@@ -1,12 +1,3 @@
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Meteormate",
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -14,7 +5,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="m-0 p-0">{children}</body>
     </html>
   );
 }
