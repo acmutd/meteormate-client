@@ -7,10 +7,27 @@ export default function Document() {
         {/* Preconnect for better font loading performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Urbanist font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
         />
+
+        {/* Oranienbaum font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Oranienbaum&display=swap"
+          rel="stylesheet"
+        />
+
+        {/* Outfit font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
+        {/* Didact Gothic font */}
+        <link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap" rel="stylesheet"></link>
+        
       </Head>
       <body>
         <Main />
