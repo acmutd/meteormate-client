@@ -45,7 +45,8 @@ export default function Home() {
 
 
       {/* Third section */}
-      <div id="getStarted" className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+      <div id="getStarted" className="min-h-screen bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col items-center justify-center"
+      style={{ backgroundImage: `url('/images/STARS__GRAYSCALE_LOGO_png.png')` }}>
         <div className="flex flex-col items-center -space-y-10 mb-1">
           <h1 className="outfit-bold text-[100px]">Ready to Find Your</h1>
           <h1 className="outfit-bold text-[100px]">Perfect Match?</h1>
