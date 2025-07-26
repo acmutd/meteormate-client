@@ -7,7 +7,6 @@ body {
   margin: 0;
   padding: 0;
   height: 100%; 
-  overflow: hidden; 
 }
 
 .didact-gothic-regular {
@@ -37,6 +36,13 @@ body {
 .outfit-bold {
   font-family: "Outfit", sans-serif;
   font-weight: 700;
+  font-style: normal;
+}
+
+.inter-tight-regular {
+  font-family: "Inter Tight", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
   font-style: normal;
 }
 
