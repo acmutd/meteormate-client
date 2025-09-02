@@ -50,6 +50,7 @@ export default function CreateAccountPage() {
 		}
 
 		console.log("Creating account with", { email, password });
+		router.push("/authentication/verifyEmail");
 	};
 
 	return (
