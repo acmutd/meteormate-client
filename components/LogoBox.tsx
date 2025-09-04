@@ -14,13 +14,13 @@ const MeteorCard: React.FC<MeteorCardProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`relative w-full max-w-md ${className}`}>
+    <div className={`relative w-auto max-w-md justify-center items-center ${className}`}>
       {/* Logo peeking out the top */}
-      <div className="absolute -top-13 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="absolute  justify-center -top-10 left-1/2 transform -translate-x-1/2 z-10">
         <img 
           src={logoSrc}
           alt={logoAlt}
-          className="w-30 h-30"
+          className="w-40 h-40"
           style={{ 
             filter: `
               drop-shadow(1px 1px 0 white) 
@@ -30,7 +30,7 @@ const MeteorCard: React.FC<MeteorCardProps> = ({
           }}
         />
       </div>
-      <div className="bg-white rounded-2xl shadow-xl p-8 pt-16 min-w-fit whitespace-nowrap">
+      <div className="bg-white rounded-2xl shadow-xl px-16 py-30 min-w-fit whitespace-nowrap">
         {children}
       </div>
     </div>
