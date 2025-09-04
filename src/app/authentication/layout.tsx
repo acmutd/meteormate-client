@@ -10,7 +10,7 @@ export default function AuthLayout({
 			className="bg-cover bg-center bg-no-repeat min-h-screen w-screen flex items-center justify-center relative"
 			style={{
 				background: `
-					linear-gradient(to right, #2E86AB, #1B4965)
+					linear-gradient(to right, #1D7DAD, #03234A)
 				`,
 			}}
 		>
