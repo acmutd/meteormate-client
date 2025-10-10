@@ -196,7 +196,6 @@ export default function CreateAccountPage() {
 					</button>
 				</div>
 			</div>
-
 		</LogoBox>
 	);
 }

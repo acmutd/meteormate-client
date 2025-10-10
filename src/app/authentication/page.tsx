@@ -35,6 +35,9 @@ export default function LoginPage() {
 		}
 
 		console.log("Logging in with", { email, password }); // for us to check console logging
+
+		// temp push to new page for testing purposes
+		router.push("/onboarding/createProfile");
 	};
 
 	return (
@@ -129,14 +132,14 @@ export default function LoginPage() {
 						Login
 					</button>
 				</div>
-
 			</div>
 
 			{/* this is the forgot password button */}
 			<div className="text-right mt-2">
-				<button 
-				onClick={() => router.push("/authentication/forgotPassword")}
-				className="text-black text-sm hover:underline cursor-pointer">
+				<button
+					onClick={() => router.push("/authentication/forgotPassword")}
+					className="text-black text-sm hover:underline cursor-pointer"
+				>
 					Forgot password?
 				</button>
 			</div>
