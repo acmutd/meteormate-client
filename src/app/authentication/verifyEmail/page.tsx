@@ -5,9 +5,18 @@ import { useRouter } from "next/navigation";
 
 export default function VerifyEmailPage() {
 	const router = useRouter();
-	const email = "abc123452@utdallas.edu";
 	const [code, setCode] = useState(Array(6).fill(""));
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+	const [email, setEmail] = useState<string | null>(null);
+
+	React.useEffect(() => {
+		import("firebase/auth").then(({ onAuthStateChanged, getAuth }) => {
+			const auth = getAuth();
+			onAuthStateChanged(auth, (user) => {
+				setEmail(user?.email ?? null);
+			});
+		});
+	}, []);
 
 	const handleChange = (value: string, index: number) => {
 		if (/^\d$/.test(value)) {
@@ -57,7 +66,9 @@ export default function VerifyEmailPage() {
 					Verify Email
 				</h1>
 				<p className="font-urbanist font-light md:text-[12px] text-[10px]">
-					We have sent a verification code to {email}.
+					{email
+						? `We have sent a verification code to ${email}.`
+						: "We have sent a verification code to your registered email."}
 				</p>
 				<p className="font-urbanist font-light md:text-[12px] text-[10px] pb-3">
 					Please check your inbox and input the code below to activate your

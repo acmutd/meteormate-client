@@ -23,14 +23,21 @@ export const doPasswordChange = (email) => {
 };
 
 // the following is for email verification - to verify the user is a utd student I guess
-export const doSendEmailVerification = (email) => {
+export const doSendEmailVerification = () => {
     const user = auth.currentUser;
+    if (!user) {
+        console.error("No authenticated user found for verification.");
+        return Promise.reject(new Error("User not logged in."));
+    }
 
-    const verificationUrl = `${window.location.origin}/verifyEmail`; // or any redirect URL
+    const verificationUrl = `${window.location.origin}/authentication/verifyEmail`;
 
-    return sendEmailVerification(user, { url: verificationUrl })
+    return sendEmailVerification(user, {
+        url: verificationUrl,
+        handleCodeInApp: true,
+    })
         .then(() => {
-            console.log("Verification email sent!");
+            console.log("Verification email sent successfully!");
         })
         .catch((error) => {
             console.error("Error sending verification email:", error);
