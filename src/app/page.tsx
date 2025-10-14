@@ -4,11 +4,13 @@ import "./globals.css";
 import { Mail, Linkedin, Instagram, MapPin } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 
+import { Link } from "react-scroll";
+
 export default function Home() {
 	const router = useRouter();
 
 	return (
-		<div className="flex flex-col min-h-screen overflow-y-scroll overflow-x-hidden scroll-smooth">
+		<div className="flex flex-col min-h-screen overflow-x-hidden scroll-smooth">
 			{/* the first landing page screen  */}
 			<div
 				className="bg-cover bg-center bg-no-repeat text-white min-h-screen w-screen"
@@ -28,16 +30,31 @@ export default function Home() {
 							MeteorMate
 						</h1>
 					</div>
-					<button className="cursor-pointer font-outfit font-normal md:text-[14px] text-[10px] p-1">
-						<a href="#howItWorks">How It Works</a>
-					</button>
+					<Link
+						to="howItWorks"
+						smooth={true}
+						duration={500}
+						className="cursor-pointer font-outfit font-normal md:text-[14px] text-[10px] p-1 w-50 text-center flex items-center justify-center"
+					>
+						How It Works
+					</Link>
 
-					<button className="cursor-pointer md:text-[14px] text-[10px] p-1">
-						<a href="#getStarted">Get Started</a>
-					</button>
-					<button className="cursor-pointer md:text-[14px] text-[10px] p-1">
-						<a href="#contactUs">Contact Us</a>
-					</button>
+					<Link
+						to="getStarted"
+						smooth={true}
+						duration={500}
+						className="cursor-pointer md:text-[14px] text-[10px] p-1 w-50 text-center flex items-center justify-center"
+					>
+						Get Started
+					</Link>
+					<Link
+						to="contactUs"
+						smooth={true}
+						duration={500}
+						className="cursor-pointer md:text-[14px] text-[10px] p-1 w-50 flex text-center items-center justify-center"
+					>
+						Contact Us
+					</Link>
 					<button
 						className="px-15 cursor-pointer md:text-[14px] text-[10px]"
 						onClick={() => router.push("/authentication")}
