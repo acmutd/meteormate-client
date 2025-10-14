@@ -26,6 +26,7 @@ export default function CreateProfilePage() {
 			selectedCleanliness,
 			selectedNoiseTolerance,
 		});
+		router.push("/onboarding/interests");
 	};
 	return (
 		<div className="py-8 px-15 w-full flex flex-col">

@@ -1,0 +1,17 @@
+import React from "react";
+export default function CreateProfilePageLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	return (
+		<div
+			className="bg-cover bg-center bg-no-repeat bg-black min-h-screen w-screen flex items-center justify-center relative"
+			style={{
+				backgroundImage: "url('/images/stars.png')",
+			}}
+		>
+			<div className="relative z-10">{children}</div>
+		</div>
+	);
+}
