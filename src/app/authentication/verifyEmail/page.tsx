@@ -54,9 +54,47 @@ export default function VerifyEmailPage() {
 		}
 	};
 
-	const handleVerifyEmail = () => {
+	const handleVerifyEmail = async () => {
 		const verificationCode = code.join("");
-		console.log("Verifying email with code:", verificationCode);
+
+		if (verificationCode.length !== 6) {
+			console.error("Please enter a complete 6-digit code");
+			return;
+		}
+
+		try {
+			const email = localStorage.getItem('verificationEmail');
+
+			if (!email) {
+				console.error("No email found. Please sign up again.");
+				return;
+			}
+
+			const response = await fetch('http://localhost:8000/api/auth/verify-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					email: email,
+					code: verificationCode
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.detail || 'Verification failed');
+			}
+
+			const result = await response.json();
+			console.log("Verification successful:", result.message);
+
+			// todo - redirect to home later once we know route
+			// router.push('/');
+
+		} catch (error) {
+			console.error("Verification error:", error.message);
+		}
 	};
 
 	return (

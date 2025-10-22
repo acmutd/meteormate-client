@@ -1,12 +1,10 @@
 "use client";
+
 import React, { useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../../contexts/authContext";
 import { doCreateUserWithEmailAndPassword, doSendEmailVerification } from "@/firebase/auth";
-import { getAuth, sendEmailVerification } from "firebase/auth";
 //import { getAuth, sendEmailVerification } from 'firebase/auth';
-import firebase from "firebase/compat/app";
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -16,8 +14,7 @@ export default function CreateAccountPage() {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState("");
 	
-	const auth = useAuth(); // need this for the variable
-	//const userLoggedIn = auth?.userLoggedIn; 
+	//const userLoggedIn = auth?.userLoggedIn;
  	const [isSigningUp, setIsSigningUp] = useState(false);
 
 
@@ -54,38 +51,43 @@ export default function CreateAccountPage() {
 
 	const handleCreateAccount = async () => {
 		if (!email.endsWith("@utdallas.edu")) {
-			setEmailError("Please enter a valid @utdallas.edu email.");
-			return;
+		   setEmailError("Please enter a valid @utdallas.edu email.");
+		   return;
 		}
 
 		if (password !== confirmPassword) {
-			setConfirmPasswordError("Passwords do not match");
-			return;
+		   setConfirmPasswordError("Passwords do not match");
+		   return;
 		}
 
 		try {
-			if (!isSigningUp) {
-				setIsSigningUp(true);
-				await doCreateUserWithEmailAndPassword(email, password)
-				await doSendEmailVerification(email);
-				router.push("/authentication/verifyEmail"); // better redirect
-				
-			}
+		   if (!isSigningUp) {
+			  setIsSigningUp(true);
+
+			  const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+			  const uid = userCredential.user.uid;
+
+			  await doSendEmailVerification(email, uid);
+
+			  localStorage.setItem('verificationEmail', email);  // todo - maybe clear this once user is verified?
+
+			  router.push("/authentication/verifyEmail");
+		   }
 		} catch (err: any) {
-			console.error("Signup error:", err);
-			if (err.code === "auth/email-already-in-use") {
-				setEmailError("An account with this email already exists.");
-			} else {
-				setEmailError(err.message || "Sign Up failed");
-			}
+		   console.error("Signup error:", err);
+		   if (err.code === "auth/email-already-in-use") {
+			  setEmailError("An account with this email already exists.");
+		   } else {
+			  setEmailError(err.message || "Sign Up failed");
+		   }
 		} finally {
-			setIsSigningUp(false);
+		   setIsSigningUp(false);
 		}
 	};
 
 	// once the handleCreatingAccount is pressed and once the button is pressed too, the sendVerificationEmail is generated
 	// const handleSendVerificationEmail = async () => {
-		
+
 	// };
 
 

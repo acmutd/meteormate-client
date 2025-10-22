@@ -22,26 +22,28 @@ export const doPasswordChange = (email) => {
     return updatePassword(auth.currentUser, password);
 };
 
-// the following is for email verification - to verify the user is a utd student I guess
-export const doSendEmailVerification = () => {
-    const user = auth.currentUser;
-    if (!user) {
-        console.error("No authenticated user found for verification.");
-        return Promise.reject(new Error("User not logged in."));
-    }
-
-    const verificationUrl = `${window.location.origin}/authentication/verifyEmail`;
-
-    return sendEmailVerification(user, {
-        url: verificationUrl,
-        handleCodeInApp: true,
-    })
-        .then(() => {
-            console.log("Verification email sent successfully!");
-        })
-        .catch((error) => {
-            console.error("Error sending verification email:", error);
-            throw error;
+export const doSendEmailVerification = async (email, uid) => {
+    try {
+        // todo - change this to actual host when deploying
+        const response = await fetch('http://localhost:8000/api/auth/send-verification-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                uid: uid
+            })
         });
-};
 
+        if (!response.ok) {
+            throw new Error('Failed to send verification code');
+        }
+
+        console.log("Verification code sent successfully!");
+        return response.json();
+    } catch (error) {
+        console.error("Error sending verification code:", error);
+        throw error;
+    }
+};
