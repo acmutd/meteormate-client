@@ -1,7 +1,10 @@
 "use client";
+
 import React, { useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
+import { doCreateUserWithEmailAndPassword, doSendEmailVerification } from "@/firebase/auth";
+//import { getAuth, sendEmailVerification } from 'firebase/auth';
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -10,6 +13,11 @@ export default function CreateAccountPage() {
 	const [emailError, setEmailError] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState("");
+	
+	//const userLoggedIn = auth?.userLoggedIn;
+ 	const [isSigningUp, setIsSigningUp] = useState(false);
+
+
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -20,6 +28,7 @@ export default function CreateAccountPage() {
 		} else {
 			setEmailError("");
 		}
+		
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,20 +47,49 @@ export default function CreateAccountPage() {
 		}
 	};
 
-	const handleCreateAccount = () => {
+	
+
+	const handleCreateAccount = async () => {
 		if (!email.endsWith("@utdallas.edu")) {
-			setEmailError("Please enter a valid @utdallas.edu email.");
-			return;
+		   setEmailError("Please enter a valid @utdallas.edu email.");
+		   return;
 		}
 
 		if (password !== confirmPassword) {
-			setConfirmPasswordError("Passwords do not match");
-			return;
+		   setConfirmPasswordError("Passwords do not match");
+		   return;
 		}
 
-		console.log("Creating account with", { email, password });
-		router.push("/authentication/verifyEmail");
+		try {
+		   if (!isSigningUp) {
+			  setIsSigningUp(true);
+
+			  const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+			  const uid = userCredential.user.uid;
+
+			  await doSendEmailVerification(email, uid);
+
+			  localStorage.setItem('verificationEmail', email);  // todo - maybe clear this once user is verified?
+
+			  router.push("/authentication/verifyEmail");
+		   }
+		} catch (err: any) {
+		   console.error("Signup error:", err);
+		   if (err.code === "auth/email-already-in-use") {
+			  setEmailError("An account with this email already exists.");
+		   } else {
+			  setEmailError(err.message || "Sign Up failed");
+		   }
+		} finally {
+		   setIsSigningUp(false);
+		}
 	};
+
+	// once the handleCreatingAccount is pressed and once the button is pressed too, the sendVerificationEmail is generated
+	// const handleSendVerificationEmail = async () => {
+
+	// };
+
 
 	return (
 		<LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
@@ -190,10 +228,16 @@ export default function CreateAccountPage() {
 					{/* create account button */}
 					<button
 						onClick={handleCreateAccount}
-						className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer"
+						disabled={isSigningUp}
+						className={`mt-4 mb-4 py-2 rounded-3xl transition cursor-pointer ${
+							isSigningUp
+								? "bg-gray-400 text-white"
+								: "bg-[#509275] text-white hover:bg-gray-800"
+						}`}
 					>
-						Create Account
+						{isSigningUp ? "Creating..." : "Create Account"}
 					</button>
+
 				</div>
 			</div>
 
