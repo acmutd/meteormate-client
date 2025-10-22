@@ -1,25 +1,39 @@
-import {auth} from "./firebase";
+import { auth } from "./firebase";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  updatePassword
+} from "firebase/auth";
 
-import { createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, updatePassword } from "firebase/auth";
-
+// ✅ Create a new user
 export const doCreateUserWithEmailAndPassword = async (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  return userCredential.user; // return only the user object
 };
 
+// ✅ Sign in existing user
 export const doSignInWithEmailAndPassword = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  return signInWithEmailAndPassword(auth, email, password);
 };
 
+// ✅ Sign out current user
 export const doSignOut = () => {
-    return auth.signOut();
+  return auth.signOut();
 };
 
+// ✅ Send password reset email
 export const doPasswordReset = (email) => {
-    return sendPasswordResetEmail(auth, email);
+  return sendPasswordResetEmail(auth, email);
 };
 
-export const doPasswordChange = (email) => {
-    return updatePassword(auth.currentUser, password);
+// ❌ FIXED: updatePassword requires the *new password*, not the email
+export const doPasswordChange = (newPassword) => {
+  if (!auth.currentUser) {
+    return Promise.reject(new Error("No authenticated user found."));
+  }
+  return updatePassword(auth.currentUser, newPassword);
 };
 
 export const doSendEmailVerification = async (email, uid) => {
@@ -47,3 +61,4 @@ export const doSendEmailVerification = async (email, uid) => {
         throw error;
     }
 };
+
