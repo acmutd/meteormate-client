@@ -7,6 +7,7 @@ import { doCreateUserWithEmailAndPassword, doSendEmailVerification } from "@/fir
 import { getAuth, sendEmailVerification } from "firebase/auth";
 //import { getAuth, sendEmailVerification } from 'firebase/auth';
 import firebase from "firebase/compat/app";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -51,42 +52,59 @@ export default function CreateAccountPage() {
 	};
 
 	
+	// handle create accont through the verification email
+	// const handleCreateAccount = async () => {
+	// 	if (!email.endsWith("@utdallas.edu")) return setEmailError("UTD email required.");
+	// 	if (password !== confirmPassword) return setConfirmPasswordError("Passwords do not match");
 
+	// 	try {
+	// 		setIsSigningUp(true);
+
+	// 		// Create user
+	// 		const newUser = await doCreateUserWithEmailAndPassword(email, password);
+
+	// 		// Send verification email
+	// 		await doSendEmailVerification(newUser);
+
+	// 		// Redirect to verify page
+	// 		router.push("/authentication/verifyEmail");
+
+	// 	} catch (err: any) {
+	// 		console.error(err);
+	// 	} finally {
+	// 		setIsSigningUp(false);
+	// 	}
+	// };
+	
+	// handle create account through the 6 digit code
 	const handleCreateAccount = async () => {
-		if (!email.endsWith("@utdallas.edu")) {
-			setEmailError("Please enter a valid @utdallas.edu email.");
-			return;
-		}
-
-		if (password !== confirmPassword) {
-			setConfirmPasswordError("Passwords do not match");
-			return;
-		}
+		if (!email.endsWith("@utdallas.edu")) return setEmailError("UTD email required.");
+		if (password !== confirmPassword) return setConfirmPasswordError("Passwords do not match");
 
 		try {
-			if (!isSigningUp) {
-				setIsSigningUp(true);
-				await doCreateUserWithEmailAndPassword(email, password)
-				await doSendEmailVerification(email);
-				router.push("/authentication/verifyEmail"); // better redirect
-				
-			}
+			setIsSigningUp(true);
+
+			// Create user in Firebase Auth
+			const newUser = await doCreateUserWithEmailAndPassword(email, password);
+
+			// Call your Python backend to send verification code
+			await fetch("https://YOUR_BACKEND_DOMAIN/send-code", { // need to add my domain here please dont forget
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email, uid: newUser.uid }),
+			});
+
+			router.push("/authentication/verifyEmail");
+
 		} catch (err: any) {
-			console.error("Signup error:", err);
-			if (err.code === "auth/email-already-in-use") {
-				setEmailError("An account with this email already exists.");
-			} else {
-				setEmailError(err.message || "Sign Up failed");
-			}
+			console.error(err);
 		} finally {
 			setIsSigningUp(false);
 		}
 	};
 
-	// once the handleCreatingAccount is pressed and once the button is pressed too, the sendVerificationEmail is generated
-	// const handleSendVerificationEmail = async () => {
-		
-	// };
+
+	
 
 
 	return (

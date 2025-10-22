@@ -21,6 +21,9 @@ export default function VerifyEmailPage() {
                 setEmailError(""); // otherwise pass
             }
         };
+	const handleResetPassword = () => {
+		
+	}
 
 	return (
 		<LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
