@@ -65,7 +65,7 @@ export default function CreateAccountPage() {
 			  setIsSigningUp(true);
 
 			  const userCredential = await doCreateUserWithEmailAndPassword(email, password);
-			  const uid = userCredential.user.uid;
+			  const uid = userCredential.uid;
 
 			  await doSendEmailVerification(email, uid);
 

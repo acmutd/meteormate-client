@@ -4,19 +4,10 @@ import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 
 export default function VerifyEmailPage() {
-	const router = useRouter();
+	useRouter();
 	const [code, setCode] = useState(Array(6).fill(""));
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-	const [email, setEmail] = useState<string | null>(null);
-
-	React.useEffect(() => {
-		import("firebase/auth").then(({ onAuthStateChanged, getAuth }) => {
-			const auth = getAuth();
-			onAuthStateChanged(auth, (user) => {
-				setEmail(user?.email ?? null);
-			});
-		});
-	}, []);
+	const [email] = useState<string | null>(null);
 
 	const handleChange = (value: string, index: number) => {
 		if (/^\d$/.test(value)) {
@@ -93,7 +84,7 @@ export default function VerifyEmailPage() {
 			// router.push('/');
 
 		} catch (error) {
-			console.error("Verification error:", error.message);
+			console.error("Verification error:", (error as Error).message);
 		}
 	};
 
