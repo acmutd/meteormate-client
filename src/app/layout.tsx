@@ -1,3 +1,7 @@
+"use client";
+
+import "./globals.css";
+import { AuthProvider } from "../contexts/authContext";
 import ScreenBlocker from "../../components/ScreenBlocker";
 
 export default function RootLayout({
@@ -8,10 +12,12 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className="m-0 p-0">
-				<div className="hidden md:block">{children}</div>
-				<div className="block md:hidden">
-					<ScreenBlocker />
-				</div>
+				<AuthProvider>
+					<div className="hidden md:block">{children}</div>
+					<div className="block md:hidden">
+						<ScreenBlocker />
+					</div>
+				</AuthProvider>
 			</body>
 		</html>
 	);
