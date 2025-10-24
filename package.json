@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@types/react-scroll": "^1.8.10",
     "firebase": "^12.3.0",
     "nodemailer": "^7.0.9",
     "react-router-dom": "^7.9.3",
