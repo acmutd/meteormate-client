@@ -39,6 +39,12 @@ body {
   font-style: normal;
 }
 
+.outfit-extrabold {
+  font-family: "Outfit", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
 .inter-tight-regular {
   font-family: "Inter Tight", sans-serif;
   font-optical-sizing: auto;
