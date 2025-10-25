@@ -25,6 +25,7 @@ export default function CreateAccountPage() {
 	const [nonAlphanumericCharacter, setNonAlphanumericCharacter] =
 		useState(false);
 	const [numberCharacter, setNumberCharacter] = useState(false);
+	const [requirementsMet, setRequirementsMet] = useState(false);
 
 	//const userLoggedIn = auth?.userLoggedIn;
 	const [isSigningUp, setIsSigningUp] = useState(false);
@@ -43,7 +44,7 @@ export default function CreateAccountPage() {
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value);
 		// password length check
-		if (e.target.value.length >= 6) {
+		if (e.target.value.length >= 8) {
 			setMinCharacters(true);
 		} else {
 			setMinCharacters(false);
@@ -70,6 +71,11 @@ export default function CreateAccountPage() {
 			setNumberCharacter(false);
 		} else {
 			setNumberCharacter(true);
+		}
+		if (e.target.value.length >= 6 && e.target.value.search(/[a-z]/) != -1 && e.target.value.search(/[A-Z]/) != -1 && e.target.value.search(/[$*.[\]{}()?\"!@#%&/\\,<>':;|_~]/) != -1 && e.target.value.search(/[0-9]/) != -1){
+			setRequirementsMet(true);
+		} else {
+			setRequirementsMet(false);
 		}
 	};
 
@@ -257,7 +263,7 @@ export default function CreateAccountPage() {
 							/>
 						</div>
 						{confirmPasswordError && (
-							<p className="absolute top-110 left-26 text-red-500 text-xs">
+							<p className=" text-red-500 text-xs">
 								{confirmPasswordError}
 							</p>
 						)}
@@ -267,11 +273,11 @@ export default function CreateAccountPage() {
 						<p className="text-xs mt-1">Passwords must:</p>
 						{minCharacters ? (
 							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Be at least 6 characters
+								<Check className="size-4" /> Be at least 8 characters
 							</p>
 						) : (
 							<p className="text-xs text-red-500 flex items-center gap-1">
-								<X className="size-4" /> Be at least 6 characters
+								<X className="size-4" /> Be at least 8 characters
 							</p>
 						)}
 						{lowercaseLetter ? (
@@ -319,15 +325,15 @@ export default function CreateAccountPage() {
 					{/* create account button */}
 					<button
 						onClick={handleCreateAccount}
-						disabled={isSigningUp}
-						className={`mt-4 mb-4 py-2 rounded-3xl transition cursor-pointer ${
-							isSigningUp
-								? "bg-gray-400 text-white"
-								: "bg-[#509275] text-white hover:bg-gray-800"
+						disabled={isSigningUp || !requirementsMet}
+						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 ${
+							isSigningUp || !requirementsMet
+							? "bg-gray-400 text-white cursor-not-allowed"
+							: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
 						}`}
-					>
+						>
 						{isSigningUp ? "Creating..." : "Create Account"}
-					</button>
+						</button>
 				</div>
 			</div>
 		</LogoBox>
