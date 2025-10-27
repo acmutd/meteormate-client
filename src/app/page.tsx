@@ -203,7 +203,10 @@ export default function Home() {
 				</div>
 				{/* Button for start your search */}
 				<div className="flex justify-center items-center">
-					<button className="outfit-bold md:px-7 md:py-4 p-2 rounded-[20px] border-0 md:text-[24px] text-[10px] flex justify-center button-find cursor-pointer mt-2 bg-gradient-to-br from-orange-400 to-yellow-500 hover:opacity-80 transition-opacity duration-300">
+					<button
+						className="outfit-bold md:px-7 md:py-4 p-2 rounded-[20px] border-0 md:text-[24px] text-[10px] flex justify-center button-find cursor-pointer mt-2 bg-gradient-to-br from-orange-400 to-yellow-500 hover:opacity-80 transition-opacity duration-300"
+						onClick={() => router.push("/roomateFinderPage")}
+					>
 						Start Your Search
 					</button>
 				</div>
