@@ -1,27 +1,26 @@
 import React from 'react'
 
 interface RoomateFinderCardProps {
-    image: {
-        src: string;
-        alt: string;
+    data: string | {
+        image: {
+            src: string;
+            alt: string;
+        };
+        name: string;
+        major: string;
+        grade: string;
+        description: string;
+        tags: string[];
+        personalities: string[];
     };
-    name: string;
-    major: string;
-    grade: string;
-    description: string;
-    tags: string[];
-    personalities: string[];
 }
 
 export default function RoomateFinderCard({
-    image,
-    name,
-    major,
-    grade,
-    description,
-    tags,
-    personalities,
+    data
 }: RoomateFinderCardProps) {
+    const cardData = typeof data === 'string' ? JSON.parse(data) : data;
+    const  {image, name, major, grade, description, tags, personalities} = cardData
+
     return(
         <div className="rounded-2xl bg-white w-120 h-120">
             {/* image section with name, major, grade in bottom left*/}
@@ -40,7 +39,7 @@ export default function RoomateFinderCard({
             {/* tags section */}
             <div className="p-3">
                 <div className="flex flex-wrap gap-2">
-                    {tags.map((tag, index) => (
+                    {tags.map((tag: string, index: number) => (
                         <div
                             key={index}
                             className="bg-[#7B7B7B] text-white text-xs font-semibold rounded-full px-3 py-1"
@@ -55,13 +54,13 @@ export default function RoomateFinderCard({
             {/* personalities section */}
             <div className="p-3">
                 <div className="items-center justify-center flex flex-wrap gap-2">
-                    {personalities.map((personality, index) => (
+                    {personalities.map((personality: string, index: number) => (
                         <div
                             key={index}
                             className="bg-[#E2E2E2] rounded-xl p-2 flex flex-col items-center w-15"
                         >
                             <img
-                                src={`/images/personality_${personality}.png`}
+                                src={`/images/personality_images/${personality}.png`}
                                 alt={personality}  
                                 className="w-7 h-7" 
                             />
