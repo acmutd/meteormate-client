@@ -62,55 +62,63 @@ export default function Home() {
 								Contact Us
 							</Link>
 							<button
-								className="px-15 cursor-pointer md:text-[14px] text-[10px]"
+								className="mx-13 p-2 cursor-pointer md:text-[14px] text-[10px] transition-transform duration-200 hover:scale-105 active:scale-95"
 								onClick={() => router.push("/authentication")}
 							>
-								<p className="outfit-regular border-0 bg-white text-black rounded-[100px] px-5 py-2">
+								<p className="outfit-regular border-0 bg-white text-black rounded-[100px] px-5 py-2 transition-all duration-300 hover:shadow-lg">
 									Login
 								</p>
 							</button>
 						</div>
 						{/* main landing page content */}
-						<div className="mt-35 ml-10">
-							<p className="text-sm font-bold">
-								Your UTD roomate match starts here.
-							</p>
-							<h1 className="mt-4 text-6xl font-extrabold">
-								Find your perfect roomate
-							</h1>
-							<h1 className="text-6xl font-extrabold">here at UT Dallas!</h1>
-							<p className="mt-4 font-inter font-thin text-lg">
-								Our goal it to help students like you find
-							</p>
-							<p className="font-inter font-thin text-lg">
-								compatible roommates based on lifestyle,
-							</p>
-							<p className="font-inter font-thin text-lg">
-								habits, and interests! Create your profile
-							</p>
-							<p className="font-inter font-thin text-lg">
-								and explore potential matches to have a
-							</p>
-							<p className="font-inter font-thin text-lg">
-								roommate that fits your vibe!
-							</p>
-							<div className="flex gap-20 mt-4">
-								<Link
-									to="getStarted"
-									smooth={true}
-									duration={500}
-									className="bg-white text-black text-sm font-bold rounded-3xl px-4 py-3 cursor-pointer"
-								>
-									Get Started
-								</Link>
-								<Link
-									to="howItWorks"
-									smooth={true}
-									duration={500}
-									className="bg-white text-black text-sm font-bold rounded-3xl px-4 py-3 cursor-pointer"
-								>
-									Learn More
-								</Link>
+						<div className="flex items-end justify-between">
+							<div className="flex-1 ml-10 mb-20 mt-15 self-start">
+								<p className="text-sm font-bold">
+									Your UTD roomate match starts here.
+								</p>
+								<h1 className="mt-4 text-5xl font-extrabold">
+									Find your perfect roomate
+								</h1>
+								<h1 className="text-5xl font-extrabold">here at UT Dallas!</h1>
+								<p className="mt-4 font-inter font-thin text-xl">
+									Our goal it to help students like you find
+								</p>
+								<p className="font-inter font-thin text-xl">
+									compatible roommates based on lifestyle,
+								</p>
+								<p className="font-inter font-thin text-xl">
+									habits, and interests! Create your profile
+								</p>
+								<p className="font-inter font-thin text-xl">
+									and explore potential matches to have a
+								</p>
+								<p className="font-inter font-thin text-xl">
+									roommate that fits your vibe!
+								</p>
+								<div className="flex gap-20 mt-4">
+									<Link
+										to="getStarted"
+										smooth={true}
+										duration={500}
+										className="bg-white text-black text-sm font-bold rounded-3xl px-4 py-3 cursor-pointer"
+									>
+										Get Started
+									</Link>
+									<Link
+										to="howItWorks"
+										smooth={true}
+										duration={500}
+										className="bg-white text-black text-sm font-bold rounded-3xl px-4 py-3 cursor-pointer"
+									>
+										Learn More
+									</Link>
+								</div>
+							</div>
+							<div className="flex items-end justify-end pb-0 pr-10 pt-32 w-1/2">
+								<img 
+									src="/images/laptop_model.png"
+									className="max-w-full w-full object-contain"
+								/>
 							</div>
 						</div>
 					</div>
