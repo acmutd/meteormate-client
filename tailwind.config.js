@@ -7,11 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {
-
       fontFamily: {
         urbanist: ['"Urbanist"', 'sans-serif'],
         oranienbaum: ['"Oranienbaum"', 'serif'],
         outfit: ['"Outfit"', 'sans-serif'],
+        inter: ['"Inter"', 'sans-serif'],
+        pavanam: ['"Pavanam"', 'sans-serif'],
       },
     },
   },
