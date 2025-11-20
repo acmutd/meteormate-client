@@ -3,8 +3,12 @@
 import React, { useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
-import { doCreateUserWithEmailAndPassword, doSendEmailVerification } from "@/firebase/auth";
+import {
+	doCreateUserWithEmailAndPassword,
+	doSendEmailVerification,
+} from "@/firebase/auth";
 //import { getAuth, sendEmailVerification } from 'firebase/auth';
+import { Check, X } from "lucide-react";
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -13,11 +17,18 @@ export default function CreateAccountPage() {
 	const [emailError, setEmailError] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState("");
-	
+
+	// requirements
+	const [minCharacters, setMinCharacters] = useState(false);
+	const [lowercaseLetter, setLowercaseLetter] = useState(false);
+	const [uppercaseLetter, setUppercaseLetter] = useState(false);
+	const [nonAlphanumericCharacter, setNonAlphanumericCharacter] =
+		useState(false);
+	const [numberCharacter, setNumberCharacter] = useState(false);
+	const [requirementsMet, setRequirementsMet] = useState(false);
+
 	//const userLoggedIn = auth?.userLoggedIn;
- 	const [isSigningUp, setIsSigningUp] = useState(false);
-
-
+	const [isSigningUp, setIsSigningUp] = useState(false);
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -28,11 +39,44 @@ export default function CreateAccountPage() {
 		} else {
 			setEmailError("");
 		}
-		
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value);
+		// password length check
+		if (e.target.value.length >= 8) {
+			setMinCharacters(true);
+		} else {
+			setMinCharacters(false);
+		}
+		// lowercase letter check
+		if (e.target.value.search(/[a-z]/) == -1) {
+			setLowercaseLetter(false);
+		} else {
+			setLowercaseLetter(true);
+		}
+		// uppcase letter check
+		if (e.target.value.search(/[A-Z]/) == -1) {
+			setUppercaseLetter(false);
+		} else {
+			setUppercaseLetter(true);
+		}
+		// nonalphanumeric character check
+		if (e.target.value.search(/[$*.[\]{}()?\"!@#%&/\\,<>':;|_~]/) == -1) {
+			setNonAlphanumericCharacter(false);
+		} else {
+			setNonAlphanumericCharacter(true);
+		}
+		if (e.target.value.search(/[0-9]/) == -1) {
+			setNumberCharacter(false);
+		} else {
+			setNumberCharacter(true);
+		}
+		if (e.target.value.length >= 6 && e.target.value.search(/[a-z]/) != -1 && e.target.value.search(/[A-Z]/) != -1 && e.target.value.search(/[$*.[\]{}()?\"!@#%&/\\,<>':;|_~]/) != -1 && e.target.value.search(/[0-9]/) != -1){
+			setRequirementsMet(true);
+		} else {
+			setRequirementsMet(false);
+		}
 	};
 
 	const handleConfirmPasswordChange = (
@@ -47,41 +91,42 @@ export default function CreateAccountPage() {
 		}
 	};
 
-	
-
 	const handleCreateAccount = async () => {
 		if (!email.endsWith("@utdallas.edu")) {
-		   setEmailError("Please enter a valid @utdallas.edu email.");
-		   return;
+			setEmailError("Please enter a valid @utdallas.edu email.");
+			return;
 		}
 
 		if (password !== confirmPassword) {
-		   setConfirmPasswordError("Passwords do not match");
-		   return;
+			setConfirmPasswordError("Passwords do not match");
+			return;
 		}
 
 		try {
-		   if (!isSigningUp) {
-			  setIsSigningUp(true);
+			if (!isSigningUp) {
+				setIsSigningUp(true);
 
-			  const userCredential = await doCreateUserWithEmailAndPassword(email, password);
-			  const uid = userCredential.uid;
+				const userCredential = await doCreateUserWithEmailAndPassword(
+					email,
+					password
+				);
+				const uid = userCredential.uid;
 
-			  await doSendEmailVerification(email, uid);
+				await doSendEmailVerification(email, uid);
 
-			  localStorage.setItem('verificationEmail', email);  // todo - maybe clear this once user is verified?
+				localStorage.setItem("verificationEmail", email); // todo - maybe clear this once user is verified?
 
-			  router.push("/authentication/verifyEmail");
-		   }
+				router.push("/authentication/verifyEmail");
+			}
 		} catch (err: any) {
-		   console.error("Signup error:", err);
-		   if (err.code === "auth/email-already-in-use") {
-			  setEmailError("An account with this email already exists.");
-		   } else {
-			  setEmailError(err.message || "Sign Up failed");
-		   }
+			console.error("Signup error:", err);
+			if (err.code === "auth/email-already-in-use") {
+				setEmailError("An account with this email already exists.");
+			} else {
+				setEmailError(err.message || "Sign Up failed");
+			}
 		} finally {
-		   setIsSigningUp(false);
+			setIsSigningUp(false);
 		}
 	};
 
@@ -90,13 +135,12 @@ export default function CreateAccountPage() {
 
 	// };
 
-
 	return (
 		<LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
 			{/* Back arrow */}
 			<button
 				onClick={router.back}
-				className="absolute top-4 left-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+				className="absolute top-8 -left-15 p-2 hover:bg-gray-100 rounded-full transition-colors"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -219,8 +263,61 @@ export default function CreateAccountPage() {
 							/>
 						</div>
 						{confirmPasswordError && (
-							<p className="text-red-500 text-xs mt-1">
+							<p className=" text-red-500 text-xs">
 								{confirmPasswordError}
+							</p>
+						)}
+					</div>
+
+					<div>
+						<p className="text-xs mt-1">Passwords must:</p>
+						{minCharacters ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
+								<Check className="size-4" /> Be at least 8 characters
+							</p>
+						) : (
+							<p className="text-xs text-red-500 flex items-center gap-1">
+								<X className="size-4" /> Be at least 8 characters
+							</p>
+						)}
+						{lowercaseLetter ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
+								<Check className="size-4" /> Include at least one lowercase
+								letter (a-z)
+							</p>
+						) : (
+							<p className="text-xs text-red-500 flex items-center gap-1">
+								<X className="size-4" /> Include at least one lowercase letter
+								(a-z)
+							</p>
+						)}
+						{uppercaseLetter ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
+								<Check className="size-4" /> Include at least one uppercase
+								letter (A-Z)
+							</p>
+						) : (
+							<p className="text-xs text-red-500 flex items-center gap-1">
+								<X className="size-4" /> Include at least one uppercase letter
+								(A-Z)
+							</p>
+						)}
+						{nonAlphanumericCharacter ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
+								<Check className="size-4" /> Include a special character (!@#$%)
+							</p>
+						) : (
+							<p className="text-xs text-red-500 flex items-center gap-1">
+								<X className="size-4" /> Include a special character (!@#$%)
+							</p>
+						)}
+						{numberCharacter ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
+								<Check className="size-4" /> Include a number (0-9)
+							</p>
+						) : (
+							<p className="text-xs text-red-500 flex items-center gap-1">
+								<X className="size-4" /> Include a number (0-9)
 							</p>
 						)}
 					</div>
@@ -228,19 +325,17 @@ export default function CreateAccountPage() {
 					{/* create account button */}
 					<button
 						onClick={handleCreateAccount}
-						disabled={isSigningUp}
-						className={`mt-4 mb-4 py-2 rounded-3xl transition cursor-pointer ${
-							isSigningUp
-								? "bg-gray-400 text-white"
-								: "bg-[#509275] text-white hover:bg-gray-800"
+						disabled={isSigningUp || !requirementsMet}
+						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 ${
+							isSigningUp || !requirementsMet
+							? "bg-gray-400 text-white cursor-not-allowed"
+							: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
 						}`}
-					>
+						>
 						{isSigningUp ? "Creating..." : "Create Account"}
-					</button>
-
+						</button>
 				</div>
 			</div>
-
 		</LogoBox>
 	);
 }
