@@ -71,34 +71,38 @@ export default function Home() {
 							</button>
 						</div>
 						{/* main landing page content */}
-						<div className="flex items-end justify-between">
-							<div className="flex-1 ml-10 mb-20 mt-15 self-start">
-								<p className="text-sm font-bold">Your UTD roomate match starts here.</p>
-								<h1 className="mt-4 text-5xl font-extrabold">
+						<div className="flex items-center justify-between">
+							<div className="flex-1 ml-10 lg:mb-20 lg:mt-15 md:mt-5 self-start">
+								<p className="md:text-xs text-sm font-bold">
+									Your UTD roomate match starts here.
+								</p>
+								<h1 className="mt-4 lg:text-5xl text-3xl font-extrabold">
 									Find your perfect roomate
 								</h1>
-								<h1 className="text-5xl font-extrabold">here at UT Dallas!</h1>
-								<p className="mt-4 font-inter font-thin text-xl">
+								<h1 className="md:text-3xl lg:text-5xl font-extrabold">
+									here at UT Dallas!
+								</h1>
+								<p className="mt-4 font-inter font-thin md:text-sm lg:text-xl">
 									Our goal it to help students like you find
 								</p>
-								<p className="font-inter font-thin text-xl">
+								<p className="font-inter font-thin md:text-sm lg:text-xl">
 									compatible roommates based on lifestyle,
 								</p>
-								<p className="font-inter font-thin text-xl">
+								<p className="font-inter font-thin md:text-sm lg:text-xl">
 									habits, and interests! Create your profile
 								</p>
-								<p className="font-inter font-thin text-xl">
+								<p className="font-inter font-thin md:text-sm lg:text-xl">
 									and explore potential matches to have a
 								</p>
-								<p className="font-inter font-thin text-xl">
+								<p className="font-inter font-thin md:text-sm lg:text-xl">
 									roommate that fits your vibe!
 								</p>
-								<div className="flex gap-20 mt-4">
+								<div className="flex items-center gap-20 mt-4">
 									<Link
 										to="getStarted"
 										smooth={true}
 										duration={500}
-										className="bg-white text-black text-sm font-bold rounded-3xl px-4 py-3 cursor-pointer"
+										className="bg-white text-black lg:text-sm font-bold rounded-3xl lg:px-4 lg:py-3 md:text-xs md:px-2 md:py-2 cursor-pointer"
 									>
 										Get Started
 									</Link>
@@ -106,13 +110,13 @@ export default function Home() {
 										to="howItWorks"
 										smooth={true}
 										duration={500}
-										className="bg-white text-black text-sm font-bold rounded-3xl px-4 py-3 cursor-pointer"
+										className="bg-white text-black lg:text-sm font-bold rounded-3xl lg:px-4 lg:py-3 md:text-xs md:px-2 md:py-2 cursor-pointer"
 									>
 										Learn More
 									</Link>
 								</div>
 							</div>
-							<div className="flex items-end justify-end pb-0 pr-10 pt-32 w-1/2">
+							<div className="flex items-end justify-end pb-0 pr-10 lg:pt-28 md:pt-20 w-1/2">
 								<img
 									src="/images/laptop_model.png"
 									className="max-w-full w-full object-contain"
