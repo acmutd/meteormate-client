@@ -40,7 +40,7 @@ export default function Home() {
 								to="howItWorks"
 								smooth={true}
 								duration={500}
-								className="cursor-pointer font-outfit font-normal md:text-[14px] text-[10px] p-1 w-50 text-center flex items-center justify-center"
+								className="cursor-pointer font-outfit font-normal md:text-[14px] text-[10px] p-1 w-25 h-10 mt-6 text-center flex items-center justify-center"
 							>
 								How It Works
 							</Link>
@@ -49,7 +49,7 @@ export default function Home() {
 								to="getStarted"
 								smooth={true}
 								duration={500}
-								className="cursor-pointer md:text-[14px] text-[10px] p-1 w-50 text-center flex items-center justify-center"
+								className="cursor-pointer md:text-[14px] text-[10px] p-1 w-25 h-10 mt-6 text-center flex items-center justify-center"
 							>
 								Get Started
 							</Link>
@@ -57,7 +57,7 @@ export default function Home() {
 								to="contactUs"
 								smooth={true}
 								duration={500}
-								className="cursor-pointer md:text-[14px] text-[10px] p-1 w-50 flex text-center items-center justify-center"
+								className="cursor-pointer font-outfit font-normal md:text-[14px] text-[10px] p-1 w-25 h-10 mt-6 flex text-center items-center justify-center"
 							>
 								Contact Us
 							</Link>
@@ -73,9 +73,7 @@ export default function Home() {
 						{/* main landing page content */}
 						<div className="flex items-end justify-between">
 							<div className="flex-1 ml-10 mb-20 mt-15 self-start">
-								<p className="text-sm font-bold">
-									Your UTD roomate match starts here.
-								</p>
+								<p className="text-sm font-bold">Your UTD roomate match starts here.</p>
 								<h1 className="mt-4 text-5xl font-extrabold">
 									Find your perfect roomate
 								</h1>
@@ -115,7 +113,7 @@ export default function Home() {
 								</div>
 							</div>
 							<div className="flex items-end justify-end pb-0 pr-10 pt-32 w-1/2">
-								<img 
+								<img
 									src="/images/laptop_model.png"
 									className="max-w-full w-full object-contain"
 								/>
@@ -149,8 +147,8 @@ export default function Home() {
 						/>
 						<h1 className="font-bold h-10 ">AI Powered Matchmaking</h1>
 						<p className="h-30">
-							Our advanced algorithm analyzes personality traits and preferences
-							to find you the ideal roommate.
+							Our advanced algorithm analyzes personality traits and preferences to
+							find you the ideal roommate.
 						</p>
 					</div>
 
@@ -162,8 +160,8 @@ export default function Home() {
 						/>
 						<h1 className="font-bold h-10">Data Driven Insights</h1>
 						<p className="h-30">
-							View comprehensive compatibility metrics and compare potential
-							roommates using interactive charts and graphs.
+							View comprehensive compatibility metrics and compare potential roommates
+							using interactive charts and graphs.
 						</p>
 					</div>
 
@@ -188,8 +186,8 @@ export default function Home() {
 						/>
 						<h1 className="font-bold h-10">Privacy First</h1>
 						<p className="h-30">
-							Your data is always protected. You control what information you
-							share and who can see it.
+							Your data is always protected. You control what information you share and
+							who can see it.
 						</p>
 					</div>
 
@@ -201,9 +199,8 @@ export default function Home() {
 						/>
 						<h1 className="font-bold h-10">Personalized Matchmaking</h1>
 						<p className="h-30">
-							Tinder styled swiping interface with detailed profile and
-							compatibility scores makes finding your roommate fun and
-							intuitive.
+							Tinder styled swiping interface with detailed profile and compatibility
+							scores makes finding your roommate fun and intuitive.
 						</p>
 					</div>
 
@@ -215,8 +212,7 @@ export default function Home() {
 						/>
 						<h1 className="font-bold h-10">Social Integration</h1>
 						<p className="h-30">
-							Optional social media connection for enhanced matching and
-							verification.
+							Optional social media connection for enhanced matching and verification.
 						</p>
 					</div>
 				</div>
@@ -285,9 +281,7 @@ export default function Home() {
 
 					{/* Center text - absolutely positioned for true centering */}
 					<div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center text-white/80">
-						<h1 className="oranienbaum-regular text-[30px] mb-10">
-							MeteorMate
-						</h1>
+						<h1 className="oranienbaum-regular text-[30px] mb-10">MeteorMate</h1>
 
 						<div className="flex gap-10 outfit-regular text-white/60 text-sm">
 							<h2 className="cursor-pointer">Home</h2>
