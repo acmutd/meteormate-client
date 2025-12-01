@@ -4,10 +4,11 @@ import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 
 export default function VerifyEmailPage() {
-	useRouter();
+	const router = useRouter(); // NEW: actually use the router
 	const [code, setCode] = useState(Array(6).fill(""));
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 	const [email] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null); // NEW: error message state
 
 	const handleChange = (value: string, index: number) => {
 		if (/^\d$/.test(value)) {
@@ -28,17 +29,14 @@ export default function VerifyEmailPage() {
 		if (e.key === "Backspace") {
 			const newCode = [...code];
 			if (code[index]) {
-				// If current field has a value, clear it
 				newCode[index] = "";
 				setCode(newCode);
 			} else if (index > 0) {
-				// If current field is empty, move to previous field and clear it
 				newCode[index - 1] = "";
 				setCode(newCode);
 				inputsRef.current[index - 1]?.focus();
 			}
 		} else if (e.key === "Delete") {
-			// Delete key clears current field
 			const newCode = [...code];
 			newCode[index] = "";
 			setCode(newCode);
@@ -47,44 +45,45 @@ export default function VerifyEmailPage() {
 
 	const handleVerifyEmail = async () => {
 		const verificationCode = code.join("");
+		setError(null); // NEW: clear any previous error
 
 		if (verificationCode.length !== 6) {
-			console.error("Please enter a complete 6-digit code");
+			setError("Please enter the 6-digit code.");
 			return;
 		}
 
 		try {
-			const email = localStorage.getItem('verificationEmail');
+			const email = localStorage.getItem("verificationEmail");
 
 			if (!email) {
-				console.error("No email found. Please sign up again.");
+				setError("No email found. Please sign up again.");
 				return;
 			}
 
-			const response = await fetch('http://localhost:8000/api/auth/verify-email', {
-				method: 'POST',
+			const response = await fetch("http://localhost:8000/api/auth/verify-email", {
+				method: "POST",
 				headers: {
-					'Content-Type': 'application/json',
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
 					email: email,
-					code: verificationCode
-				})
+					code: verificationCode,
+				}),
 			});
 
 			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.detail || 'Verification failed');
+				const errorData = await response.json().catch(() => ({}));
+				// NEW: show a red error message above the button
+				setError(errorData.detail || "Invalid code. Please try again.");
+				return;
 			}
 
-			const result = await response.json();
-			console.log("Verification successful:", result.message);
-
-			// todo - redirect to home later once we know route
-			// router.push('/');
-
-		} catch (error) {
-			console.error("Verification error:", (error as Error).message);
+			// success -> reroute to login
+			// NEW:
+			router.push("../authentication");
+		} catch (err) {
+			setError("Something went wrong. Please try again.");
+			console.error("Verification error:", (err as Error).message);
 		}
 	};
 
@@ -122,6 +121,11 @@ export default function VerifyEmailPage() {
 						/>
 					))}
 				</div>
+
+				{/* NEW: inline error message */}
+				{error && (
+					<p className="mt-3 text-sm text-red-600">{error}</p>
+				)}
 
 				{/* verify button */}
 				<button
