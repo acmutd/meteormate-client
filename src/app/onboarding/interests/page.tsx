@@ -2,72 +2,74 @@
 import React, { useState } from "react";
 import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
+import InterestCard from '../../../../components/InterestCard';
+import ProgressHeader from "../../../../components/ProgressHeader";
 
-export default function CreateProfilePage() {
-	const router = useRouter();
-	const [interests, setInterests] = useState<string[]>([]);
+const INTEREST_ROWS = [
+	['Climbing', 'Anime', 'Running', 'Instruments', 'Reading', 'Gaming'],
+	['Travel', 'Blogging', 'Movies', 'Singing', 'Shopping', 'Cooking', 'Art'],
+	['Organized', 'Photos', 'Basketball', 'Music', 'EDM', 'Coding'],
+	['Bollywood', 'Sleeping', 'Scrapbook', 'Legos', 'D&D', 'Soccer', 'Pickleball'],
+	['Chess', 'Concerts', 'K-Pop', 'Dancing', 'Languages', 'Badminton']
+];
 
-	const options = [
-		"Travel",
-		"Gaming",
-		"Cooking",
-		"Singing",
-		"Reading",
-		"Art",
-		"Dance",
-		"Basketball",
-		"Meditation",
-		"Anime",
-		"Fashion",
-		"Exercising",
-		"Concerts",
-		"Studying",
-		"Thrifting",
-		"Movies/Shows",
-		"Photography",
-		"Swimming",
-		"Blogging",
-		"Skating",
-		"Cyclling",
-		"Rock Climbing",
-		"Graphic Design",
-		"Programming",
-		"Sleeping",
-		"Psychology",
-		"Instruments",
-		"K-Pop",
-		"Bollywood",
-		"EDM",
-		"Rap",
-		"Music",
-		"Chess",
-		"Frisbee",
-		"Vegan",
-		"Dungeons and Dragons",
-		"Board Games",
-		"Cryptocurrency",
-		"Languages",
-		"Scrapbooking",
-		"Vinyls",
-		"Cozy Games",
-	];
+const MAX_SELECTIONS = 6;
 
+export default function InterestsPage() {
+	const [selectedInterests, setSelectedInterests] = useState<string[]>([]);	
+	
 	const handleNextStep = () => {
-		// Logic to handle the next step action
-		console.log({ interests });
-		// router.push("/onboarding/lifestylePreferences");
-	};
-	return (
-		<div className="bg-[#252726] rounded-lg shadow-xl py-8 px-15 w-full flex flex-col">
-			{/* map each option to a ui card component that is selectable, max of 10 selections */}
+		console.log(selectedInterests)
+	}
 
-			<div className="flex justify-center">
-				<NextStepButton
-					className="mt-7"
-					logo={<img src="/images/peechi_duo.png" />}
-					onClick={handleNextStep}
-				/>
+	const handleToggle = (interest: string) => {
+		setSelectedInterests(prev => {
+		if (prev.includes(interest)) {
+			return prev.filter(i => i !== interest);
+		}
+		if (prev.length >= MAX_SELECTIONS) {
+			return prev;
+		}
+		return [...prev, interest];
+		});
+	};
+
+	return (
+		<div className="flex flex-col min-h-screen items-center justify-center">
+			<ProgressHeader 
+        title="Select Your Interests"
+        subtitle="Pick a few interests to show who you are! You may pick up to 6."
+        currentStep={3}
+      />
+			<div className="p-8">
+				<div className="max-w-4xl mx-auto">
+					<div className="flex flex-col gap-4">
+					{INTEREST_ROWS.map((row, rowIndex) => (
+						<div 
+						key={rowIndex} 
+						className="flex gap-4 justify-center"
+						style={{ 
+							marginLeft: rowIndex % 2 === 1 ? '1rem' : '0' 
+						}}
+						>
+						{row.map(interest => (
+							<InterestCard
+							key={interest}
+							name={interest}
+							isSelected={selectedInterests.includes(interest)}
+							onToggle={() => handleToggle(interest)}
+							/>
+						))}
+						</div>
+					))}
+					</div>
+				</div>
 			</div>
+			<NextStepButton
+				className="mt-3 mb-4"
+				logo={<img src="/images/peechi_duo.png" />}
+				onClick={handleNextStep}
+			/>
 		</div>
 	);
 }

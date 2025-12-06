@@ -28,9 +28,9 @@ const NextStepButton: React.FC<NextStepButtonProps> = ({
         ${className || ""}
       `}
 		>
-			<h1 className="absolute transform -right-4 relative z-20">Next Step</h1>
+			<h1 className="transform -right-4 relative z-20">Next Step</h1>
 
-			<span className="ml-4 flex items-center justify-center relative z-20 absolute left-30">
+			<span className="ml-4 flex items-center justify-center relative z-20 left-30">
 				&gt;
 			</span>
 
