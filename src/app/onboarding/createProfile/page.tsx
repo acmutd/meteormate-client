@@ -44,15 +44,15 @@ export default function CreateProfilePage() {
 		router.push("/onboarding/lifestylePreferences");
 	};
 	return (
-		<div className="bg-[#252726] rounded-lg shadow-xl py-8 px-15 w-full flex flex-col">
+		<div className="bg-[#F1EBE2] rounded-lg shadow-xl py-8 px-15 w-full flex flex-col">
 			{/* profile picture */}
 			<div className="flex justify-center mb-6">
-				<div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center"></div>
+				<div className="w-20 h-20 rounded-full bg-[#36454F] flex items-center justify-center"></div>
 			</div>
 			<div className="grid grid-cols-2 gap-15">
 				{/* first name */}
 				<div>
-					<h1 className="text-white text-xs mb-2">First Name</h1>
+					<h1 className="text-black font-bold text-xs mb-2">First Name</h1>
 					<div className="bg-white rounded-md p-2">
 						<input
 							type="text"
@@ -64,7 +64,7 @@ export default function CreateProfilePage() {
 				</div>
 				{/* last name */}
 				<div>
-					<h1 className="text-white text-xs mb-2">Last Name</h1>
+					<h1 className="text-black font-bold text-xs mb-2">Last Name</h1>
 					<div className="bg-white rounded-md p-2">
 						<input
 							type="text"
@@ -76,7 +76,7 @@ export default function CreateProfilePage() {
 				</div>
 				{/* major */}
 				<div>
-					<h1 className="text-white text-xs mb-2">Major</h1>
+					<h1 className="text-black font-bold text-xs mb-2">Major</h1>
 					<select
 						name="major"
 						className="bg-white rounded-md p-2 w-full focus:outline-none"
@@ -87,24 +87,16 @@ export default function CreateProfilePage() {
 							Select an option...
 						</option>
 
-						<option value="biomedical-engineering">
-							Biomedical Engineering
-						</option>
+						<option value="biomedical-engineering">Biomedical Engineering</option>
 						<option value="computer-engineering">Computer Engineering</option>
 						<option value="computer-science">Computer Science</option>
 						<option value="data-science">Data Science</option>
-						<option value="electrical-engineering">
-							Electrical Engineering
-						</option>
-						<option value="mechanical-engineering">
-							Mechanical Engineering
-						</option>
+						<option value="electrical-engineering">Electrical Engineering</option>
+						<option value="mechanical-engineering">Mechanical Engineering</option>
 						<option value="software-engineering">Software Engineering</option>
 
 						<option value="accounting">Accounting</option>
-						<option value="business-administration">
-							Business Administration
-						</option>
+						<option value="business-administration">Business Administration</option>
 						<option value="business-analytics">Business Analytics</option>
 						<option value="finance">Finance</option>
 						<option value="global-business">Global Business</option>
@@ -116,9 +108,7 @@ export default function CreateProfilePage() {
 							Information Technology and Systems
 						</option>
 						<option value="marketing">Marketing</option>
-						<option value="supply-chain-management">
-							Supply Chain Management
-						</option>
+						<option value="supply-chain-management">Supply Chain Management</option>
 
 						<option value="animation-games">Animation and Games</option>
 						<option value="arts-technology-emerging-communication">
@@ -131,9 +121,7 @@ export default function CreateProfilePage() {
 						</option>
 						<option value="literature">Literature</option>
 						<option value="philosophy">Philosophy</option>
-						<option value="visual-performing-arts">
-							Visual and Performing Arts
-						</option>
+						<option value="visual-performing-arts">Visual and Performing Arts</option>
 
 						<option value="child-learning-development">
 							Child Learning and Development
@@ -172,7 +160,7 @@ export default function CreateProfilePage() {
 				</div>
 				{/* year */}
 				<div>
-					<h1 className="text-white text-xs mb-2">Year</h1>
+					<h1 className="text-black font-bold text-xs mb-2">Year</h1>
 					<select
 						name="year"
 						className="bg-white rounded-md p-2 w-full focus:outline-none"
@@ -191,7 +179,7 @@ export default function CreateProfilePage() {
 				</div>
 				{/* age */}
 				<div>
-					<h1 className="text-white text-xs mb-2">Age</h1>
+					<h1 className="text-black font-bold text-xs mb-2">Age</h1>
 					<div className="bg-white rounded-md p-2">
 						<input
 							type="text"
@@ -203,7 +191,7 @@ export default function CreateProfilePage() {
 				</div>
 				{/* Gender */}
 				<div>
-					<h1 className="text-white text-xs mb-2">Gender</h1>
+					<h1 className="text-black font-bold text-xs mb-2">Gender</h1>
 					<select
 						name="gender"
 						className="bg-white rounded-md p-2 w-full focus:outline-none"

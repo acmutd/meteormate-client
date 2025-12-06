@@ -16,7 +16,7 @@ const LifestylePreferencesCard = ({
 }: LifestylePreferencesCardProps) => {
 	return (
 		<div
-			className={`rounded-xl px-16 py-4 w-full max-w-xs flex flex-col items-center hover:scale-105 hover:bg-gray-200 ${
+			className={`rounded-xl px-16 py-4 w-full max-w-xs flex flex-col items-center drop-shadow-xl border-[#C4C7CA] border-1 hover:scale-105 hover:bg-gray-200 ${
 				isSelected ? "ring-4 ring-[#FF9100] bg-gray-200" : "bg-white"
 			}`}
 			onClick={onClick}

@@ -30,8 +30,8 @@ export default function CreateProfilePage() {
 	};
 	return (
 		<div className="py-8 px-15 w-full flex flex-col">
-			<h1 className="text-white text-xl font-bold">Wake-up Time</h1>
-			<p className="text-white text-sm mt-1 mb-2">
+			<h1 className="text-black text-xl font-bold">Wake-up Time</h1>
+			<p className="text-black text-sm mt-1 mb-2">
 				When are you the most active generally?
 			</p>
 			{/*grid for the 3 options*/}
@@ -55,8 +55,8 @@ export default function CreateProfilePage() {
 					onClick={() => setSelectedWakeupTime("Night Owl")}
 				/>
 			</div>
-			<h1 className="text-white text-xl font-bold">Cleanliness</h1>
-			<p className="text-white text-sm mt-1 mb-2">
+			<h1 className="text-black text-xl font-bold">Cleanliness</h1>
+			<p className="text-black text-sm mt-1 mb-2">
 				What is your preferred level of tidiness?
 			</p>
 			<div className="grid grid-cols-3 gap-4 mb-4">
@@ -79,8 +79,8 @@ export default function CreateProfilePage() {
 					onClick={() => setSelectedCleanliness("Neat Freak")}
 				/>
 			</div>
-			<h1 className="text-white text-xl font-bold">Noise Tolerance</h1>
-			<p className="text-white text-sm mt-1 mb-2">
+			<h1 className="text-black text-xl font-bold">Noise Tolerance</h1>
+			<p className="text-black text-sm mt-1 mb-2">
 				What noise level are you comfortable with?
 			</p>
 			<div className="grid grid-cols-3 gap-4 mb-4">
