@@ -43,24 +43,25 @@ export default function LoginPage() {
 	};
 
 	const handleLogin = async () => {
-		if (!email.endsWith("@utdallas.edu")) {
-			setEmailError("Please enter a valid @utdallas.edu email.");
-			return;
-		} // just making sure that the email ends with @utdallas.edu
+        router.push("/onboarding/createProfile")
+	// 	if (!email.endsWith("@utdallas.edu")) {
+	// 		setEmailError("Please enter a valid @utdallas.edu email.");
+	// 		return;
+	// 	} // just making sure that the email ends with @utdallas.edu
 
-	//then we try to get if is signing in is true whne the value is flipped then we set the value to be actually true and then call signing with email and password and then router.push it to the createAccount page
-    try {
-      if (!isSigningIn) {
-        setIsSigningIn(true);
-        await doSignInWithEmailAndPassword(email, password);
-        router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
-      }
-    } catch (err: any) { //just in case there's a problem signing in 
-      console.error("Login error:", err);
-      setEmailError(err.message || "Login failed"); // for what reasons
-    } finally {
-      setIsSigningIn(false);
-    }
+	// //then we try to get if is signing in is true whne the value is flipped then we set the value to be actually true and then call signing with email and password and then router.push it to the createAccount page
+    // try {
+    //   if (!isSigningIn) {
+    //     setIsSigningIn(true);
+    //     await doSignInWithEmailAndPassword(email, password);
+    //     router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
+    //   }
+    // } catch (err: any) { //just in case there's a problem signing in 
+    //   console.error("Login error:", err);
+    //   setEmailError(err.message || "Login failed"); // for what reasons
+    // } finally {
+    //   setIsSigningIn(false);
+    // }
   };
 
   return (

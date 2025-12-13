@@ -6,7 +6,7 @@ import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../../components/ProgressHeader";
 
-export default function CreateProfilePage() {
+export default function LifestylePreferencesPage() {
 	const router = useRouter();
 
 	const [selectedWakeupTime, setSelectedWakeupTime] = useState<string | null>(
@@ -18,6 +18,18 @@ export default function CreateProfilePage() {
 	const [selectedNoiseTolerance, setSelectedNoiseTolerance] = useState<
 		string | null
 	>(null);
+
+	const handleToggle = (
+		currentValue: string | null,
+		setValue: (val: string | null) => void,
+		newValue: string
+	) => {
+		if (currentValue === newValue) {
+      setValue(null);
+    } else {
+      setValue(newValue);
+    }
+	}
 
 	const handleNextStep = () => {
 		// Logic to handle the next step action
@@ -47,19 +59,19 @@ export default function CreateProfilePage() {
 						title="Early Bird"
 						imageSrc="/images/early_bird_card.png"
 						isSelected={selectedWakeupTime === "Early Bird"}
-						onClick={() => setSelectedWakeupTime("Early Bird")}
+						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Early Bird")}
 					/>
 					<LifestylePreferencesCard
 						title="Flexible"
 						imageSrc="/images/flexible_card.png"
 						isSelected={selectedWakeupTime === "Flexible"}
-						onClick={() => setSelectedWakeupTime("Flexible")}
+						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Flexible")}
 					/>
 					<LifestylePreferencesCard
 						title="Night Owl"
 						imageSrc="/images/night_owl_card.png"
 						isSelected={selectedWakeupTime === "Night Owl"}
-						onClick={() => setSelectedWakeupTime("Night Owl")}
+						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Night Owl")}
 					/>
 				</div>
 				<h1 className="text-black text-xl font-bold">Cleanliness</h1>
@@ -71,19 +83,19 @@ export default function CreateProfilePage() {
 						title="Orderly"
 						imageSrc="/images/orderly_card.png"
 						isSelected={selectedCleanliness === "Orderly"}
-						onClick={() => setSelectedCleanliness("Orderly")}
+						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Orderly")}
 					/>
 					<LifestylePreferencesCard
 						title="Tidy"
 						imageSrc="/images/tidy_card.png"
 						isSelected={selectedCleanliness === "Tidy"}
-						onClick={() => setSelectedCleanliness("Tidy")}
+						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Tidy")}
 					/>
 					<LifestylePreferencesCard
 						title="Neat Freak"
 						imageSrc="/images/neat_freak_card.png"
 						isSelected={selectedCleanliness === "Neat Freak"}
-						onClick={() => setSelectedCleanliness("Neat Freak")}
+						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Neat Freak")}
 					/>
 				</div>
 				<h1 className="text-black text-xl font-bold">Noise Tolerance</h1>
@@ -95,19 +107,19 @@ export default function CreateProfilePage() {
 						title="Quiet"
 						imageSrc="/images/quiet_card.png"
 						isSelected={selectedNoiseTolerance === "Quiet"}
-						onClick={() => setSelectedNoiseTolerance("Quiet")}
+						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Quiet")}
 					/>
 					<LifestylePreferencesCard
 						title="Moderate"
 						imageSrc="/images/moderate_card.png"
 						isSelected={selectedNoiseTolerance === "Moderate"}
-						onClick={() => setSelectedNoiseTolerance("Moderate")}
+						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Moderate")}
 					/>
 					<LifestylePreferencesCard
 						title="Social"
 						imageSrc="/images/social_card.png"
 						isSelected={selectedNoiseTolerance === "Social"}
-						onClick={() => setSelectedNoiseTolerance("Social")}
+						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Social")}
 					/>
 				</div>
 				<div className="flex justify-center">
