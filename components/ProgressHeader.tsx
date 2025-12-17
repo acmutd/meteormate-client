@@ -9,7 +9,7 @@ export default function ProgressHeader({
   title, 
   subtitle, 
   currentStep, 
-  totalSteps = 4 
+  totalSteps = 5
 }: ProgressHeaderProps) {
   const progressPercent = (currentStep / totalSteps) * 100;
 

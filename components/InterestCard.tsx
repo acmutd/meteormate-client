@@ -12,6 +12,7 @@ export default function InterestCard({ name, isSelected, onToggle }: InterestCar
       onClick={onToggle}
       className={`
         flex flex-col items-center justify-center
+        cursor-pointer
         rounded-2xl p-4 w-24 h-24
         transition-colors duration-200
         ${isSelected ? 'bg-[#FFC03F]' : 'bg-[#F1EBE2]'}

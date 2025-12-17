@@ -31,6 +31,8 @@ export default function LifestylePreferencesPage() {
     }
 	}
 
+	
+
 	const handleNextStep = () => {
 		// Logic to handle the next step action
 		console.log("handling next step");
@@ -54,7 +56,7 @@ export default function LifestylePreferencesPage() {
 					When are you the most active generally?
 				</p>
 				{/*grid for the 3 options*/}
-				<div className="grid grid-cols-3 gap-4 mb-4">
+				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Early Bird"
 						imageSrc="/images/early_bird_card.png"
@@ -74,11 +76,11 @@ export default function LifestylePreferencesPage() {
 						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Night Owl")}
 					/>
 				</div>
-				<h1 className="text-black text-xl font-bold">Cleanliness</h1>
+				<h1 className="text-black text-xl font-bold ">Cleanliness</h1>
 				<p className="text-black text-sm mt-1 mb-2">
 					What is your preferred level of tidiness?
 				</p>
-				<div className="grid grid-cols-3 gap-4 mb-4">
+				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Orderly"
 						imageSrc="/images/orderly_card.png"
@@ -102,7 +104,7 @@ export default function LifestylePreferencesPage() {
 				<p className="text-black text-sm mt-1 mb-2">
 					What noise level are you comfortable with?
 				</p>
-				<div className="grid grid-cols-3 gap-4 mb-4">
+				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Quiet"
 						imageSrc="/images/quiet_card.png"

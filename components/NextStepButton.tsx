@@ -5,22 +5,26 @@ interface NextStepButtonProps {
 	onClick?: () => void;
 	logo?: React.ReactNode;
 	className?: string;
+	disabled?: boolean;
 }
 
 const NextStepButton: React.FC<NextStepButtonProps> = ({
 	onClick,
 	logo,
 	className,
+	disabled,
 }) => {
 	return (
 		<button
 			onClick={onClick}
+			disabled={disabled}
 			// Ensure the button is relative for absolute positioning of the logo
 			className={`
         relative flex items-center justify-center
         py-3 px-6 rounded-full text-white font-semibold text-lg
 		h-12 w-100
         shadow-lg
+		cursor-pointer
         bg-gradient-to-r from-[#FF9100] to-[#FFC94C]
         hover:from-[#E68200] hover:to-[#E3B03C]
         transition-all duration-200 ease-in-out

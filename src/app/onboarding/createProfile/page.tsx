@@ -3,6 +3,7 @@ import React from "react";
 import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../../components/ProgressHeader";
+import { useRef, useState } from "react"; // mostly only for the profile picture
 
 export default function CreateProfilePage() {
 	const router = useRouter();
@@ -12,6 +13,21 @@ export default function CreateProfilePage() {
 	const [major, setMajor] = React.useState("");
 	const [year, setYear] = React.useState("");
 	const [gender, setGender] = React.useState("");
+
+	//for the profile picture
+	const fileInputRef = useRef<HTMLInputElement>(null);
+  	const [preview, setPreview] = useState<string | null>(null);
+
+	//to make sure before moving ahead that their whole thing is filled or not
+	const isFormValid =
+		firstName.trim() !== "" &&
+		lastName.trim() !== "" &&
+		major !== "" &&
+		year !== "" &&
+		gender !== "" &&
+		age !== "" &&
+		Number(age) > 0;
+
 
 	// const PeechiDuo = require("../../../public/images/peechi_duo.png");
 
@@ -41,9 +57,28 @@ export default function CreateProfilePage() {
 
 	const handleNextStep = () => {
 		// Logic to handle the next step action
+		if (!isFormValid) {
+			alert("Please fill out all required fields.");
+			return;
+  		}
 		console.log({ age, firstName, lastName, major, year, gender });
 		router.push("/onboarding/lifestylePreferences");
 	};
+
+
+	const handleImageClick = () => {
+    	fileInputRef.current?.click();
+  	};
+
+  	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    	const file = e.target.files?.[0];
+    	if (!file) return;
+
+		// to preview the image in the icon 
+		const imageUrl = URL.createObjectURL(file);
+		setPreview(imageUrl);
+	};
+
 	return (
 		<div className="flex flex-col items-center min-h-screen">
 			<ProgressHeader
@@ -54,8 +89,35 @@ export default function CreateProfilePage() {
 			<div className="bg-[#F1EBE2] rounded-lg shadow-xl py-8 px-15 mt-4 w-full flex flex-col">
 				{/* profile picture */}
 				<div className="flex justify-center mb-6">
-					<div className="w-20 h-20 rounded-full bg-[#36454F] flex items-center justify-center"></div>
+					<div className="flex flex-col items-center gap-3">
+
+					<div
+						onClick={handleImageClick}
+						className="w-32 h-32 rounded-full border-2 border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center hover:opacity-80"
+					>
+						{preview ? (
+						<img
+							src={preview}
+							alt="Profile"
+							className="w-full h-full object-cover"
+						/>
+						) : (
+						<span className="text-gray-400 text-sm">Click to upload</span>
+						)}
+					</div>
+
+					{/* Hidden file input */}
+					<input
+						ref={fileInputRef}
+						type="file"
+						accept="image/*"
+						onChange={handleFileChange}
+						className="hidden"
+					/>
+					</div>
+
 				</div>
+
 				<div className="grid grid-cols-2 gap-15">
 					{/* first name */}
 					<div>
@@ -219,9 +281,10 @@ export default function CreateProfilePage() {
 				</div>
 				<div className="flex justify-center">
 					<NextStepButton
-						className="mt-7"
-						logo={<img src="/images/peechi_duo.png" />}
-						onClick={handleNextStep}
+					className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+					logo={<img src="/images/peechi_duo.png" />}
+					onClick={handleNextStep}
+					disabled={!isFormValid}
 					/>
 				</div>
 			</div>

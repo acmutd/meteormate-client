@@ -17,8 +17,10 @@ const MAX_SELECTIONS = 6;
 
 export default function InterestsPage() {
 	const [selectedInterests, setSelectedInterests] = useState<string[]>([]);	
+	const router = useRouter();
 	
 	const handleNextStep = () => {
+		router.push("/onboarding/lifestylePersonality");
 		console.log(selectedInterests)
 	}
 

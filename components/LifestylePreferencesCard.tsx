@@ -22,12 +22,14 @@ const LifestylePreferencesCard = ({
 			onClick={onClick}
 		>
 			{/* The circular image */}
+			<div className="rounded-full bg-linear-to-r from-[#FF9100] to-[#FFC94C] p-1">
 			<img
 				src={imageSrc}
-				className="h-12 w-12 rounded-full object-cover bg-gradient-to-r from-[#FF9100] to-[#FFC94C] p-2"
+				className="h-12 w-12 object-cover p-2"
 			/>
-
-			<p className="text-lg font-semibold text-gray-800 text-center">{title}</p>
+			</div>
+			<p className="text-lg text-gray-800 text-center">{title}</p>
+			
 		</div>
 	);
 };
