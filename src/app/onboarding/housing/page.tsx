@@ -121,7 +121,7 @@ function OffCampusUI() {
   return (
     <div>
             <ProgressHeader 
-				title="On Campus"
+				title="Off Campus"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
 				currentStep={5}
 			/>
