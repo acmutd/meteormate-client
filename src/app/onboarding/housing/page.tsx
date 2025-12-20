@@ -7,7 +7,14 @@ import ProgressHeader from "../../../../components/ProgressHeader";
 import React, { useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
+
+
 function OnCampusUI() {
+	const router = useRouter();
+	const handleNextStep = () => {
+		router.push("/onboarding/dashboard");
+	};
+
     const [selectedLocation, setSelectedLocation] = useState<string | null>(
         null
     );
@@ -44,13 +51,13 @@ function OnCampusUI() {
 				<div className="grid grid-cols-2 gap-2 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="University Village"
-						imageSrc="/images/houses.png" //need to change this
+						imageSrc="/images/houses.webp" //need to change this
 						isSelected={selectedLocation === "UV"}
 						onClick={() => handleToggle(selectedLocation, setSelectedLocation, "UV")}
 					/>
 					<LifestylePreferencesCard
 						title="Freshmen Dorms"
-						imageSrc="/images/3D-buildings.png" // change this
+						imageSrc="/images/3D-buildings.webp" // change this
 						isSelected={selectedLocation === "FD"}
 						onClick={() => handleToggle(selectedLocation, setSelectedLocation, "FD")}
 					/>
@@ -63,13 +70,13 @@ function OnCampusUI() {
 				<div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer"> 
 					<LifestylePreferencesCard
 						title="Yes, I am an honors student"
-						imageSrc="/images/badge.png"
+						imageSrc="/images/badge.webp"
 						isSelected={selectedHonorsStatus === "yes"}
 						onClick={() => handleToggle(selectedHonorsStatus, setSelectedHonorsStatus, "yes")}
 					/>
 					<LifestylePreferencesCard
 						title="No, I am not an honors student"
-						imageSrc="/images/study.png"
+						imageSrc="/images/study.webp"
 						isSelected={selectedHonorsStatus === "no"}
 						onClick={() => handleToggle(selectedHonorsStatus, setSelectedHonorsStatus, "no")}
 					/>
@@ -82,24 +89,38 @@ function OnCampusUI() {
 				<div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Yes, I would like to be a part of LLC"
-						imageSrc="/images/environment.png"
+						imageSrc="/images/environment.webp"
 						isSelected={selectedLLCPreference === "Yes"}
 						onClick={() => handleToggle(selectedLLCPreference, setSelectedLLCPreference, "Yes")}
 					/>
 					<LifestylePreferencesCard
 						title="No, I would not like to be a part of LLC"
-						imageSrc="/images/reading-book.png"
+						imageSrc="/images/reading-book.webp"
 						isSelected={selectedLLCPreference === "No"}
 						onClick={() => handleToggle(selectedLLCPreference, setSelectedLLCPreference, "No")}
 					/>
 					
 				</div>
             </div>
+			<div className="flex items-center justify-center">
+            <DoneButton
+                                className="mt-7"
+                                logo={<img src="/images/peechi_duo.webp" />}
+                                onClick={handleNextStep}
+								disabled = {!selectedLLCPreference || !selectedHonorsStatus || !selectedLocation}
+								
+                            />
+    		</div>
         </div>
   );
 }
 
 function OffCampusUI() {
+	const router = useRouter();
+	const handleNextStep = () => {
+		router.push("/onboarding/dashboard");
+	};
+
     const [selectedLeaseStatus, setSelectedLeaseStatus] = useState<string | null>(
         null
     );
@@ -134,13 +155,13 @@ function OffCampusUI() {
 				<div className="grid grid-cols-2 gap-2 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="I have a lease and need a roommate"
-						imageSrc="/images/houses.png" //need to change this
+						imageSrc="/images/houses.webp" //need to change this
 						isSelected={selectedLeaseStatus === "yes"}
 						onClick={() => handleToggle(selectedLeaseStatus, setSelectedLeaseStatus, "yes")}
 					/>
 					<LifestylePreferencesCard
 						title="I do not have a lease"
-						imageSrc="/images/3D-buildings.png" // change this
+						imageSrc="/images/3D-buildings.webp" // change this
 						isSelected={selectedLeaseStatus === "no"}
 						onClick={() => handleToggle(selectedLeaseStatus, setSelectedLeaseStatus, "no")}
 					/>
@@ -154,13 +175,13 @@ function OffCampusUI() {
 				<div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer"> 
 					<LifestylePreferencesCard
 						title="I am looking to offer the room temporarily"
-						imageSrc="/images/badge.png"
+						imageSrc="/images/badge.webp"
 						isSelected={selectedFindingPreference === "temp"}
 						onClick={() => handleToggle(selectedFindingPreference, setSelectedFindingPreference, "temp")}
 					/>
 					<LifestylePreferencesCard
 						title="I am looking to offer the room for long-term"
-						imageSrc="/images/study.png"
+						imageSrc="/images/study.webp"
 						isSelected={selectedFindingPreference === "LongTerm"}
 						onClick={() => handleToggle(selectedFindingPreference, setSelectedFindingPreference, "LongTerm")}
 					/>
@@ -169,13 +190,22 @@ function OffCampusUI() {
 				
 				
             </div>
+			<div className="flex items-center justify-center">
+            <DoneButton
+                                className="mt-7"
+                                logo={<img src="/images/peechi_duo.webp" />}
+                                onClick={handleNextStep}
+								disabled = {!selectedFindingPreference || !selectedLeaseStatus}
+								
+                            />
+    		</div>
         </div>
   );
 }
 
 export default function HousingPage() {
 
-  const router = useRouter();
+ 	const router = useRouter();
   const searchParams = useSearchParams();
 
   const living = useMemo(
@@ -183,11 +213,7 @@ export default function HousingPage() {
     [searchParams]
   );
 
-  const handleNextStep = () => {
-		// Logic to handle the next step action
-		
-		router.push("/onboarding/dashboard");
-	};
+  
   return (
     <div className="p-6">
       {living === "onCampus" ? (
@@ -209,13 +235,7 @@ export default function HousingPage() {
 
         
       )}
-      <div className="flex items-center justify-center">
-            <DoneButton
-                                className="mt-7"
-                                logo={<img src="/images/peechi_duo.png" />}
-                                onClick={handleNextStep}
-                            />
-    </div>
+      
     </div>
   );
 }

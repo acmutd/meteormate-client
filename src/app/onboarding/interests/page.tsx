@@ -69,7 +69,7 @@ export default function InterestsPage() {
 			</div>
 			<NextStepButton
 				className="mt-3 mb-4"
-				logo={<img src="/images/peechi_duo.png" />}
+				logo={<img src="/images/peechi_duo.webp" />}
 				onClick={handleNextStep}
 			/>
 		</div>

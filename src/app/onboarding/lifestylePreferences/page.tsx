@@ -59,19 +59,19 @@ export default function LifestylePreferencesPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Early Bird"
-						imageSrc="/images/early_bird_card.png"
+						imageSrc="/images/early_bird_card.webp"
 						isSelected={selectedWakeupTime === "Early Bird"}
 						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Early Bird")}
 					/>
 					<LifestylePreferencesCard
 						title="Flexible"
-						imageSrc="/images/flexible_card.png"
+						imageSrc="/images/flexible_card.webp"
 						isSelected={selectedWakeupTime === "Flexible"}
 						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Flexible")}
 					/>
 					<LifestylePreferencesCard
 						title="Night Owl"
-						imageSrc="/images/night_owl_card.png"
+						imageSrc="/images/night_owl_card.webp"
 						isSelected={selectedWakeupTime === "Night Owl"}
 						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Night Owl")}
 					/>
@@ -83,19 +83,19 @@ export default function LifestylePreferencesPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Orderly"
-						imageSrc="/images/orderly_card.png"
+						imageSrc="/images/orderly_card.webp"
 						isSelected={selectedCleanliness === "Orderly"}
 						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Orderly")}
 					/>
 					<LifestylePreferencesCard
 						title="Tidy"
-						imageSrc="/images/tidy_card.png"
+						imageSrc="/images/tidy_card.webp"
 						isSelected={selectedCleanliness === "Tidy"}
 						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Tidy")}
 					/>
 					<LifestylePreferencesCard
 						title="Neat Freak"
-						imageSrc="/images/neat_freak_card.png"
+						imageSrc="/images/neat_freak_card.webp"
 						isSelected={selectedCleanliness === "Neat Freak"}
 						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Neat Freak")}
 					/>
@@ -107,19 +107,19 @@ export default function LifestylePreferencesPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Quiet"
-						imageSrc="/images/quiet_card.png"
+						imageSrc="/images/quiet_card.webp"
 						isSelected={selectedNoiseTolerance === "Quiet"}
 						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Quiet")}
 					/>
 					<LifestylePreferencesCard
 						title="Moderate"
-						imageSrc="/images/moderate_card.png"
+						imageSrc="/images/moderate_card.webp"
 						isSelected={selectedNoiseTolerance === "Moderate"}
 						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Moderate")}
 					/>
 					<LifestylePreferencesCard
 						title="Social"
-						imageSrc="/images/social_card.png"
+						imageSrc="/images/social_card.webp"
 						isSelected={selectedNoiseTolerance === "Social"}
 						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Social")}
 					/>
@@ -127,8 +127,9 @@ export default function LifestylePreferencesPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<img src="/images/peechi_duo.png" />}
+						logo={<img src="/images/peechi_duo.webp" />}
 						onClick={handleNextStep}
+						disabled = {!selectedCleanliness || !selectedNoiseTolerance || !selectedWakeupTime}
 					/>
 				</div>
 			</div>

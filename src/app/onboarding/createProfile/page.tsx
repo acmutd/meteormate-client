@@ -29,7 +29,7 @@ export default function CreateProfilePage() {
 		Number(age) > 0;
 
 
-	// const PeechiDuo = require("../../../public/images/peechi_duo.png");
+	// const PeechiDuo = require("../../../public/images/peechi_duo.webp");
 
 	const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setGender(e.target.value);
@@ -282,7 +282,7 @@ export default function CreateProfilePage() {
 				<div className="flex justify-center">
 					<NextStepButton
 					className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
-					logo={<img src="/images/peechi_duo.png" />}
+					logo={<img src="/images/peechi_duo.webp" />}
 					onClick={handleNextStep}
 					disabled={!isFormValid}
 					/>

@@ -18,14 +18,14 @@ export default function Home() {
 					<div
 						className="absolute inset-0 bg-cover bg-top-left bg-no-repeat text-white min-h-screen w-screen"
 						style={{
-							backgroundImage: `url('/images/hero_section_background.png')`,
+							backgroundImage: `url('/images/hero_section_background.webp')`,
 						}}
 					>
 						{/* navbar div */}
 						<div className="flex justify-between">
 							<div className="flex justify-center items-center gap-4 p-5">
 								<img
-									src="/images/MM_logo_V1.png"
+									src="/images/MM_logo_V1.webp"
 									alt="logo"
 									className="md:w-13 md:h-13 w-8 h-8"
 								/>
@@ -118,7 +118,7 @@ export default function Home() {
 							</div>
 							<div className="flex items-end justify-end pb-0 pr-10 lg:pt-28 md:pt-20 w-1/2">
 								<img
-									src="/images/laptop_model.png"
+									src="/images/laptop_model.webp"
 									className="max-w-full w-full object-contain"
 								/>
 							</div>
@@ -131,7 +131,7 @@ export default function Home() {
 			<div
 				id="howItWorks"
 				className="w-screen min-h-screen bg-black flex flex-col justify-center items-center"
-				style={{ backgroundImage: `url('/images/stars.png')` }}
+				style={{ backgroundImage: `url('/images/stars.webp')` }}
 			>
 				<h1 className="text-white text-[60px] font-extrabold">
 					Fast Solution and Best Matches
@@ -145,7 +145,7 @@ export default function Home() {
 				<div className="grid grid-cols-3 gap-10">
 					<div className="inter-tight-regular text-black bg-white border-0 rounded-xl flex flex-col text-center justify-center items-center px-8 py-5 w-80 h-60">
 						<img
-							src="/images/landing_logo1_S2.png"
+							src="/images/landing_logo1_S2.webp"
 							alt="AI Powered"
 							className="md:w-22 md:h-17 justify-center items-center "
 						/>
@@ -158,7 +158,7 @@ export default function Home() {
 
 					<div className="inter-tight-regular text-black bg-white border-0 rounded-xl flex flex-col text-center justify-center items-center px-8 py-5 w-80 h-60">
 						<img
-							src="/images/L2.png"
+							src="/images/L2.webp"
 							alt="AI Powered"
 							className="md:w-23 md:h-17 justify-center items-center"
 						/>
@@ -171,7 +171,7 @@ export default function Home() {
 
 					<div className="inter-tight-regular text-black bg-white border-0 rounded-xl flex flex-col text-center justify-center items-center px-8 py-5 w-80 h-60">
 						<img
-							src="/images/L3.png"
+							src="/images/L3.webp"
 							alt="AI Powered"
 							className="md:w-25 md:h-17 justify-center items-center"
 						/>
@@ -184,7 +184,7 @@ export default function Home() {
 
 					<div className="inter-tight-regular text-black bg-white border-0 rounded-xl flex flex-col text-center justify-center items-center px-8 py-5 w-80 h-60">
 						<img
-							src="/images/L4.png"
+							src="/images/L4.webp"
 							alt="AI Powered"
 							className="md:w-29 md:h-18 justify-center items-center"
 						/>
@@ -197,7 +197,7 @@ export default function Home() {
 
 					<div className="inter-tight-regular text-black bg-white border-0 rounded-xl flex flex-col text-center justify-center items-center px-8 py-5 w-80 h-60">
 						<img
-							src="/images/L5.png"
+							src="/images/L5.webp"
 							alt="AI Powered"
 							className="md:w-22 md:h-17 justify-center items-center"
 						/>
@@ -210,7 +210,7 @@ export default function Home() {
 
 					<div className="inter-tight-regular text-black bg-white border-0 rounded-xl flex flex-col text-center justify-center items-center px-8 py-5 w-80 h-60">
 						<img
-							src="/images/L6.png"
+							src="/images/L6.webp"
 							alt="AI Powered"
 							className="md:w-25 md:h-20 justify-center items-center"
 						/>
@@ -227,7 +227,7 @@ export default function Home() {
 				id="getStarted"
 				className="min-h-screen bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col items-center justify-center"
 				style={{
-					backgroundImage: `url('/images/STARS__GRAYSCALE_LOGO_png.png')`,
+					backgroundImage: `url('/images/STARS__GRAYSCALE_LOGO_png.webp')`,
 				}}
 			>
 				<div className="flex flex-col items-center">
@@ -253,14 +253,14 @@ export default function Home() {
 				id="contactUs"
 				className="bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col w-full"
 				style={{
-					backgroundImage: `url('/images/stars_footerr.png')`,
+					backgroundImage: `url('/images/stars_footerr.webp')`,
 				}}
 			>
 				<div className="mt-5 flex flex-col items-center">
 					<div className="w-23 h-23 bg-[#2B2B2B] bg-opacity-50 rounded-full flex items-center justify-center">
 						{/* Logo */}
 						<img
-							src="/images/MM_logo_V1.png"
+							src="/images/MM_logo_V1.webp"
 							alt="Logo"
 							className="w-16 h-16 object-contain"
 						/>

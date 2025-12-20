@@ -106,7 +106,7 @@ export default function NewPasswordPage() {
   };
 
   return (
-    <LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col w-full max-w-2xl px-10">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] p-2">
           Input New Password

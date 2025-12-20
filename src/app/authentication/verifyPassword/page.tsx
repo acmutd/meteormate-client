@@ -107,7 +107,7 @@ export default function VerifyPassword() {
   };
 
   return (
-    <LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col justify-center items-center text-center w-[400px]">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px]">
           Verify Password

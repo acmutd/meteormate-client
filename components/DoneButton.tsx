@@ -25,12 +25,15 @@ const DoneButton: React.FC<NextStepButtonProps> = ({
         h-12 w-100
         shadow-lg
         cursor-pointer
-        bg-gradient-to-r from-[#FF9100] to-[#FFC94C]
-        hover:from-[#E68200] hover:to-[#E3B03C]
         transition-all duration-200 ease-in-out
-        overflow-visible
-        ${className || ""}
-      `}
+        		overflow-visible
+					${
+					disabled
+						? "bg-gray-300 text-gray-500 cursor-not-allowed"
+						: "bg-gradient-to-r from-[#FF9100] to-[#FFC94C] hover:from-[#E68200] hover:to-[#E3B03C] text-white cursor-pointer"
+					}
+					${className || ""}
+		`}
         >
             <h1 className="transform -right-4 relative z-20">All Done</h1>
 
