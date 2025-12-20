@@ -95,25 +95,7 @@ export default function LoginPage() {
 	};
 
   return (
-    <LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
-			{/* Back arrow to landing */}
-			<button
-				onClick={() => router.push("/")}
-				className="absolute top-8 left-5 p-2 hover:bg-gray-100 rounded-full transition-colors"
-				aria-label="Back to landing page"
-				type="button"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					strokeWidth={2}
-					stroke="currentColor"
-					className="w-6 h-6"
-				>
-					<path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-				</svg>
-			</button>
+    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
         <div className="flex flex-col justify-center items-center text-center ">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] pt-2">
             Welcome to MeteorMate

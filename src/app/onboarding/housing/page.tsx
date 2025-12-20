@@ -38,6 +38,8 @@ const sendOnboardingData = async () => {
 	// console.log(body)
 }
 
+
+
 function OnCampusUI() {
 	const router = useRouter();
 	const handleNextStep = async () => {
