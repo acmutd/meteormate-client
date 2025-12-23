@@ -2,6 +2,7 @@
 import React, { useRef, useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter, useSearchParams } from "next/navigation";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 export default function VerifyPassword() {
   const router = useRouter();
@@ -139,7 +140,8 @@ export default function VerifyPassword() {
               ref={(el: HTMLInputElement | null) => {
                 inputsRef.current[index] = el;
               }}
-              className="w-12 h-12 text-center text-xl border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+              disabled={isVerifying}
+              className="w-12 h-12 text-center text-xl border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
             />
           ))}
         </div>
@@ -152,8 +154,9 @@ export default function VerifyPassword() {
         <button
           onClick={handleVerifyPassword}
           disabled={isVerifying}
-          className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer w-[80%] disabled:opacity-60 disabled:cursor-not-allowed"
+          className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer w-[80%] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
+          {isVerifying && <LoadingSpinner size="sm" />}
           {isVerifying ? "Verifying..." : "Verify Password"}
         </button>
       </div>

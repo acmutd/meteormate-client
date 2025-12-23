@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
+import { validatePasswordMatch, validatePassword } from "@/utils/validation";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 export default function NewPasswordPage() {
   const router = useRouter();
@@ -29,12 +31,11 @@ export default function NewPasswordPage() {
   }, [router]);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-    // live update match error if confirm is already filled
-    if (confirmPassword && e.target.value !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-    } else {
-      setConfirmPasswordError("");
+    const value = e.target.value;
+    setPassword(value);
+    // Live update match error if confirm password is already filled
+    if (confirmPassword) {
+      setConfirmPasswordError(validatePasswordMatch(value, confirmPassword));
     }
   };
 
@@ -43,11 +44,7 @@ export default function NewPasswordPage() {
   ) => {
     const value = e.target.value;
     setConfirmPassword(value);
-    if (value !== password) {
-      setConfirmPasswordError("Passwords do not match");
-    } else {
-      setConfirmPasswordError("");
-    }
+    setConfirmPasswordError(validatePasswordMatch(password, value));
   };
 
   const handleSubmit = async () => {
@@ -57,8 +54,18 @@ export default function NewPasswordPage() {
       setErrorMsg("Please fill out both password fields.");
       return;
     }
-    if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
+
+    // Validate password requirements
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setErrorMsg("Password does not meet requirements. Please ensure it has at least 8 characters, includes uppercase, lowercase, number, and special character.");
+      return;
+    }
+
+    // Validate password match
+    const passwordMatchError = validatePasswordMatch(password, confirmPassword);
+    if (passwordMatchError) {
+      setConfirmPasswordError(passwordMatchError);
       return;
     }
     if (!email || !code) {
@@ -140,7 +147,8 @@ export default function NewPasswordPage() {
               value={password}
               onChange={handlePasswordChange}
               placeholder="Password"
-              className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full"
+              disabled={isSubmitting}
+              className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
         </div>
@@ -170,7 +178,8 @@ export default function NewPasswordPage() {
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
               placeholder="Re-Enter Password"
-              className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full"
+              disabled={isSubmitting}
+              className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
           {confirmPasswordError && (
@@ -188,8 +197,9 @@ export default function NewPasswordPage() {
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer disabled:opacity-60"
+          className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
+          {isSubmitting && <LoadingSpinner size="sm" />}
           {isSubmitting ? "Updating..." : "Update Password"}
         </button>
       </div>
