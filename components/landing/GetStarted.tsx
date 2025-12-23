@@ -2,13 +2,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
+import LandingSection from "./LandingSection";
 
 export default function GetStarted() {
 	const router = useRouter();
 	const [isNavigating, setIsNavigating] = useState(false);
 
 	return (
-		<div
+		<LandingSection
 			id="getStarted"
 			className="min-h-screen bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col items-center justify-center"
 			style={{
@@ -41,7 +42,7 @@ export default function GetStarted() {
 					Start Your Search
 				</button>
 			</div>
-		</div>
+		</LandingSection>
 	);
 }
 

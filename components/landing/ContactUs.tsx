@@ -2,10 +2,11 @@
 import Image from "next/image";
 import { Mail, Linkedin, Instagram, MapPin } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
+import LandingSection from "./LandingSection";
 
 export default function ContactUs() {
 	return (
-		<div
+		<LandingSection
 			id="contactUs"
 			className="bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col w-full"
 			style={{
@@ -95,7 +96,7 @@ export default function ContactUs() {
 					<span className="cursor-pointer">Data Protection</span>
 				</div>
 			</div>
-		</div>
+		</LandingSection>
 	);
 }
 
