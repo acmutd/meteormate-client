@@ -55,9 +55,12 @@ export default function LoginPage() {
         await doSignInWithEmailAndPassword(email, password);
         router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
       }
-    } catch (err: any) { //just in case there's a problem signing in 
+    } catch (err: unknown) { //just in case there's a problem signing in 
       console.error("Login error:", err);
-      setEmailError(err.message || "Login failed"); // for what reasons
+      const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+        ? err.message 
+        : "Login failed";
+      setEmailError(errorMessage); // for what reasons
     } finally {
       setIsSigningIn(false);
     }

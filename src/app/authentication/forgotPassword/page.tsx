@@ -1,13 +1,11 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(Array(6).fill(""));
-  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [emailError, setEmailError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -51,9 +49,12 @@ export default function VerifyEmailPage() {
     router.push(
       `/authentication/verifyPassword?email=${encodeURIComponent(email)}`
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Error sending reset verification:", err);
-    setEmailError(err.message || "Something went wrong. Please try again.");
+    const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+      ? err.message 
+      : "Something went wrong. Please try again.";
+    setEmailError(errorMessage);
   } finally {
     setIsSending(false);
   }
