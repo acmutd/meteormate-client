@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import LandingSection from "./LandingSection";
 
 interface FeatureCardProps {
 	imageSrc: string;
@@ -92,9 +93,9 @@ export default function HowItWorks() {
 	];
 
 	return (
-		<div
+		<LandingSection
 			id="howItWorks"
-			className="w-screen min-h-screen bg-black flex flex-col justify-center items-center"
+			className="w-screen min-h-screen bg-black flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
 			style={{ backgroundImage: `url('/images/stars.png')` }}
 		>
 			<h1 className="text-white text-[60px] font-extrabold">
@@ -111,7 +112,7 @@ export default function HowItWorks() {
 					<FeatureCard key={index} {...feature} />
 				))}
 			</div>
-		</div>
+		</LandingSection>
 	);
 }
 

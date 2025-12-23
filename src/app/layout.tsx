@@ -10,7 +10,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				{/* Preconnect for better font loading performance */}
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -61,7 +61,7 @@ export default function RootLayout({
 					rel="stylesheet"
 				></link>
 			</head>
-			<body className="m-0 p-0">
+			<body className="m-0 p-0" suppressHydrationWarning>
 				<AuthProvider>
 					<div className="hidden md:block">{children}</div>
 					<div className="block md:hidden">
