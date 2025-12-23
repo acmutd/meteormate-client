@@ -98,9 +98,12 @@ export default function VerifyPassword() {
 
       // ✅ only go to new password page *after* successful verification
       router.push("/authentication/newPassword");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error verifying reset code:", err);
-      setError(err.message || "Verification failed. Please try again.");
+      const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+        ? err.message 
+        : "Verification failed. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsVerifying(false);
     }

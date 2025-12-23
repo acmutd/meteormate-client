@@ -97,9 +97,12 @@ export default function NewPasswordPage() {
 
       // Redirect to login
       router.push("../authentication");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Reset password error:", err);
-      setErrorMsg(err.message || "Something went wrong.");
+      const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+        ? err.message 
+        : "Something went wrong.";
+      setErrorMsg(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

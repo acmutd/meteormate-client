@@ -118,12 +118,15 @@ export default function CreateAccountPage() {
 
 				router.push("/authentication/verifyEmail");
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Signup error:", err);
-			if (err.code === "auth/email-already-in-use") {
+			if (err && typeof err === "object" && "code" in err && err.code === "auth/email-already-in-use") {
 				setEmailError("An account with this email already exists.");
 			} else {
-				setEmailError(err.message || "Sign Up failed");
+				const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+					? err.message 
+					: "Sign Up failed";
+				setEmailError(errorMessage);
 			}
 		} finally {
 			setIsSigningUp(false);
