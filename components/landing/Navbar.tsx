@@ -71,6 +71,7 @@ export default function Navbar() {
 					{[
 						{ to: "howItWorks", label: "How It Works" },
 						{ to: "getStarted", label: "Get Started" },
+						{ to: "meetTheTeam", label: "Meet the Team" },
 						{ to: "contactUs", label: "Contact Us" },
 					].map((link) => (
 						<Link

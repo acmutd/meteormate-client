@@ -4,6 +4,7 @@ import Navbar from "../../components/landing/Navbar";
 import HeroSection from "../../components/landing/HeroSection";
 import HowItWorks from "../../components/landing/HowItWorks";
 import GetStarted from "../../components/landing/GetStarted";
+import MeetTheTeam from "../../components/landing/MeetTheTeam";
 import ContactUs from "../../components/landing/ContactUs";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
 				<HeroSection />
 				<HowItWorks />
 				<GetStarted />
+				<MeetTheTeam />
 				<ContactUs />
 			</main>
 		</div>
