@@ -5,6 +5,8 @@ import LogoBox from "../../../components/LogoBox";
 import { doSignInWithEmailAndPassword } from "../../firebase/auth";
 import { useAuth } from "../../contexts/authContext";
 import { useSearchParams } from "next/navigation";
+import { validateUTDEmail, getEmailValidationError } from "@/utils/validation";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -30,12 +32,7 @@ export default function LoginPage() {
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setEmail(value);
-
-		if (!value.endsWith("@utdallas.edu")) {
-			setEmailError("Email must end with @utdallas.edu");
-		} else {
-			setEmailError("");
-		}
+		setEmailError(getEmailValidationError(value));
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,10 +40,12 @@ export default function LoginPage() {
 	};
 
 	const handleLogin = async () => {
-		if (!email.endsWith("@utdallas.edu")) {
-			setEmailError("Please enter a valid @utdallas.edu email.");
+		// Validate email
+		const emailErr = getEmailValidationError(email);
+		if (emailErr) {
+			setEmailError(emailErr);
 			return;
-		} // just making sure that the email ends with @utdallas.edu
+		}
 
 	//then we try to get if is signing in is true whne the value is flipped then we set the value to be actually true and then call signing with email and password and then router.push it to the createAccount page
     try {
@@ -55,9 +54,12 @@ export default function LoginPage() {
         await doSignInWithEmailAndPassword(email, password);
         router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
       }
-    } catch (err: any) { //just in case there's a problem signing in 
+    } catch (err: unknown) { //just in case there's a problem signing in 
       console.error("Login error:", err);
-      setEmailError(err.message || "Login failed"); // for what reasons
+      const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+        ? err.message 
+        : "Login failed";
+      setEmailError(errorMessage); // for what reasons
     } finally {
       setIsSigningIn(false);
     }
@@ -122,7 +124,8 @@ export default function LoginPage() {
                             value={email}
                             onChange={handleEmailChange}
                             placeholder="Email"
-                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full"
+                            disabled={isSigningIn}
+                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                     </div>
                     {emailError && (
@@ -152,7 +155,8 @@ export default function LoginPage() {
                             value={password}
                             onChange={handlePasswordChange}
                             placeholder="Password"
-                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full"
+                            disabled={isSigningIn}
+                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                     </div>
                 </div>
@@ -160,8 +164,9 @@ export default function LoginPage() {
                 <button
                     onClick={handleLogin}
                     disabled={isSigningIn}
-                    className="bg-[#509275] text-white rounded-3xl hover:bg-gray-800 transition cursor-pointer py-3"
+                    className="bg-[#509275] text-white rounded-3xl hover:bg-gray-800 transition cursor-pointer py-3 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
+                    {isSigningIn && <LoadingSpinner size="sm" />}
                     {isSigningIn ? "Logging in..." : "Login"}
                 </button>
             </div>
