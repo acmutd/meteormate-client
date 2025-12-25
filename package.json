@@ -29,6 +29,7 @@
     "@types/react-dom": "^19",
     "@types/react-scroll": "^1.8.10",
     "autoprefixer": "^10.4.21",
+    "baseline-browser-mapping": "^2.9.11",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "tailwindcss": "^4",
