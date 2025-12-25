@@ -118,7 +118,7 @@ export default function CreateAccountPage() {
 			{/* Back arrow */}
 			<button
 				onClick={router.back}
-				className="absolute top-8 -left-15 p-2 hover:bg-gray-100 rounded-full transition-colors"
+				className="absolute top-8 left-5 p-2 hover:bg-gray-100 rounded-full transition-colors"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -136,14 +136,16 @@ export default function CreateAccountPage() {
 				</svg>
 			</button>
 
-			{/* Title and subtitle */}
-			<div className="flex flex-col justify-center items-center text-center w-[400px]">
-				<h1 className="font-urbanist font-semibold md:text-[35px] text-[20px]">
-					Create an Account
-				</h1>
-				<p className="font-urbanist font-light md:text-[12px] text-[10px] pb-3">
-					Please only use your UTD Email.
-				</p>
+			<div className="flex flex-col justify-center items-center">
+				{/* Title and subtitle */}
+				<div className="flex flex-col justify-center items-center text-center w-[clamp(10rem,55vh,25rem)]">
+					<h1 className="font-urbanist font-semibold text-[clamp(20px,5vh,30px)]">
+						Create an Account
+					</h1>
+					<p className="font-urbanist font-light text-[clamp(7px,2vh,12px)] pb-3">
+						Please only use your UTD Email.
+					</p>
+				</div>
 			</div>
 
 			{/* Form fields */}
@@ -151,7 +153,7 @@ export default function CreateAccountPage() {
 				<div className="flex flex-col text-left w-[80%] space-y-4">
 					{/* email */}
 					<div className="flex flex-col">
-						<label className="block text-sm font-urbanist font-light text-gray-700 mb-2">
+						<label className="block text-[clamp(10px,2vh,20px)] font-urbanist font-light text-gray-700 mb-2">
 							UTD Email
 						</label>
 						<div className="relative">
@@ -161,7 +163,7 @@ export default function CreateAccountPage() {
 								viewBox="0 0 24 24"
 								strokeWidth="1.5"
 								stroke="currentColor"
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
+								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-[clamp(1rem,3vh,1.25rem)] h-[clamp(1rem,3vh,1.25rem)] text-black"
 							>
 								<path
 									strokeLinecap="round"
@@ -174,8 +176,7 @@ export default function CreateAccountPage() {
 								value={email}
 								onChange={handleEmailChange}
 								placeholder="Email"
-								disabled={isSigningUp}
-								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full"
 							/>
 						</div>
 						{emailError && (
@@ -185,7 +186,7 @@ export default function CreateAccountPage() {
 
 					{/* password */}
 					<div className="flex flex-col">
-						<label className="block text-sm font-urbanist font-light text-gray-700 mb-2">
+						<label className="block text-[clamp(10px,2vh,20px)] font-urbanist font-light text-gray-700 mb-2">
 							Password
 						</label>
 						<div className="relative">
@@ -195,7 +196,7 @@ export default function CreateAccountPage() {
 								viewBox="0 0 24 24"
 								strokeWidth="1.5"
 								stroke="currentColor"
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
+								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-[clamp(1rem,3vh,1.25rem)] h-[clamp(1rem,3vh,1.25rem)] text-black"
 							>
 								<path
 									strokeLinecap="round"
@@ -208,15 +209,14 @@ export default function CreateAccountPage() {
 								value={password}
 								onChange={handlePasswordChange}
 								placeholder="Password"
-								disabled={isSigningUp}
-								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full"
 							/>
 						</div>
 					</div>
 
 					{/* verify password */}
 					<div className="flex flex-col">
-						<label className="block text-sm font-urbanist font-light text-gray-700 mb-2">
+						<label className="block text-[clamp(10px,2vh,20px)] font-urbanist font-light text-gray-700 mb-2">
 							Verify Password
 						</label>
 						<div className="relative">
@@ -226,7 +226,7 @@ export default function CreateAccountPage() {
 								viewBox="0 0 24 24"
 								strokeWidth="1.5"
 								stroke="currentColor"
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
+								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-[clamp(1rem,3vh,1.25rem)] h-[clamp(1rem,3vh,1.25rem)] text-black"
 							>
 								<path
 									strokeLinecap="round"
@@ -240,7 +240,7 @@ export default function CreateAccountPage() {
 								onChange={handleConfirmPasswordChange}
 								placeholder="Re-Enter Password"
 								disabled={isSigningUp}
-								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
 							/>
 						</div>
 						{confirmPasswordError && (
@@ -251,54 +251,54 @@ export default function CreateAccountPage() {
 					</div>
 
 					<div>
-						<p className="text-xs mt-1">Passwords must:</p>
+						<p className="[font-size:clamp(10px,2vh,14px)]">Passwords must:</p>
 						{passwordValidation.checks.minLength ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Be at least 8 characters
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
+								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Be at least 8 characters
 							</p>
 						) : (
-							<p className="text-xs text-red-500 flex items-center gap-1">
-								<X className="size-4" /> Be at least 8 characters
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
+								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Be at least 8 characters
 							</p>
 						)}
 						{passwordValidation.checks.lowercase ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Include at least one lowercase
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
+								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one lowercase
 								letter (a-z)
 							</p>
 						) : (
-							<p className="text-xs text-red-500 flex items-center gap-1">
-								<X className="size-4" /> Include at least one lowercase letter
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
+								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one lowercase letter
 								(a-z)
 							</p>
 						)}
 						{passwordValidation.checks.uppercase ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Include at least one uppercase
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
+								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one uppercase
 								letter (A-Z)
 							</p>
 						) : (
-							<p className="text-xs text-red-500 flex items-center gap-1">
-								<X className="size-4" /> Include at least one uppercase letter
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
+								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one uppercase letter
 								(A-Z)
 							</p>
 						)}
 						{passwordValidation.checks.special ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Include a special character (!@#$%)
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
+								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a special character (!@#$%)
 							</p>
 						) : (
-							<p className="text-xs text-red-500 flex items-center gap-1">
-								<X className="size-4" /> Include a special character (!@#$%)
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
+								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a special character (!@#$%)
 							</p>
 						)}
 						{passwordValidation.checks.number ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Include a number (0-9)
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
+								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a number (0-9)
 							</p>
 						) : (
-							<p className="text-xs text-red-500 flex items-center gap-1">
-								<X className="size-4" /> Include a number (0-9)
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
+								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a number (0-9)
 							</p>
 						)}
 					</div>
