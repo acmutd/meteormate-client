@@ -1,4 +1,6 @@
+"use client";
 import React from "react";
+import Image from "next/image";
 
 interface MeteorCardProps {
 	children: React.ReactNode;
@@ -10,7 +12,7 @@ interface MeteorCardProps {
 const MeteorCard: React.FC<MeteorCardProps> = ({
 	children,
 	logoSrc,
-	logoAlt = "Logo",
+	logoAlt = "MeteorMate Logo",
 	className = "",
 }) => {
 	return (

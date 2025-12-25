@@ -9,6 +9,13 @@ import {
 } from "@/firebase/auth";
 //import { getAuth, sendEmailVerification } from 'firebase/auth';
 import { Check, X } from "lucide-react";
+import {
+	validateUTDEmail,
+	validatePassword,
+	validatePasswordMatch,
+	getEmailValidationError,
+} from "@/utils/validation";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -17,65 +24,27 @@ export default function CreateAccountPage() {
 	const [emailError, setEmailError] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState("");
+	const [passwordValidation, setPasswordValidation] = useState(
+		validatePassword("")
+	);
 
-	// requirements
-	const [minCharacters, setMinCharacters] = useState(false);
-	const [lowercaseLetter, setLowercaseLetter] = useState(false);
-	const [uppercaseLetter, setUppercaseLetter] = useState(false);
-	const [nonAlphanumericCharacter, setNonAlphanumericCharacter] =
-		useState(false);
-	const [numberCharacter, setNumberCharacter] = useState(false);
-	const [requirementsMet, setRequirementsMet] = useState(false);
-
-	//const userLoggedIn = auth?.userLoggedIn;
 	const [isSigningUp, setIsSigningUp] = useState(false);
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setEmail(value);
-
-		if (!value.endsWith("@utdallas.edu")) {
-			setEmailError("Email must end with @utdallas.edu");
-		} else {
-			setEmailError("");
-		}
+		setEmailError(getEmailValidationError(value));
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setPassword(e.target.value);
-		// password length check
-		if (e.target.value.length >= 8) {
-			setMinCharacters(true);
-		} else {
-			setMinCharacters(false);
-		}
-		// lowercase letter check
-		if (e.target.value.search(/[a-z]/) == -1) {
-			setLowercaseLetter(false);
-		} else {
-			setLowercaseLetter(true);
-		}
-		// uppcase letter check
-		if (e.target.value.search(/[A-Z]/) == -1) {
-			setUppercaseLetter(false);
-		} else {
-			setUppercaseLetter(true);
-		}
-		// nonalphanumeric character check
-		if (e.target.value.search(/[$*.[\]{}()?\"!@#%&/\\,<>':;|_~]/) == -1) {
-			setNonAlphanumericCharacter(false);
-		} else {
-			setNonAlphanumericCharacter(true);
-		}
-		if (e.target.value.search(/[0-9]/) == -1) {
-			setNumberCharacter(false);
-		} else {
-			setNumberCharacter(true);
-		}
-		if (e.target.value.length >= 6 && e.target.value.search(/[a-z]/) != -1 && e.target.value.search(/[A-Z]/) != -1 && e.target.value.search(/[$*.[\]{}()?\"!@#%&/\\,<>':;|_~]/) != -1 && e.target.value.search(/[0-9]/) != -1){
-			setRequirementsMet(true);
-		} else {
-			setRequirementsMet(false);
+		const value = e.target.value;
+		setPassword(value);
+		const validation = validatePassword(value);
+		setPasswordValidation(validation);
+		
+		// Update confirm password error if confirm password is already filled
+		if (confirmPassword) {
+			setConfirmPasswordError(validatePasswordMatch(value, confirmPassword));
 		}
 	};
 
@@ -84,21 +53,27 @@ export default function CreateAccountPage() {
 	) => {
 		const value = e.target.value;
 		setConfirmPassword(value);
-		if (value !== password) {
-			setConfirmPasswordError("Passwords do not match");
-		} else {
-			setConfirmPasswordError("");
-		}
+		setConfirmPasswordError(validatePasswordMatch(password, value));
 	};
 
 	const handleCreateAccount = async () => {
-		if (!email.endsWith("@utdallas.edu")) {
-			setEmailError("Please enter a valid @utdallas.edu email.");
+		// Validate email
+		const emailErr = getEmailValidationError(email);
+		if (emailErr) {
+			setEmailError(emailErr);
 			return;
 		}
 
-		if (password !== confirmPassword) {
-			setConfirmPasswordError("Passwords do not match");
+		// Validate password
+		if (!passwordValidation.isValid) {
+			setEmailError("Please fix password requirements before continuing.");
+			return;
+		}
+
+		// Validate password match
+		const passwordMatchError = validatePasswordMatch(password, confirmPassword);
+		if (passwordMatchError) {
+			setConfirmPasswordError(passwordMatchError);
 			return;
 		}
 
@@ -118,12 +93,15 @@ export default function CreateAccountPage() {
 
 				router.push("/authentication/verifyEmail");
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Signup error:", err);
-			if (err.code === "auth/email-already-in-use") {
+			if (err && typeof err === "object" && "code" in err && err.code === "auth/email-already-in-use") {
 				setEmailError("An account with this email already exists.");
 			} else {
-				setEmailError(err.message || "Sign Up failed");
+				const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+					? err.message 
+					: "Sign Up failed";
+				setEmailError(errorMessage);
 			}
 		} finally {
 			setIsSigningUp(false);
@@ -261,7 +239,8 @@ export default function CreateAccountPage() {
 								value={confirmPassword}
 								onChange={handleConfirmPasswordChange}
 								placeholder="Re-Enter Password"
-								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full"
+								disabled={isSigningUp}
+								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
 							/>
 						</div>
 						{confirmPasswordError && (
@@ -271,19 +250,19 @@ export default function CreateAccountPage() {
 						)}
 					</div>
 
-					<div className="text-[clamp(1px,2vh,12px)]">
-						<p className="mt-1">Passwords must:</p>
-						{minCharacters ? (
-							<p className="text-green-500 flex items-center gap-1">
-								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Be at least 8 characters
+					<div>
+						<p className="text-[clamp(1px,2vh,12px)]">Passwords must:</p>
+						{passwordValidation.checks.minLength ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
+								<Check className="size-4" /> Be at least 8 characters
 							</p>
 						) : (
 							<p className="text-red-500 flex items-center gap-1">
 								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Be at least 8 characters
 							</p>
 						)}
-						{lowercaseLetter ? (
-							<p className="text-green-500 flex items-center gap-1">
+						{passwordValidation.checks.lowercase ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
 								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one lowercase
 								letter (a-z)
 							</p>
@@ -293,8 +272,8 @@ export default function CreateAccountPage() {
 								(a-z)
 							</p>
 						)}
-						{uppercaseLetter ? (
-							<p className="text-green-500 flex items-center gap-1">
+						{passwordValidation.checks.uppercase ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
 								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one uppercase
 								letter (A-Z)
 							</p>
@@ -304,8 +283,8 @@ export default function CreateAccountPage() {
 								(A-Z)
 							</p>
 						)}
-						{nonAlphanumericCharacter ? (
-							<p className="text-green-500 flex items-center gap-1">
+						{passwordValidation.checks.special ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
 								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a special character (!@#$%)
 							</p>
 						) : (
@@ -313,9 +292,9 @@ export default function CreateAccountPage() {
 								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a special character (!@#$%)
 							</p>
 						)}
-						{numberCharacter ? (
-							<p className="text-green-500 flex items-center gap-1">
-								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a number (0-9)
+						{passwordValidation.checks.number ? (
+							<p className="text-xs text-green-500 flex items-center gap-1">
+								<Check className="size-4" /> Include a number (0-9)
 							</p>
 						) : (
 							<p className="text-red-500 flex items-center gap-1">
@@ -327,15 +306,16 @@ export default function CreateAccountPage() {
 					{/* create account button */}
 					<button
 						onClick={handleCreateAccount}
-						disabled={isSigningUp || !requirementsMet}
-						className={`py-2 px-6 rounded-3xl transition-colors duration-200 ${
-							isSigningUp || !requirementsMet
+						disabled={isSigningUp || !passwordValidation.isValid}
+						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${
+							isSigningUp || !passwordValidation.isValid
 							? "bg-gray-400 text-white cursor-not-allowed"
 							: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
 						}`}
 						>
+						{isSigningUp && <LoadingSpinner size="sm" />}
 						{isSigningUp ? "Creating..." : "Create Account"}
-						</button>
+					</button>
 				</div>
 			</div>
 		</LogoBox>
