@@ -251,53 +251,53 @@ export default function CreateAccountPage() {
 					</div>
 
 					<div>
-						<p className="text-[clamp(1px,2vh,12px)]">Passwords must:</p>
+						<p className="[font-size:clamp(10px,2vh,14px)]">Passwords must:</p>
 						{passwordValidation.checks.minLength ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Be at least 8 characters
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
+								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Be at least 8 characters
 							</p>
 						) : (
-							<p className="text-red-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
 								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Be at least 8 characters
 							</p>
 						)}
 						{passwordValidation.checks.lowercase ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
 								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one lowercase
 								letter (a-z)
 							</p>
 						) : (
-							<p className="text-red-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
 								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one lowercase letter
 								(a-z)
 							</p>
 						)}
 						{passwordValidation.checks.uppercase ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
 								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one uppercase
 								letter (A-Z)
 							</p>
 						) : (
-							<p className="text-red-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
 								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include at least one uppercase letter
 								(A-Z)
 							</p>
 						)}
 						{passwordValidation.checks.special ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
 								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a special character (!@#$%)
 							</p>
 						) : (
-							<p className="text-red-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
 								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a special character (!@#$%)
 							</p>
 						)}
 						{passwordValidation.checks.number ? (
-							<p className="text-xs text-green-500 flex items-center gap-1">
-								<Check className="size-4" /> Include a number (0-9)
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-green-500 flex items-center gap-1">
+								<Check className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a number (0-9)
 							</p>
 						) : (
-							<p className="text-red-500 flex items-center gap-1">
+							<p className="[font-size:clamp(10px,1.5vh,12px)] text-red-500 flex items-center gap-1">
 								<X className="size-[clamp(0.75rem,2vh,1.25rem)]" /> Include a number (0-9)
 							</p>
 						)}
