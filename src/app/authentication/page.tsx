@@ -1,17 +1,23 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import LogoBox from "../../../components/LogoBox";
 import { doSignInWithEmailAndPassword } from "../../firebase/auth";
 import { useAuth } from "../../contexts/authContext";
 import { useSearchParams } from "next/navigation";
-import { validateUTDEmail, getEmailValidationError } from "@/utils/validation";
+import { getEmailValidationError } from "@/utils/validation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import EmailInput from "../../../components/forms/EmailInput";
+import PasswordInput from "../../../components/forms/PasswordInput";
+import { useToast } from "@/components/ui/ToastProvider";
+import { getAuthErrorMessage } from "@/utils/authErrors";
 
 export default function LoginPage() {
 	const router = useRouter();
+	const { toast } = useToast();
 	const auth = useAuth(); // avoid destructuring directly
 	const userLoggedIn = auth?.userLoggedIn;
+	const emailRef = useRef<HTMLInputElement | null>(null);
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -28,6 +34,10 @@ export default function LoginPage() {
       router.push("../authentication"); // this pushs it back to the authentication
     }
   }, [userLoggedIn, router]);
+
+	useEffect(() => {
+		emailRef.current?.focus();
+	}, []);
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -52,21 +62,48 @@ export default function LoginPage() {
       if (!isSigningIn) {
         setIsSigningIn(true);
         await doSignInWithEmailAndPassword(email, password);
+				toast({
+					type: "success",
+					title: "Welcome back!",
+					description: "You’re now logged in.",
+				});
         router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
       }
     } catch (err: unknown) { //just in case there's a problem signing in 
       console.error("Login error:", err);
-      const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
-        ? err.message 
-        : "Login failed";
-      setEmailError(errorMessage); // for what reasons
+			const { message } = getAuthErrorMessage(err);
+			toast({ type: "error", title: "Login failed", description: message });
+      setEmailError(message);
     } finally {
       setIsSigningIn(false);
     }
   };
 
+	const onSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		void handleLogin();
+	};
+
   return (
     <LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+			{/* Back arrow to landing */}
+			<button
+				onClick={() => router.push("/")}
+				className="absolute top-8 left-5 p-2 hover:bg-gray-100 rounded-full transition-colors"
+				aria-label="Back to landing page"
+				type="button"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth={2}
+					stroke="currentColor"
+					className="w-6 h-6"
+				>
+					<path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+				</svg>
+			</button>
         <div className="flex flex-col justify-center items-center text-center ">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] pt-2">
             Welcome to MeteorMate
@@ -99,70 +136,28 @@ export default function LoginPage() {
         <hr className="grow border border-gray-800 border-b-0" />
         </div>
 
-        {/* Login form */}
-        <div className="flex justify-center items-center">
+        {/* Login form (Enter submits) */}
+        <form onSubmit={onSubmit} className="flex justify-center items-center">
             <div className="flex flex-col text-left w-[85%] space-y-4 relative">
-                {/* Email field */}
-                <div className="flex flex-col">
-                    <div className="relative">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-                            />
-                        </svg>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={handleEmailChange}
-                            placeholder="Email"
-                            disabled={isSigningIn}
-                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                    </div>
-                    {emailError && (
-                        <p className="text-red-500 text-xs mt-1">{emailError}</p>
-                    )}
-                </div>
+								<EmailInput
+									value={email}
+									onChange={handleEmailChange}
+									onBlur={() => setEmailError(getEmailValidationError(email))}
+									disabled={isSigningIn}
+									error={emailError}
+									inputRef={emailRef}
+								/>
 
-                {/* Password field */}
-                <div className="flex flex-col">
-                    <div className="relative">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-                            />
-                        </svg>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            placeholder="Password"
-                            disabled={isSigningIn}
-                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                    </div>
-                </div>
+								<PasswordInput
+									value={password}
+									onChange={handlePasswordChange}
+									disabled={isSigningIn}
+									showToggle
+									autoComplete="current-password"
+								/>
 
                 <button
-                    onClick={handleLogin}
+                    type="submit"
                     disabled={isSigningIn}
                     className="bg-[#509275] text-white rounded-3xl hover:bg-gray-800 transition cursor-pointer py-3 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
@@ -170,7 +165,7 @@ export default function LoginPage() {
                     {isSigningIn ? "Logging in..." : "Login"}
                 </button>
             </div>
-        </div>
+        </form>
 
         {/* Forgot password */}
         <div className="text-right mt-2">

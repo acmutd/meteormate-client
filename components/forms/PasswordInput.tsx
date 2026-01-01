@@ -1,27 +1,53 @@
 import React, { useState } from "react";
+import { validatePassword } from "@/utils/validation";
 
 interface PasswordInputProps {
 	value: string;
 	onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 	placeholder?: string;
 	label?: string;
 	error?: string;
 	disabled?: boolean;
 	className?: string;
 	showToggle?: boolean;
+	showStrength?: boolean;
+	autoComplete?: string;
+	inputRef?: React.Ref<HTMLInputElement>;
 }
 
 export default function PasswordInput({
 	value,
 	onChange,
+	onBlur,
 	placeholder = "Password",
 	label,
 	error,
 	disabled = false,
 	className = "",
 	showToggle = false,
+	showStrength = false,
+	autoComplete = "current-password",
+	inputRef,
 }: PasswordInputProps) {
 	const [showPassword, setShowPassword] = useState(false);
+	const strength = showStrength ? validatePassword(value) : null;
+	const strengthScore = strength
+		? Object.values(strength.checks).filter(Boolean).length
+		: 0;
+
+	const strengthLabel =
+		!strength || value.length === 0
+			? ""
+			: strengthScore <= 2
+				? "Weak"
+				: strengthScore === 3
+					? "Good"
+					: "Strong";
+
+	const strengthColor =
+		strengthScore <= 2 ? "bg-rose-500" : strengthScore === 3 ? "bg-amber-400" : "bg-emerald-500";
+	const strengthPct = !strength ? 0 : Math.min(100, (strengthScore / 5) * 100);
 
 	return (
 		<div className={`flex flex-col ${className}`}>
@@ -49,8 +75,11 @@ export default function PasswordInput({
 					type={showPassword ? "text" : "password"}
 					value={value}
 					onChange={onChange}
+					onBlur={onBlur}
 					placeholder={placeholder}
 					disabled={disabled}
+					autoComplete={autoComplete}
+					ref={inputRef}
 					className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
 				/>
 				{showToggle && (
@@ -58,7 +87,6 @@ export default function PasswordInput({
 						type="button"
 						onClick={() => setShowPassword(!showPassword)}
 						className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-						tabIndex={-1}
 					>
 						{showPassword ? (
 							<svg
@@ -99,6 +127,22 @@ export default function PasswordInput({
 					</button>
 				)}
 			</div>
+			{showStrength && value.length > 0 ? (
+				<div className="mt-2">
+					<div className="flex items-center justify-between">
+						<p className="text-xs text-gray-600">Password strength</p>
+						<p className="text-xs font-semibold text-gray-700">{strengthLabel}</p>
+					</div>
+					<div className="mt-1 h-2 w-full rounded-full bg-gray-200 overflow-hidden">
+						<div className={`h-full ${strengthColor} transition-all`} style={{ width: `${strengthPct}%` }} />
+					</div>
+					{strength && !strength.isValid ? (
+						<p className="mt-1 text-[11px] text-gray-500">
+							Use 8+ chars with uppercase, lowercase, number, and special character.
+						</p>
+					) : null}
+				</div>
+			) : null}
 			{error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 		</div>
 	);
