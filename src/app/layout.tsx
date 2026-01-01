@@ -3,6 +3,7 @@
 import "./globals.css";
 import { AuthProvider } from "../contexts/authContext";
 import ScreenBlocker from "../../components/ScreenBlocker";
+import MaintenanceGate from "@/components/system/MaintenanceGate";
 
 export default function RootLayout({
 	children,
@@ -63,10 +64,12 @@ export default function RootLayout({
 			</head>
 			<body className="m-0 p-0" suppressHydrationWarning>
 				<AuthProvider>
-					<div className="hidden md:block">{children}</div>
-					<div className="block md:hidden">
-						<ScreenBlocker />
-					</div>
+					<MaintenanceGate>
+						<div className="hidden md:block">{children}</div>
+						<div className="block md:hidden">
+							<ScreenBlocker />
+						</div>
+					</MaintenanceGate>
 				</AuthProvider>
 			</body>
 		</html>

@@ -11,6 +11,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@types/react-scroll": "^1.8.10",
+    "animejs": "^3.2.2",
     "firebase": "^12.3.0",
     "lucide-react": "^0.539.0",
     "next": "15.4.10",

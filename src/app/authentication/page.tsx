@@ -6,6 +6,12 @@ import { doSignInWithEmailAndPassword } from "../../firebase/auth";
 import { useAuth } from "../../contexts/authContext";
 import { useSearchParams } from "next/navigation";
 import { validateUTDEmail, getEmailValidationError } from "@/utils/validation";
+import {
+	checkRateLimit,
+	formatRateLimitMessage,
+	recordFailure,
+	recordSuccess,
+} from "@/utils/rateLimit";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 
 export default function LoginPage() {
@@ -16,6 +22,7 @@ export default function LoginPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
+	const [safetyMessage, setSafetyMessage] = useState("");
 	const [isSigningIn, setIsSigningIn] = useState(false);
 
   // to know if we should show the red banner and disable/hide the "create an account" button
@@ -40,10 +47,19 @@ export default function LoginPage() {
 	};
 
 	const handleLogin = async () => {
+		const rateCheck = checkRateLimit("login");
+		if (!rateCheck.allowed) {
+			setEmailError("");
+			setSafetyMessage(formatRateLimitMessage("login", rateCheck));
+			return;
+		}
+		setSafetyMessage("");
+
 		// Validate email
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
+			recordFailure("login");
 			return;
 		}
 
@@ -52,6 +68,7 @@ export default function LoginPage() {
       if (!isSigningIn) {
         setIsSigningIn(true);
         await doSignInWithEmailAndPassword(email, password);
+        recordSuccess("login");
         router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
       }
     } catch (err: unknown) { //just in case there's a problem signing in 
@@ -59,7 +76,11 @@ export default function LoginPage() {
       const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
         ? err.message 
         : "Login failed";
+      recordFailure("login");
       setEmailError(errorMessage); // for what reasons
+      setSafetyMessage(
+        "If you keep seeing this, reset your password before trying again. Repeated failed logins will temporarily lock further attempts."
+      );
     } finally {
       setIsSigningIn(false);
     }
@@ -81,6 +102,15 @@ export default function LoginPage() {
                 aria-live="polite"
             >
                 Account has been created — log in with your credentials.
+            </div>
+        )}
+        {safetyMessage && (
+            <div
+                className="w-[85%] mx-auto mb-3 rounded-md border border-amber-400 bg-amber-100 p-3 text-sm text-amber-800"
+                role="status"
+                aria-live="polite"
+            >
+                {safetyMessage}
             </div>
         )}
 

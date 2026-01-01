@@ -1,0 +1,62 @@
+import Link from "next/link";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import StatusLayout from "./StatusLayout";
+
+export default function NotFoundPage() {
+	return (
+		<StatusLayout
+			eyebrow="404 Error"
+			title="Lost among the meteors"
+			description="The page you're looking for drifted off course. Let's guide you back to somewhere safe."
+			accent="amber"
+			actions={
+				<>
+					<Link
+						href="/"
+						className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 px-5 py-3 font-semibold text-black shadow-lg transition hover:from-orange-500 hover:to-yellow-400"
+					>
+						Back to Home
+					</Link>
+					<a
+						href="https://discord.com"
+						target="_blank"
+						rel="noreferrer"
+						className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-3 font-semibold text-white/80 transition hover:border-white/40 hover:text-white"
+					>
+						Contact on Discord
+					</a>
+				</>
+			}
+		>
+			<div className="mx-auto max-w-2xl space-y-4 text-left text-white/80">
+				{/* 404 Icon */}
+				<div className="flex justify-center mb-4">
+					<div className="relative">
+						<div className="absolute inset-0 bg-orange-400/30 blur-2xl rounded-full" />
+						<MagnifyingGlassIcon className="relative w-16 h-16 text-orange-400" />
+					</div>
+				</div>
+
+				<div className="rounded-2xl border border-orange-400/20 bg-orange-500/10 px-4 py-3 text-sm">
+					<p className="font-semibold text-orange-300 mb-1">Page Not Found</p>
+					<p className="text-white/90">
+						This page doesn't exist or may have been moved. This is not a planned downtime—just a missing page.
+					</p>
+				</div>
+
+				<p className="font-outfit">
+					This link might be outdated, or we renamed the page while polishing the experience.
+				</p>
+				<ul className="list-disc list-inside space-y-1 text-sm md:text-base">
+					<li>Check the URL for typos or trailing slashes.</li>
+					<li>Use the navigation to jump back to How It Works or Get Started.</li>
+					<li>
+						If you think this should exist, send us a quick note and we'll get it back on
+						track.
+					</li>
+				</ul>
+			</div>
+		</StatusLayout>
+	);
+}
+

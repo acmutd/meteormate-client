@@ -15,6 +15,12 @@ import {
 	validatePasswordMatch,
 	getEmailValidationError,
 } from "@/utils/validation";
+import {
+	checkRateLimit,
+	formatRateLimitMessage,
+	recordFailure,
+	recordSuccess,
+} from "@/utils/rateLimit";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 export default function CreateAccountPage() {
@@ -29,6 +35,7 @@ export default function CreateAccountPage() {
 	);
 
 	const [isSigningUp, setIsSigningUp] = useState(false);
+	const [safetyMessage, setSafetyMessage] = useState("");
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -57,16 +64,26 @@ export default function CreateAccountPage() {
 	};
 
 	const handleCreateAccount = async () => {
+		const rateCheck = checkRateLimit("signup");
+		if (!rateCheck.allowed) {
+			setEmailError("");
+			setSafetyMessage(formatRateLimitMessage("signup", rateCheck));
+			return;
+		}
+		setSafetyMessage("");
+
 		// Validate email
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
+			recordFailure("signup");
 			return;
 		}
 
 		// Validate password
 		if (!passwordValidation.isValid) {
 			setEmailError("Please fix password requirements before continuing.");
+			recordFailure("signup");
 			return;
 		}
 
@@ -74,6 +91,7 @@ export default function CreateAccountPage() {
 		const passwordMatchError = validatePasswordMatch(password, confirmPassword);
 		if (passwordMatchError) {
 			setConfirmPasswordError(passwordMatchError);
+			recordFailure("signup");
 			return;
 		}
 
@@ -86,6 +104,7 @@ export default function CreateAccountPage() {
 					password
 				);
 				const uid = userCredential.uid;
+				recordSuccess("signup");
 
 				await doSendEmailVerification(email, uid);
 
@@ -95,6 +114,7 @@ export default function CreateAccountPage() {
 			}
 		} catch (err: unknown) {
 			console.error("Signup error:", err);
+			recordFailure("signup");
 			if (err && typeof err === "object" && "code" in err && err.code === "auth/email-already-in-use") {
 				setEmailError("An account with this email already exists.");
 			} else {
@@ -103,6 +123,9 @@ export default function CreateAccountPage() {
 					: "Sign Up failed";
 				setEmailError(errorMessage);
 			}
+			setSafetyMessage(
+				"Too many rapid sign-up attempts will temporarily pause account creation. Slow down and double-check your info, or contact a developer on Discord."
+			);
 		} finally {
 			setIsSigningUp(false);
 		}
@@ -147,6 +170,12 @@ export default function CreateAccountPage() {
 					</p>
 				</div>
 			</div>
+
+			{safetyMessage && (
+				<div className="w-[80%] mx-auto mb-3 rounded-md border border-amber-400 bg-amber-100 p-3 text-sm text-amber-800">
+					{safetyMessage}
+				</div>
+			)}
 
 			{/* Form fields */}
 			<div className="flex justify-center items-center">
