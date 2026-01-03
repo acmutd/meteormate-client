@@ -87,6 +87,30 @@ export default function VerifyEmailPage() {
 		}
 	};
 
+	const resendCode = async () => {
+		const email = localStorage.getItem("verificationEmail");
+		if (!email) {
+			setError("No email found. Please log in again.");
+			return;
+		}
+
+		try {
+			const res = await fetch("http://localhost:8000/api/auth/send-verification-code", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email, purpose: "verify" }),
+			});
+
+			if (!res.ok) {
+			const data = await res.json().catch(() => ({}));
+			setError(data.detail || "Failed to resend code.");
+			}
+		} catch {
+			setError("Failed to resend code. Please try again.");
+		}
+	};
+
+
 	return (
 		<LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
 			<div className="flex flex-col justify-center items-center text-center w-[400px]">
@@ -134,6 +158,14 @@ export default function VerifyEmailPage() {
 				>
 					Verify Email
 				</button>
+
+				<button
+					onClick={resendCode}
+					className="text-sm text-gray-600 underline hover:text-black mt-2 cursor-pointer"
+					>
+					Resend code
+				</button>
+
 			</div>
 		</LogoBox>
 	);
