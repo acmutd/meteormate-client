@@ -1,4 +1,5 @@
 import { ComputerDesktopIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 export default function ScreenBlocker() {
 	return (
@@ -14,9 +15,11 @@ export default function ScreenBlocker() {
 				</p>
 				<div className="mt-5 border-t border-gray-200 pt-2 -mb-3">
 					<div className="flex items-center justify-center gap-1 mt-2">
-						<img
+						<Image
 							src="/images/peechi_star.webp"
-							alt="Peechi Star"
+							alt="MeteorMate Star Icon"
+							width={20}
+							height={20}
 							className="size-5 self-center"
 						/>
 						<div className="flex flex-col items-center">

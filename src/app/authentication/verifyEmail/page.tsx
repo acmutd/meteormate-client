@@ -2,13 +2,15 @@
 import React, { useRef, useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 export default function VerifyEmailPage() {
-	const router = useRouter(); // NEW: actually use the router
+	const router = useRouter();
 	const [code, setCode] = useState(Array(6).fill(""));
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 	const [email] = useState<string | null>(null);
-	const [error, setError] = useState<string | null>(null); // NEW: error message state
+	const [error, setError] = useState<string | null>(null);
+	const [isVerifying, setIsVerifying] = useState(false);
 
 	const handleChange = (value: string, index: number) => {
 		if (/^\d$/.test(value)) {
@@ -45,14 +47,17 @@ export default function VerifyEmailPage() {
 
 	const handleVerifyEmail = async () => {
 		const verificationCode = code.join("");
-		setError(null); // NEW: clear any previous error
+		setError(null);
 
 		if (verificationCode.length !== 6) {
 			setError("Please enter the 6-digit code.");
 			return;
 		}
 
+		if (isVerifying) return; // Prevent multiple submissions
+
 		try {
+			setIsVerifying(true);
 			const email = localStorage.getItem("verificationEmail");
 
 			if (!email) {
@@ -73,17 +78,17 @@ export default function VerifyEmailPage() {
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				// NEW: show a red error message above the button
 				setError(errorData.detail || "Invalid code. Please try again.");
 				return;
 			}
 
-			// success -> reroute to login
-			// NEW:
-			router.push("../authentication");
+			// Success -> redirect to login
+			router.push("../authentication?created=1");
 		} catch (err) {
 			setError("Something went wrong. Please try again.");
 			console.error("Verification error:", (err as Error).message);
+		} finally {
+			setIsVerifying(false);
 		}
 	};
 
@@ -141,12 +146,13 @@ export default function VerifyEmailPage() {
 							ref={(el: HTMLInputElement | null) => {
 								inputsRef.current[index] = el;
 							}}
-							className="w-12 h-12 text-center text-xl border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+							disabled={isVerifying}
+							className="w-12 h-12 text-center text-xl border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
 						/>
 					))}
 				</div>
 
-				{/* NEW: inline error message */}
+				{/* Error message */}
 				{error && (
 					<p className="mt-3 text-sm text-red-600">{error}</p>
 				)}
@@ -154,9 +160,11 @@ export default function VerifyEmailPage() {
 				{/* verify button */}
 				<button
 					onClick={handleVerifyEmail}
-					className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer w-[80%]"
+					disabled={isVerifying}
+					className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer w-[80%] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
 				>
-					Verify Email
+					{isVerifying && <LoadingSpinner size="sm" />}
+					{isVerifying ? "Verifying..." : "Verify Email"}
 				</button>
 
 				<button

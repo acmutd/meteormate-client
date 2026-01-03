@@ -1,29 +1,29 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
+import { getEmailValidationError } from "@/utils/validation";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(Array(6).fill(""));
-  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [emailError, setEmailError] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-
-    if (!value.endsWith("@utdallas.edu")) {
-      setEmailError("Email must end with @utdallas.edu");
-    } else {
-      setEmailError("");
-    }
+    setEmailError(getEmailValidationError(value));
   };
 
   const handleResetPassword = async () => {
-  if (!email || emailError) return;
+    // Validate email before proceeding
+    const emailErr = getEmailValidationError(email);
+    if (emailErr) {
+      setEmailError(emailErr);
+      return;
+    }
 
   try {
     setIsSending(true);
@@ -51,9 +51,12 @@ export default function VerifyEmailPage() {
     router.push(
       `/authentication/verifyPassword?email=${encodeURIComponent(email)}`
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Error sending reset verification:", err);
-    setEmailError(err.message || "Something went wrong. Please try again.");
+    const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+      ? err.message 
+      : "Something went wrong. Please try again.";
+    setEmailError(errorMessage);
   } finally {
     setIsSending(false);
   }
@@ -93,7 +96,8 @@ export default function VerifyEmailPage() {
               value={email}
               onChange={handleEmailChange}
               placeholder="abc123452@utdallas.edu"
-              className="pl-11 pr-10 border border-black py-3 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full"
+              disabled={isSending}
+              className="pl-11 pr-10 border border-black py-3 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
           {emailError && (
@@ -105,8 +109,9 @@ export default function VerifyEmailPage() {
         <button
           onClick={handleResetPassword}
           disabled={isSending || !!emailError || !email}
-          className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
+          {isSending && <LoadingSpinner size="sm" />}
           {isSending ? "Sending..." : "Reset Password"}
         </button>
       </div>
