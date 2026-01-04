@@ -34,7 +34,7 @@ export default function PrivacyPage() {
             </div>
             <button
                 onClick={() => router.push("/")}
-                className="text-white/70 hover:text-white transition-colors text-sm md:text-base"
+                className="text-white/70 hover:text-white transition-colors text-sm md:text-base cursor-pointer"
             >
                 Back to Home
             </button>
@@ -151,7 +151,7 @@ export default function PrivacyPage() {
                 href="mailto:info@meteormate.com"
                 className="text-orange-400 hover:text-orange-300 transition-colors"
               >
-                MeteorMateSupport@gmail.com
+                info@meteormate.com
               </a>
             </p>
           </div>

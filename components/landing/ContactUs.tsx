@@ -40,61 +40,67 @@ export default function ContactUs() {
 					<div className="flex flex-col items-center gap-3">
 						<h3 className="outfit-regular text-sm font-semibold text-white/80 mb-1">Quick Links</h3>
 						<div className="flex flex-col gap-2 outfit-regular text-white/60 text-sm">
-							<a href="#hero" className="hover:text-white transition-colors cursor-pointer">Home</a>
-							<a href="#howItWorks" className="hover:text-white transition-colors cursor-pointer">How It Works</a>
-							<a href="#getStarted" className="hover:text-white transition-colors cursor-pointer">Get Started</a>
+							<a href="#" className="hover:text-white transition-colors cursor-pointer">Home</a>
+							<a href="#howItWorks" className="hover:text-white transition-colors cursor-pointer">How It
+								Works</a>
+							<a href="#getStarted" className="hover:text-white transition-colors cursor-pointer">Get
+								Started</a>
 						</div>
 					</div>
 
 					{/* Right: Contact Info and Social Links */}
 					<div className="flex flex-col items-center md:items-end gap-3">
 						<h3 className="outfit-regular text-sm font-semibold text-white/80 mb-1">Get In Touch</h3>
-						<div className="flex flex-col gap-2 outfit-regular text-white/60 text-sm items-center md:items-end">
+						<div
+							className="flex flex-col gap-2 outfit-regular text-white/60 text-sm items-center md:items-end">
 							<div className="flex items-center gap-2">
-								<MapPin className="w-4 h-4 text-[#509275]" />
+								<MapPin className="w-4 h-4 text-[#509275]"/>
 								<span>UT Dallas</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Mail className="w-4 h-4 text-[#509275]" />
-								<span>MeteorMateSupport@gmail.com</span>
+							<div className="flex items-center gap-2" >
+								<Mail className="w-4 h-4 text-[#509275]"/>
+								<a href="mailto:info@meteormate.com" className="cursor-pointer hover:text-white/60 transition-colors">info@meteormate.com</a>
 							</div>
 						</div>
 						{/* Social Media Icons */}
 						<div className="flex gap-3 mt-2">
 							<a
-								href="https://www.linkedin.com/company/meteor-mate/posts/?feedView=all"
+								href="https://www.linkedin.com/company/acmutd/posts/?feedView=all"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="w-9 h-9 bg-transparent border border-white/10 hover:bg-blue-600 hover:border-blue-600 rounded-full flex items-center justify-center transition-colors duration-200"
 							>
-								<Linkedin className="w-4 h-4 text-white" />
+								<Linkedin className="w-4 h-4 text-white"/>
 							</a>
 							<a
-								href="https://www.instagram.com/meteor.mate/"
+								href="https://www.instagram.com/acmutd/"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="w-9 h-9 bg-transparent border border-white/10 hover:bg-pink-600 hover:border-pink-600 rounded-full flex items-center justify-center transition-colors duration-200"
 							>
-								<Instagram className="w-4 h-4 text-white" />
+								<Instagram className="w-4 h-4 text-white"/>
 							</a>
 							<a
-								href="https://discord.com"
+								href="https://discord.gg/qWsU6bPD2a"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="w-9 h-9 bg-transparent border border-white/10 hover:bg-blue-400 hover:border-blue-400 rounded-full flex items-center justify-center transition-colors duration-200"
 							>
-								<FaDiscord className="w-4 h-4 text-white" />
+								<FaDiscord className="w-4 h-4 text-white"/>
 							</a>
 						</div>
 					</div>
 				</div>
 
 				{/* Footer Bottom */}
-				<div className="border-t border-white/10 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40 outfit-regular">
-					<span>© 2025 Meteor Mate UTD. All rights reserved</span>
-					<span className="text-white/30">Powered by ACM Development</span>
-					<div className="flex gap-4">
-						<button className="cursor-pointer hover:text-white/60 transition-colors" onClick={() => router.push("/privacy")}>Privacy & Data Protection</button>
+				<div
+					className="border-t border-white/10 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40 outfit-regular">
+					<span className="md:flex-1 md:text-left text-center">© 2026 MeteorMate UTD</span>
+					<a className="cursor-pointer hover:text-white/60 transition-colors md:flex-1 text-center" href="https://acmutd.co/development">Powered by ACM Development</a>
+					<div className="flex gap-4 md:flex-1 md:justify-end justify-center">
+						<button className="cursor-pointer hover:text-white/60 transition-colors"
+								onClick={() => router.push("/privacy")}>Privacy & Data Protection
+						</button>
 					</div>
 				</div>
 			</div>
