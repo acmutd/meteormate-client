@@ -1,10 +1,12 @@
 "use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Mail, Linkedin, Instagram, MapPin } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 import LandingSection from "./LandingSection";
 
 export default function ContactUs() {
+    const router = useRouter();
 	return (
 		<LandingSection
 			id="contactUs"
@@ -92,9 +94,7 @@ export default function ContactUs() {
 					<span>© 2025 Meteor Mate UTD. All rights reserved</span>
 					<span className="text-white/30">Powered by ACM Development</span>
 					<div className="flex gap-4">
-						<span className="cursor-pointer hover:text-white/60 transition-colors">Terms</span>
-						<span className="cursor-pointer hover:text-white/60 transition-colors">Privacy</span>
-						<span className="cursor-pointer hover:text-white/60 transition-colors">Data Protection</span>
+						<button className="cursor-pointer hover:text-white/60 transition-colors" onClick={() => router.push("/privacy")}>Privacy & Data Protection</button>
 					</div>
 				</div>
 			</div>
