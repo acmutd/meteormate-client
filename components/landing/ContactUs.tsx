@@ -59,7 +59,7 @@ export default function ContactUs() {
 							</div>
 							<div className="flex items-center gap-2" >
 								<Mail className="w-4 h-4 text-[#509275]"/>
-								<a href="mailto:info@meteormate.com" className="cursor-pointer hover:text-white/60 transition-colors">info@meteormate.com</a>
+								<a href="mailto:info@meteormate.com" className="hover:text-white transition-colors cursor-pointer">info@meteormate.com</a>
 							</div>
 						</div>
 						{/* Social Media Icons */}
