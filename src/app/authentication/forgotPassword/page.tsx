@@ -13,6 +13,7 @@ export default function VerifyEmailPage() {
 	const emailRef = useRef<HTMLInputElement | null>(null);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
 	useEffect(() => {
@@ -22,11 +23,19 @@ export default function VerifyEmailPage() {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    setEmailError(getEmailValidationError(value));
+    if (emailTouched) {
+      setEmailError(getEmailValidationError(value));
+    }
+  };
+
+  const handleEmailBlur = () => {
+    setEmailTouched(true);
+    setEmailError(getEmailValidationError(email));
   };
 
   const handleResetPassword = async () => {
-    // Validate email before proceeding
+    setEmailTouched(true);
+    
     const emailErr = getEmailValidationError(email);
     if (emailErr) {
       setEmailError(emailErr);
@@ -69,6 +78,7 @@ export default function VerifyEmailPage() {
     const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
       ? err.message 
       : "Something went wrong. Please try again.";
+    setEmailTouched(true);
     setEmailError(errorMessage);
 		toast({ type: "error", title: "Couldn't send code", description: errorMessage });
   } finally {
@@ -116,7 +126,7 @@ export default function VerifyEmailPage() {
 					<EmailInput
 						value={email}
 						onChange={handleEmailChange}
-						onBlur={() => setEmailError(getEmailValidationError(email))}
+						onBlur={handleEmailBlur}
 						placeholder="abc123452@utdallas.edu"
 						disabled={isSending}
 						error={emailError}

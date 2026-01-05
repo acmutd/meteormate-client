@@ -27,6 +27,7 @@ export default function CreateAccountPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
+	const [emailTouched, setEmailTouched] = useState(false);
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState("");
 	const [passwordValidation, setPasswordValidation] = useState(
@@ -42,7 +43,14 @@ export default function CreateAccountPage() {
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setEmail(value);
-		setEmailError(getEmailValidationError(value));
+		if (emailTouched) {
+			setEmailError(getEmailValidationError(value));
+		}
+	};
+
+	const handleEmailBlur = () => {
+		setEmailTouched(true);
+		setEmailError(getEmailValidationError(email));
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +74,8 @@ export default function CreateAccountPage() {
 	};
 
 	const handleCreateAccount = async () => {
-		// Validate email
+		setEmailTouched(true);
+		
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
@@ -109,14 +118,10 @@ export default function CreateAccountPage() {
 			}
 		} catch (err: unknown) {
 			console.error("Signup error:", err);
-			const { message, code } = getAuthErrorMessage(err);
+			const { message } = getAuthErrorMessage(err);
 			toast({ type: "error", title: "Sign up failed", description: message });
-			// If it's an email-related error, show it under email; otherwise show a generic top message via emailError.
-			if (code === "auth/email-already-in-use" || code === "auth/invalid-email") {
-				setEmailError(message);
-			} else {
-				setEmailError(message);
-			}
+			setEmailTouched(true);
+			setEmailError(message);
 		} finally {
 			setIsSigningUp(false);
 		}
@@ -128,7 +133,7 @@ export default function CreateAccountPage() {
 		!getEmailValidationError(email) &&
 		passwordValidation.isValid &&
 		!!confirmPassword &&
-		!validatePasswordMatch(password, confirmPassword);
+		validatePasswordMatch(password, confirmPassword) === "";
 
 	const onSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -181,23 +186,22 @@ export default function CreateAccountPage() {
 					<EmailInput
 						value={email}
 						onChange={handleEmailChange}
-						onBlur={() => setEmailError(getEmailValidationError(email))}
+						onBlur={handleEmailBlur}
 						label="UTD Email"
 						error={emailError}
 						disabled={isSigningUp}
 						inputRef={emailRef}
 					/>
 
-					<PasswordInput
-						value={password}
-						onChange={handlePasswordChange}
-						onBlur={() => setPasswordValidation(validatePassword(password))}
-						label="Password"
-						disabled={isSigningUp}
-						showToggle
-						showStrength
-						autoComplete="new-password"
-					/>
+				<PasswordInput
+					value={password}
+					onChange={handlePasswordChange}
+					onBlur={() => setPasswordValidation(validatePassword(password))}
+					label="Password"
+					disabled={isSigningUp}
+					showToggle
+					autoComplete="new-password"
+				/>
 
 					<PasswordInput
 						value={confirmPassword}

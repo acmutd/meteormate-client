@@ -56,7 +56,10 @@ function uid() {
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
 	const [toasts, setToasts] = useState<Toast[]>([]);
+	const toastsRef = useRef<Toast[]>([]);
 	const timers = useRef<Map<string, number>>(new Map());
+
+	toastsRef.current = toasts;
 
 	const dismiss = useCallback((id: string) => {
 		setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -75,9 +78,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
 	const toast = useCallback(
 		(t: Omit<Toast, "id">) => {
+			const isDuplicate = toastsRef.current.some(
+				(existing) =>
+					existing.type === t.type &&
+					existing.title === t.title &&
+					existing.description === t.description
+			);
+
+			if (isDuplicate) {
+				return;
+			}
+
 			const id = uid();
 			const durationMs = t.durationMs ?? (t.type === "error" ? 5000 : 3500);
 			const next: Toast = { ...t, id, durationMs };
+
 			setToasts((prev) => [next, ...prev].slice(0, 4));
 
 			const timer = window.setTimeout(() => dismiss(id), durationMs);

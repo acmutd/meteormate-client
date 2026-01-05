@@ -22,6 +22,7 @@ export default function LoginPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
+	const [emailTouched, setEmailTouched] = useState(false);
 	const [isSigningIn, setIsSigningIn] = useState(false);
 
   // to know if we should show the red banner and disable/hide the "create an account" button
@@ -42,7 +43,14 @@ export default function LoginPage() {
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setEmail(value);
-		setEmailError(getEmailValidationError(value));
+		if (emailTouched) {
+			setEmailError(getEmailValidationError(value));
+		}
+	};
+
+	const handleEmailBlur = () => {
+		setEmailTouched(true);
+		setEmailError(getEmailValidationError(email));
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +58,8 @@ export default function LoginPage() {
 	};
 
 	const handleLogin = async () => {
-		// Validate email
+		setEmailTouched(true);
+		
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
@@ -73,6 +82,7 @@ export default function LoginPage() {
       console.error("Login error:", err);
 			const { message } = getAuthErrorMessage(err);
 			toast({ type: "error", title: "Login failed", description: message });
+			setEmailTouched(true);
       setEmailError(message);
     } finally {
       setIsSigningIn(false);
@@ -142,7 +152,7 @@ export default function LoginPage() {
 								<EmailInput
 									value={email}
 									onChange={handleEmailChange}
-									onBlur={() => setEmailError(getEmailValidationError(email))}
+									onBlur={handleEmailBlur}
 									disabled={isSigningIn}
 									error={emailError}
 									inputRef={emailRef}

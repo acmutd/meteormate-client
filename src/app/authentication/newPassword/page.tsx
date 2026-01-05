@@ -129,7 +129,7 @@ export default function NewPasswordPage() {
 		!isSubmitting &&
 		passwordValidation.isValid &&
 		!!confirmPassword &&
-		!validatePasswordMatch(password, confirmPassword) &&
+		validatePasswordMatch(password, confirmPassword) === "" &&
 		!!email &&
 		!!code;
 
@@ -146,16 +146,15 @@ export default function NewPasswordPage() {
         </h1>
 
 				<form onSubmit={onSubmit} className="flex flex-col gap-3">
-					<PasswordInput
-						value={password}
-						onChange={handlePasswordChange}
-						label="Password"
-						disabled={isSubmitting}
-						showToggle
-						showStrength
-						autoComplete="new-password"
-						inputRef={passwordRef}
-					/>
+				<PasswordInput
+					value={password}
+					onChange={handlePasswordChange}
+					label="Password"
+					disabled={isSubmitting}
+					showToggle
+					autoComplete="new-password"
+					inputRef={passwordRef}
+				/>
 
 					<PasswordInput
 						value={confirmPassword}
