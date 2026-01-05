@@ -76,14 +76,12 @@ export default function CreateAccountPage() {
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
-			recordFailure("signup");
 			return;
 		}
 
 		// Validate password
 		if (!passwordValidation.isValid) {
 			setEmailError("Please fix password requirements before continuing.");
-			recordFailure("signup");
 			return;
 		}
 
@@ -91,7 +89,6 @@ export default function CreateAccountPage() {
 		const passwordMatchError = validatePasswordMatch(password, confirmPassword);
 		if (passwordMatchError) {
 			setConfirmPasswordError(passwordMatchError);
-			recordFailure("signup");
 			return;
 		}
 

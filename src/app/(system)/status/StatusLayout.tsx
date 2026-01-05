@@ -25,7 +25,7 @@ export default function StatusLayout({
 	children,
 }: StatusLayoutProps) {
 	return (
-		<main className="relative min-h-screen overflow-hidden bg-black text-white px-6 py-12 flex items-center justify-center">
+		<main className="relative h-screen overflow-hidden bg-black text-white px-6 py-[clamp(1rem,4vh,3rem)] flex items-center justify-center">
 			<div
 				className="absolute inset-0 opacity-60"
 				style={{
@@ -39,14 +39,14 @@ export default function StatusLayout({
 			<div className="absolute -bottom-28 -right-20 h-80 w-80 bg-gradient-to-tr from-emerald-400/30 via-cyan-300/10 to-transparent blur-[130px] rounded-full" />
 
 			<section className="relative w-full max-w-4xl mx-auto">
-				<div className="flex justify-center mb-6">
+				<div className="flex justify-center mb-[clamp(0.5rem,2vh,1.5rem)]">
 					<div className="relative">
 						<Image
 							src="/images/MM_logo_V1.png"
 							alt="MeteorMate logo"
 							width={88}
 							height={88}
-							className="drop-shadow-[0_8px_25px_rgba(255,145,0,0.35)]"
+							className="drop-shadow-[0_8px_25px_rgba(255,145,0,0.35)] w-[clamp(3rem,8vh,5.5rem)] h-[clamp(3rem,8vh,5.5rem)]"
 							priority
 						/>
 						<div className="absolute inset-0 blur-2xl bg-orange-400/20 rounded-full -z-10" />
@@ -57,7 +57,7 @@ export default function StatusLayout({
 					<div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 					<div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-white/10 via-white/5 to-transparent blur-3xl" />
 
-					<div className="relative px-6 py-8 md:px-12 md:py-12 space-y-6 text-center">
+					<div className="relative px-6 py-[clamp(1rem,3vh,2rem)] md:px-12 md:py-[clamp(1.5rem,4vh,3rem)] space-y-[clamp(0.75rem,2vh,1.5rem)] text-center">
 						{eyebrow ? (
 							<div className="flex justify-center">
 								<div
@@ -74,12 +74,12 @@ export default function StatusLayout({
 							</div>
 						) : null}
 
-						<div className="space-y-3">
-							<h1 className="font-urbanist font-semibold text-3xl md:text-4xl leading-tight">
+						<div className="space-y-[clamp(0.5rem,1.5vh,0.75rem)]">
+							<h1 className="font-urbanist font-semibold text-[clamp(1.5rem,4vh,2.25rem)] md:text-[clamp(1.75rem,5vh,2.5rem)] leading-tight">
 								{title}
 							</h1>
 							{description ? (
-								<p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto">
+								<p className="text-[clamp(0.875rem,2vh,1rem)] md:text-[clamp(1rem,2.5vh,1.125rem)] text-white/70 max-w-2xl mx-auto">
 									{description}
 								</p>
 							) : null}

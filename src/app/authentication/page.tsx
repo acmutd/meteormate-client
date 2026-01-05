@@ -59,7 +59,6 @@ export default function LoginPage() {
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
-			recordFailure("login");
 			return;
 		}
 

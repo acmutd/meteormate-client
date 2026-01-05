@@ -19,18 +19,77 @@ const FIXABLE_HINTS = [
 	"quota",
 ];
 
+function sanitizeErrorMessage(error: Error & { digest?: string; code?: string }): string {
+	if (error?.code) {
+		const code = String(error.code);
+		if (code.startsWith("auth/")) {
+			switch (code) {
+				case "auth/email-already-in-use":
+					return "An account with this email already exists.";
+				case "auth/invalid-email":
+					return "The email address is invalid.";
+				case "auth/operation-not-allowed":
+					return "This operation is not allowed.";
+				case "auth/weak-password":
+					return "The password is too weak.";
+				case "auth/user-disabled":
+					return "This account has been disabled.";
+				case "auth/user-not-found":
+					return "No account found with this email.";
+				case "auth/wrong-password":
+					return "Incorrect password.";
+				case "auth/too-many-requests":
+					return "Too many attempts. Please try again later.";
+				case "auth/network-request-failed":
+					return "Network error. Please check your connection.";
+				case "auth/invalid-credential":
+					return "Invalid email or password.";
+				default:
+					return "An authentication error occurred.";
+			}
+		}
+	}
+
+	const message = error?.message?.toLowerCase() || "";
+	
+	if (message.includes("network") || message.includes("fetch") || message.includes("connection")) {
+		return "Network error. Please check your internet connection.";
+	}
+	
+	if (message.includes("timeout")) {
+		return "Request timed out. Please try again.";
+	}
+	
+	if (message.includes("permission") || message.includes("unauthorized") || message.includes("forbidden")) {
+		return "You don't have permission to perform this action.";
+	}
+	
+	if (message.includes("rate limit") || message.includes("too many")) {
+		return "Too many requests. Please slow down and try again.";
+	}
+	
+	return "Something unexpected happened. Our team has been notified.";
+}
+
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
 	const { message, fixable } = useMemo(() => {
 		const text = error?.message?.toLowerCase() || "";
 		const isFixable = FIXABLE_HINTS.some((hint) => text.includes(hint));
+		const sanitizedMessage = sanitizeErrorMessage(error);
 		return {
-			message: error?.message || "Something unexpected happened.",
+			message: sanitizedMessage,
 			fixable: isFixable,
 		};
 	}, [error]);
 
 	useEffect(() => {
-		console.error("Route error boundary:", error);
+		console.error("Route error boundary:", {
+			message: error?.message,
+			code: (error as any)?.code,
+			digest: error?.digest,
+			stack: error?.stack,
+			fullError: error,
+		});
 	}, [error]);
 
 	return (
