@@ -56,3 +56,9 @@ export const doSendEmailVerification = async (email, uid) => {
     }
 };
 
+export const getCurrentUserIdToken = async () => {
+  if (!auth.currentUser) {
+    throw new Error("No authenticated user found");
+  }
+  return await auth.currentUser.getIdToken();
+}
