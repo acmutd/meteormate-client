@@ -1,10 +1,14 @@
 "use client";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import LifestylePreferencesCard from "../../../../components/LifestylePreferencesCard";
 import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../../components/ProgressHeader";
+import {
+  loadOnboardingData,
+  updateOnboardingData,
+} from "../../../utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
 
 export default function LifestylePreferencesPage() {
 	const router = useRouter();
@@ -19,28 +23,41 @@ export default function LifestylePreferencesPage() {
 		string | null
 	>(null);
 
-	const handleToggle = (
-		currentValue: string | null,
-		setValue: (val: string | null) => void,
-		newValue: string
-	) => {
-		if (currentValue === newValue) {
-      setValue(null);
-    } else {
-      setValue(newValue);
+	const [hydrated, setHydrated] = useState(false); // flag for pages
+
+	useEffect(() => {
+    const saved = loadOnboardingData();
+    const lifestyle = saved.lifestyle;
+    if (lifestyle) {
+      setSelectedWakeupTime(lifestyle.wakeupTime ?? null);
+      setSelectedCleanliness(lifestyle.cleanliness ?? null);
+      setSelectedNoiseTolerance(lifestyle.noiseTolerance ?? null);
     }
-	}
+    setHydrated(true);
+  }, []);
 
 	
+	useEffect(() => {
+    if (!hydrated) return;
+
+    updateOnboardingData({
+      lifestyle: {
+        wakeupTime: selectedWakeupTime,
+        cleanliness: selectedCleanliness,
+        noiseTolerance: selectedNoiseTolerance,
+      },
+    });
+  }, [hydrated, selectedWakeupTime, selectedCleanliness, selectedNoiseTolerance]);
+	
+	const handleToggle = (
+		currentValue: string | null,
+    	setValue: (val: string | null) => void,
+    	newValue: string
+  	) => {
+    		setValue(currentValue === newValue ? null : newValue);
+  	};
 
 	const handleNextStep = () => {
-		// Logic to handle the next step action
-		console.log("handling next step");
-		console.log({
-			selectedWakeupTime,
-			selectedCleanliness,
-			selectedNoiseTolerance,
-		});
 		router.push("/onboarding/interests");
 	};
 	return (

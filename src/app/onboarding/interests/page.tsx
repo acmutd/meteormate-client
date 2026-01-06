@@ -1,9 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import InterestCard from '../../../../components/InterestCard';
 import ProgressHeader from "../../../../components/ProgressHeader";
+import {
+  loadOnboardingData,
+  updateOnboardingData,
+} from "../../../utils/onboardingStorage";
 
 const INTEREST_ROWS = [
 	['Climbing', 'Anime', 'Running', 'Instruments', 'Reading', 'Gaming'],
@@ -18,23 +22,37 @@ const MAX_SELECTIONS = 6;
 export default function InterestsPage() {
 	const [selectedInterests, setSelectedInterests] = useState<string[]>([]);	
 	const router = useRouter();
-	
+	const [hydrated, setHydrated] = useState(false); // flag for pages
+
+	useEffect(() => {
+		const saved = loadOnboardingData();
+		if (Array.isArray(saved.interests)) {
+		setSelectedInterests(saved.interests);
+		}
+		setHydrated(true);
+  	}, []);
+
+	useEffect(() => {
+		if (!hydrated) return;
+		updateOnboardingData({ interests: selectedInterests });
+  	}, [hydrated, selectedInterests]);
+
 	const handleNextStep = () => {
 		router.push("/onboarding/lifestylePersonality");
 		console.log(selectedInterests)
 	}
 
 	const handleToggle = (interest: string) => {
-		setSelectedInterests(prev => {
-		if (prev.includes(interest)) {
-			return prev.filter(i => i !== interest);
-		}
-		if (prev.length >= MAX_SELECTIONS) {
-			return prev;
-		}
-		return [...prev, interest];
-		});
-	};
+    setSelectedInterests((prev) => {
+      if (prev.includes(interest)) {
+        return prev.filter((i) => i !== interest);
+      }
+      if (prev.length >= MAX_SELECTIONS) {
+        return prev;
+      }
+      return [...prev, interest];
+    });
+  };
 
 	return (
 		<div className="flex flex-col min-h-screen items-center justify-center">

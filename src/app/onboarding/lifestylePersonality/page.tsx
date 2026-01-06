@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LifestylePreferencesCard from "../../../../components/LifestylePreferencesCard";
 import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../../components/ProgressHeader";
+import { loadOnboardingData, updateOnboardingData } from "../../../utils/onboardingStorage";
 
 export default function LifestylePersonalityPage() {
 	const router = useRouter();
@@ -25,24 +26,53 @@ export default function LifestylePersonalityPage() {
 		string | null
 	>(null);
 
-	
+	const [hydrated, setHydrated] = useState(false);  // again to keep track of the sekected oreferebces abd stuff
+
+	useEffect(() => { // loading it once and the next use effect for the changes made and keeping track
+		const saved = loadOnboardingData();
+		const lp = saved.lifestylePersonality;
+
+		if (lp) {
+		setselectedCookingPreference(lp.cookingPreference ?? null);
+		setselectedPetPreferences(lp.petPreferences ?? null);
+		setSelectedGuestsPreferences(lp.guestsPreference ?? null);
+		setSelectedRoommatePreference(lp.roommatePreference ?? null);
+		setselectedLivingPreference(lp.livingPreference ?? null);
+		}
+
+		setHydrated(true);
+	}, []);
+
+	useEffect(() => {
+    if (!hydrated) return;
+		updateOnboardingData({
+		lifestylePersonality: {
+			cookingPreference: selectedCookingPreference,
+			petPreferences: selectedPetPreferences,
+			guestsPreference: selectedGuestsPreference,
+			roommatePreference: selectedRoommatePreference,
+			livingPreference: selectedLivingPreference,
+		},
+		});
+	}, [
+		hydrated,
+		selectedCookingPreference,
+		selectedPetPreferences,
+		selectedGuestsPreference,
+		selectedRoommatePreference,
+		selectedLivingPreference,
+	]);
 
 	const handleToggle = (
 		currentValue: string | null,
 		setValue: (val: string | null) => void,
 		newValue: string
 	) => {
-		if (currentValue === newValue) {
-      setValue(null);
-    } else {
-      setValue(newValue);
-    }
-	}
-
-	
+		setValue(currentValue === newValue ? null : newValue);
+  	};
 
 	const handleNextStep = () => {
-		// Logic to handle the next step action
+		// really to check if we got the stuff needed or not and debugging later
 		console.log("handling next step");
 		console.log({
 			selectedCookingPreference,
