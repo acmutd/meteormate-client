@@ -6,10 +6,12 @@ import { getCurrentUserIdToken } from "@/firebase/auth";
 type UserProfile = {
   id: string;
   email: string;
-  first_name: string;
-  last_name: string;
-  age?: number;
-  birthdate?: Date;
+  // first_name: string;
+  // last_name: string;
+  // age?: number;
+  // birthdate?: Date;
+  created_at?: Date;
+  utd_id?: string;
 };
 
 export default function Profile() {
@@ -21,7 +23,8 @@ export default function Profile() {
     const fetchuser = async () => {
       try {
         const token = await getCurrentUserIdToken();
-        const res = await fetch("http://127.0.0.1:8000/api/auth/me", { // Todo: Change this 
+        const res = await fetch("http://127.0.0.1:8000/api/auth/me", {
+          // Todo: Change this
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -45,28 +48,59 @@ export default function Profile() {
   if (!user) return <div>No user data found</div>;
   const userData = user.user;
 
-  return ( // Testing response
-    <div>
-      <h1>Profile Page!!!</h1>
-      <div>
-        <div>ID: {userData.id}</div>
-        <div>Email: {userData.email}</div>
-        <div>First Name: {userData.first_name}</div>
-        <div>Last Name: {userData.last_name}</div>
-        <div>Age: {userData.age ?? "N/A"}</div>
-        <div>
-          Birthdate:{" "}
-          {userData.birthdate
-            ? new Date(userData.birthdate).toLocaleDateString()
-            : "N/A"}
-        </div>
+  return (
+    // Testing response
+    <div className="min-h-screen w-screen flex flex-col justify-center items-center relative">
+      <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
+        <div className="grid grid-cols-2 gap-4 w-full p-4">
+          <div className="text-md">
+            Name
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">
+                {userData.first_name} {userData.last_name} {/* Missing First Last name from API */}
+              </p>
+            </div>
+          </div>
 
-        <br></br>
+          <div className="text-md">
+            UTD Email
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">{userData.email}</p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            UTD ID
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">{userData.utd_id}</p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            Account created
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">{userData.created_at ? new Date(userData.created_at).toLocaleDateString() : "N/A"}</p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            ID
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">{userData.id}</p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            Completed Survey?
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">{user.survey_done ? "Yes" : "No"}</p> {/* Todo: Fix */}
+            </div>
+          </div>
+
+        </div>
         {/* Debug: To see backend fetch response */}
-        <div>User data:</div>
-        <pre>
-          {JSON.stringify(user, null, 2)}
-        </pre>
+          {/* <div>User data:</div>
+          <pre>{JSON.stringify(user, null, 2)}</pre> */}
       </div>
     </div>
   );
