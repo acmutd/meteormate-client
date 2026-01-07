@@ -99,7 +99,7 @@ export default function CreateAccountPage() {
 			if (!isSigningUp) {
 				setIsSigningUp(true);
 
-				const utd_id = email.substring(0, 9) // axm240143@utdallas.edu
+				const utd_id = email.split('@')[0] // axm240143@utdallas.edu
 
 				const authResponse = await callRegisterRoute(email, password, utd_id)
 				
