@@ -17,7 +17,7 @@ export async function callRegisterRoute(email: string, password: string, utd_id:
 
         if (!response.ok) {
             const data = (await response.json()) as MMApiError
-            return { ok: false, error: data.detail, code: response.status }
+            return { ok: false, error: data.detail, code: response.status.toString() }
         }
 
         const data = (await response.json()) as UserRegisterResponse
@@ -27,7 +27,7 @@ export async function callRegisterRoute(email: string, password: string, utd_id:
         return {
             ok: false,
             error: error instanceof Error ? error.message : "Internal Server Error",
-            code: 500
+            code: "500"
         }
     }
 }
@@ -36,7 +36,7 @@ export async function callActivityPing(): Promise<Result<UserActivityPing>> {
     try {
         const user = auth.currentUser;
         if (!user) {
-            return { ok: false, error: 'User not authenticated, please sign in or try again', code: 401 }
+            return { ok: false, error: 'User not authenticated, please sign in or try again', code: "401" }
         }
 
         const userToken = await user.getIdToken();
@@ -51,7 +51,7 @@ export async function callActivityPing(): Promise<Result<UserActivityPing>> {
 
         if (!response.ok) {
             const data = (await response.json()) as MMApiError
-            return { ok: false, error: data.detail, code: response.status }
+            return { ok: false, error: data.detail, code: "401" }
         }
 
         const data = (await response.json()) as UserActivityPing
@@ -61,7 +61,7 @@ export async function callActivityPing(): Promise<Result<UserActivityPing>> {
         return {
             ok: false,
             error: error instanceof Error ? error.message : "Internal Server Error",
-            code: 500
+            code: "500"
         }
     }
 }

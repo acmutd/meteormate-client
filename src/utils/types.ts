@@ -1,7 +1,7 @@
 export interface MMApiError {
     detail: string
 }
-export type Result<T> = { ok: true; data: T } | { ok: false; error: string; code: number };
+export type Result<T> = { ok: true; data: T } | { ok: false; error: string; code: string };
 
 export interface UserRegisterResponse {
     id: string,

@@ -106,7 +106,7 @@ export default function CreateAccountPage() {
 				if (!authResponse.ok) {
 					toast({
 						type: "error",
-						title: authResponse.code.toString(),
+						title: authResponse.code,
 						description: authResponse.error
 					});
 

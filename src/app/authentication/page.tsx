@@ -77,7 +77,7 @@ export default function LoginPage() {
 				if (!pingResponse.ok) {
 					toast({
 						type: 'error',
-						title: pingResponse.code.toString(),
+						title: pingResponse.code,
 						description: pingResponse.error
 					});
 				}
