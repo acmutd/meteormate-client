@@ -58,7 +58,7 @@ export default function CreateAccountPage() {
 		setPassword(value);
 		const validation = validatePassword(value);
 		setPasswordValidation(validation);
-		
+
 		// Update confirm password error if confirm password is already filled
 		if (confirmPassword) {
 			setConfirmPasswordError(validatePasswordMatch(value, confirmPassword));
@@ -75,7 +75,7 @@ export default function CreateAccountPage() {
 
 	const handleCreateAccount = async () => {
 		setEmailTouched(true);
-		
+
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
@@ -193,15 +193,15 @@ export default function CreateAccountPage() {
 						inputRef={emailRef}
 					/>
 
-				<PasswordInput
-					value={password}
-					onChange={handlePasswordChange}
-					onBlur={() => setPasswordValidation(validatePassword(password))}
-					label="Password"
-					disabled={isSigningUp}
-					showToggle
-					autoComplete="new-password"
-				/>
+					<PasswordInput
+						value={password}
+						onChange={handlePasswordChange}
+						onBlur={() => setPasswordValidation(validatePassword(password))}
+						label="Password"
+						disabled={isSigningUp}
+						showToggle
+						autoComplete="new-password"
+					/>
 
 					<PasswordInput
 						value={confirmPassword}
@@ -271,12 +271,11 @@ export default function CreateAccountPage() {
 					<button
 						type="submit"
 						disabled={!canSubmit}
-						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${
-							!canSubmit
-							? "bg-gray-400 text-white cursor-not-allowed"
-							: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
-						}`}
-						>
+						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${!canSubmit
+								? "bg-gray-400 text-white cursor-not-allowed"
+								: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
+							}`}
+					>
 						{isSigningUp && <LoadingSpinner size="sm" />}
 						{isSigningUp ? "Creating..." : "Create Account"}
 					</button>
