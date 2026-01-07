@@ -30,15 +30,11 @@ export default function LifestylePersonalityPage() {
 
 	useEffect(() => { // loading it once and the next use effect for the changes made and keeping track
 		const saved = loadOnboardingData();
-		const lp = saved.lifestylePersonality;
-
-		if (lp) {
-		setselectedCookingPreference(lp.cookingPreference ?? null);
-		setselectedPetPreferences(lp.petPreferences ?? null);
-		setSelectedGuestsPreferences(lp.guestsPreference ?? null);
-		setSelectedRoommatePreference(lp.roommatePreference ?? null);
-		setselectedLivingPreference(lp.livingPreference ?? null);
-		}
+		setselectedCookingPreference(saved.cooking_frequency ?? null);
+		setselectedPetPreferences(saved.pet_preference ?? null);
+		setSelectedGuestsPreferences(saved.guests_frequency ?? null);
+		setSelectedRoommatePreference(saved.roomate_closeness ?? null);
+		setselectedLivingPreference(saved.housing_intent ?? null);
 
 		setHydrated(true);
 	}, []);
@@ -46,13 +42,11 @@ export default function LifestylePersonalityPage() {
 	useEffect(() => {
     if (!hydrated) return;
 		updateOnboardingData({
-		lifestylePersonality: {
-			cookingPreference: selectedCookingPreference,
-			petPreferences: selectedPetPreferences,
-			guestsPreference: selectedGuestsPreference,
-			roommatePreference: selectedRoommatePreference,
-			livingPreference: selectedLivingPreference,
-		},
+			cooking_frequency: selectedCookingPreference,
+			pet_preference: selectedPetPreferences,
+			guests_frequency: selectedGuestsPreference,
+			roomate_closeness: selectedRoommatePreference,
+			housing_intent: selectedLivingPreference,
 		});
 	}, [
 		hydrated,
@@ -98,20 +92,20 @@ export default function LifestylePersonalityPage() {
 					<LifestylePreferencesCard
 						title="Never"
 						imageSrc="/images/fire-sign-15238.webp" //need to change this
-						isSelected={selectedCookingPreference === "Never"}
-						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "Never")}
+						isSelected={selectedCookingPreference === "never"}
+						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "never")}
 					/>
 					<LifestylePreferencesCard
 						title="Rarely"
 						imageSrc="/images/flambee.webp" // change this
-						isSelected={selectedCookingPreference === "Rarely"}
-						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "Rarely")}
+						isSelected={selectedCookingPreference === "rarely"}
+						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "rarely")}
 					/>
 					<LifestylePreferencesCard
 						title="Often"
 						imageSrc="/images/cooking-pots.webp" // change this
-						isSelected={selectedCookingPreference === "Often"}
-						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "Often")}
+						isSelected={selectedCookingPreference === "often"}
+						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "often")}
 					/>
 				</div>
 				
@@ -122,20 +116,20 @@ export default function LifestylePersonalityPage() {
 					<LifestylePreferencesCard
 						title="I'm okay with pets"
 						imageSrc="/images/pawprint.webp"
-						isSelected={selectedPetPreferences === "Okay"}
-						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "Okay")}
+						isSelected={selectedPetPreferences === "okay"}
+						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "okay")}
 					/>
 					<LifestylePreferencesCard
 						title="I'm not okay with pets"
 						imageSrc="/images/no-pets.webp"
-						isSelected={selectedPetPreferences === "NotOkay"}
-						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "NotOkay")}
+						isSelected={selectedPetPreferences === "not_okay"}
+						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "not_okay")}
 					/>
 					<LifestylePreferencesCard
 						title="I have a pet"
 						imageSrc="/images/pet.webp"
-						isSelected={selectedPetPreferences === "HaveAPet"}
-						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "HaveAPet")}
+						isSelected={selectedPetPreferences === "have_a_pet"}
+						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "have_a_pet")}
 					/>
 				</div>
 				
@@ -146,20 +140,20 @@ export default function LifestylePersonalityPage() {
 					<LifestylePreferencesCard
 						title="Never"
 						imageSrc="/images/no-crowd.webp"
-						isSelected={selectedGuestsPreference === "Never"}
-						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "Never")}
+						isSelected={selectedGuestsPreference === "never"}
+						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "never")}
 					/>
 					<LifestylePreferencesCard
 						title="Sometimes"
 						imageSrc="/images/group.webp"
-						isSelected={selectedGuestsPreference === "Sometimes"}
-						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "Sometimes")}
+						isSelected={selectedGuestsPreference === "sometimes"}
+						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "sometimes")}
 					/>
 					<LifestylePreferencesCard
 						title="Often"
 						imageSrc="/images/friends.webp"
-						isSelected={selectedGuestsPreference === "Often"}
-						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "Often")}
+						isSelected={selectedGuestsPreference === "often"}
+						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "often")}
 					/>
 				</div>
 
@@ -171,20 +165,20 @@ export default function LifestylePersonalityPage() {
 					<LifestylePreferencesCard
 						title="Not Close"
 						imageSrc="/images/roommate.webp"
-						isSelected={selectedRoommatePreference === "NotClose"}
-						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "NotClose")}
+						isSelected={selectedRoommatePreference === "not_close"}
+						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "not_close")}
 					/>
 					<LifestylePreferencesCard
 						title="Friends"
 						imageSrc="/images/high-five.webp"
-						isSelected={selectedRoommatePreference === "Friends"}
-						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "Friends")}
+						isSelected={selectedRoommatePreference === "friends"}
+						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "friends")}
 					/>
 					<LifestylePreferencesCard
 						title="Close Friends"
 						imageSrc="/images/best-friends.webp"
-						isSelected={selectedRoommatePreference === "CloseFriends"}
-						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "CloseFriends")}
+						isSelected={selectedRoommatePreference === "close_friends"}
+						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "close_friends")}
 					/>
 				</div>
                 
@@ -196,18 +190,18 @@ export default function LifestylePersonalityPage() {
 					<LifestylePreferencesCard
 						title="On Campus"
 						imageSrc="/images/school.webp"
-						isSelected={selectedLivingPreference === "onCampus"}
+						isSelected={selectedLivingPreference === "on_campus"}
 						onClick={() => {
-							handleToggle(selectedLivingPreference, setselectedLivingPreference, "onCampus");
+							handleToggle(selectedLivingPreference, setselectedLivingPreference, "on_campus");
 							}}
 
 					/>
 					<LifestylePreferencesCard
 						title="Off Campus"
 						imageSrc="/images/residential.webp"
-						isSelected={selectedLivingPreference === "offCampus"}
+						isSelected={selectedLivingPreference === "off_campus"}
 						onClick={() => {
-							handleToggle(selectedLivingPreference, setselectedLivingPreference, "offCampus");
+							handleToggle(selectedLivingPreference, setselectedLivingPreference, "off_campus");
 						}}
 
 					/>

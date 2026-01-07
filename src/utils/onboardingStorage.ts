@@ -1,17 +1,24 @@
 export type OnboardingData = {
-    lifestyle?: { // preference page not the personality page
-        wakeupTime: string | null;
-        cleanliness: string | null;
-        noiseTolerance: string | null;
-    };
-    interests?: string[];
-    lifestylePersonality?: {  
-        cookingPreference: string | null;
-        petPreferences: string | null;
-        guestsPreference: string | null;
-        roommatePreference: string | null;
-        livingPreference: string | null;
-    };
+  wake_time?: string | null;
+  cleanliness?: string | null;
+  noise_tolerance?: string | null;
+  interests?: string[];
+  cooking_frequency?: string | null;
+  pet_preference?: string | null;
+  guests_frequency?: string | null;
+  roomate_closeness?: string | null;
+  housing_intent?: string | null;
+  budget_min?: number | null;
+  budget_max?: number | null;
+  move_in_date?: string | null;
+  lease_length?: string | null;
+  dealbreakers?: string | null;
+  on_campus_locations?: string[];
+  honors?: boolean | null;
+  llc_interest?: boolean | null;
+  num_roommates?: string | null;
+  have_lease?: boolean | null;
+  have_lease_length?: string | null;
 };
 
 const KEY = "meteormate_onboarding";

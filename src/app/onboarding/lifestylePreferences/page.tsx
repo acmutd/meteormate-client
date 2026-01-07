@@ -27,12 +27,9 @@ export default function LifestylePreferencesPage() {
 
 	useEffect(() => {
     const saved = loadOnboardingData();
-    const lifestyle = saved.lifestyle;
-    if (lifestyle) {
-      setSelectedWakeupTime(lifestyle.wakeupTime ?? null);
-      setSelectedCleanliness(lifestyle.cleanliness ?? null);
-      setSelectedNoiseTolerance(lifestyle.noiseTolerance ?? null);
-    }
+      setSelectedWakeupTime(saved.wake_time ?? null);
+      setSelectedCleanliness(saved.cleanliness ?? null);
+      setSelectedNoiseTolerance(saved.noise_tolerance ?? null);
     setHydrated(true);
   }, []);
 
@@ -41,11 +38,9 @@ export default function LifestylePreferencesPage() {
     if (!hydrated) return;
 
     updateOnboardingData({
-      lifestyle: {
-        wakeupTime: selectedWakeupTime,
-        cleanliness: selectedCleanliness,
-        noiseTolerance: selectedNoiseTolerance,
-      },
+			wake_time: selectedWakeupTime,
+			cleanliness: selectedCleanliness,
+			noise_tolerance: selectedNoiseTolerance,
     });
   }, [hydrated, selectedWakeupTime, selectedCleanliness, selectedNoiseTolerance]);
 	
@@ -77,20 +72,20 @@ export default function LifestylePreferencesPage() {
 					<LifestylePreferencesCard
 						title="Early Bird"
 						imageSrc="/images/early_bird_card.webp"
-						isSelected={selectedWakeupTime === "Early Bird"}
-						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Early Bird")}
+						isSelected={selectedWakeupTime === "early_bird"}
+						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "early_bird")}
 					/>
 					<LifestylePreferencesCard
 						title="Flexible"
 						imageSrc="/images/flexible_card.webp"
-						isSelected={selectedWakeupTime === "Flexible"}
-						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Flexible")}
+						isSelected={selectedWakeupTime === "flexible"}
+						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "flexible")}
 					/>
 					<LifestylePreferencesCard
 						title="Night Owl"
 						imageSrc="/images/night_owl_card.webp"
-						isSelected={selectedWakeupTime === "Night Owl"}
-						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "Night Owl")}
+						isSelected={selectedWakeupTime === "night_owl"}
+						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "night_owl")}
 					/>
 				</div>
 				<h1 className="text-black text-xl font-bold ">Cleanliness</h1>
@@ -99,22 +94,22 @@ export default function LifestylePreferencesPage() {
 				</p>
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
-						title="Orderly"
+						title="Relaxed"
 						imageSrc="/images/orderly_card.webp"
-						isSelected={selectedCleanliness === "Orderly"}
-						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Orderly")}
+						isSelected={selectedCleanliness === "relaxed"}
+						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "relaxed")}
 					/>
 					<LifestylePreferencesCard
 						title="Tidy"
 						imageSrc="/images/tidy_card.webp"
-						isSelected={selectedCleanliness === "Tidy"}
-						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Tidy")}
+						isSelected={selectedCleanliness === "tidy"}
+						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "tidy")}
 					/>
 					<LifestylePreferencesCard
 						title="Neat Freak"
 						imageSrc="/images/neat_freak_card.webp"
-						isSelected={selectedCleanliness === "Neat Freak"}
-						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "Neat Freak")}
+						isSelected={selectedCleanliness === "neat_freak"}
+						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "neat_freak")}
 					/>
 				</div>
 				<h1 className="text-black text-xl font-bold">Noise Tolerance</h1>
@@ -125,20 +120,20 @@ export default function LifestylePreferencesPage() {
 					<LifestylePreferencesCard
 						title="Quiet"
 						imageSrc="/images/quiet_card.webp"
-						isSelected={selectedNoiseTolerance === "Quiet"}
-						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Quiet")}
+						isSelected={selectedNoiseTolerance === "quiet"}
+						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "quiet")}
 					/>
 					<LifestylePreferencesCard
 						title="Moderate"
 						imageSrc="/images/moderate_card.webp"
-						isSelected={selectedNoiseTolerance === "Moderate"}
-						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Moderate")}
+						isSelected={selectedNoiseTolerance === "moderate"}
+						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "moderate")}
 					/>
 					<LifestylePreferencesCard
-						title="Social"
+						title="Loud"
 						imageSrc="/images/social_card.webp"
-						isSelected={selectedNoiseTolerance === "Social"}
-						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "Social")}
+						isSelected={selectedNoiseTolerance === "loud"}
+						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "loud")}
 					/>
 				</div>
 				<div className="flex justify-center">
