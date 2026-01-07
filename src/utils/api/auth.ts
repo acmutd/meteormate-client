@@ -34,7 +34,13 @@ export async function callRegisterRoute(email: string, password: string, utd_id:
 
 export async function callActivityPing(): Promise<Result<UserActivityPing>> {
     try {
-        const userToken = await auth.currentUser!.getIdToken();
+        const user = auth.currentUser;
+        if (!user) {
+            return { ok: false, error: 'User not authenticated, please sign in or try again', code: 401 }
+        }
+
+        const userToken = await user.getIdToken();
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/activity-ping`, {
             'method': 'POST',
             'headers': {
