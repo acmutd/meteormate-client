@@ -2,7 +2,7 @@ import { MMApiError, Result, UserRegisterResponse } from "../types";
 
 export async function callRegisterRoute(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
     try {
-        const response = await fetch(`${process.env.API_BASE_URL}/auth/register`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
             'method': 'POST',
             'headers': {
                 'Content-Type': 'application/json',
