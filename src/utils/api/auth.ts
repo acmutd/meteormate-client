@@ -1,4 +1,5 @@
-import { MMApiError, Result, UserRegisterResponse } from "../types";
+import { auth } from "@/firebase/firebase";
+import { MMApiError, Result, UserActivityPing, UserRegisterResponse } from "../types";
 
 export async function callRegisterRoute(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
     try {
@@ -20,6 +21,34 @@ export async function callRegisterRoute(email: string, password: string, utd_id:
         }
 
         const data = (await response.json()) as UserRegisterResponse
+
+        return { ok: true, data }
+    } catch (error) {
+        return {
+            ok: false,
+            error: error instanceof Error ? error.message : "Internal Server Error",
+            code: 500
+        }
+    }
+}
+
+export async function callActivityPing(): Promise<Result<UserActivityPing>> {
+    try {
+        const userToken = await auth.currentUser!.getIdToken();
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/activity-ping`, {
+            'method': 'POST',
+            'headers': {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}`
+            },
+        });
+
+        if (!response.ok) {
+            const data = (await response.json()) as MMApiError
+            return { ok: false, error: data.detail, code: response.status }
+        }
+
+        const data = (await response.json()) as UserActivityPing
 
         return { ok: true, data }
     } catch (error) {
