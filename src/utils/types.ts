@@ -9,3 +9,7 @@ export interface UserRegisterResponse {
     email: string,
     created_at: string
 }
+
+export interface UserActivityPing {
+    status: string
+}
