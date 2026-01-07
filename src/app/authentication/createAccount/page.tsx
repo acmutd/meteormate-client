@@ -7,7 +7,6 @@ import {
 	doCreateUserWithEmailAndPassword,
 	doSendEmailVerification,
 } from "@/firebase/auth";
-//import { getAuth, sendEmailVerification } from 'firebase/auth';
 import { Check, X } from "lucide-react";
 import {
 	validatePassword,
@@ -19,6 +18,7 @@ import EmailInput from "../../../../components/forms/EmailInput";
 import PasswordInput from "../../../../components/forms/PasswordInput";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getAuthErrorMessage } from "@/utils/authErrors";
+import { callRegisterRoute } from "@/utils/api/auth"
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -99,13 +99,23 @@ export default function CreateAccountPage() {
 			if (!isSigningUp) {
 				setIsSigningUp(true);
 
-				const userCredential = await doCreateUserWithEmailAndPassword(
-					email,
-					password
-				);
-				const uid = userCredential.uid;
+				const utd_id = email.substring(0, 9) // axm240143@utdallas.edu
 
-				await doSendEmailVerification(email, uid);
+				const authResponse = await callRegisterRoute(email, password, utd_id)
+				
+				if (!authResponse.ok) {
+					toast({
+						type: "error",
+						title: authResponse.code.toString(),
+						description: authResponse.error
+					});
+
+					return;
+				}
+
+				const userCredentials = authResponse.data;
+
+				await doSendEmailVerification(email, userCredentials.id);
 
 				localStorage.setItem("verificationEmail", email); // todo - maybe clear this once user is verified?
 
@@ -272,8 +282,8 @@ export default function CreateAccountPage() {
 						type="submit"
 						disabled={!canSubmit}
 						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${!canSubmit
-								? "bg-gray-400 text-white cursor-not-allowed"
-								: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
+							? "bg-gray-400 text-white cursor-not-allowed"
+							: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
 							}`}
 					>
 						{isSigningUp && <LoadingSpinner size="sm" />}
