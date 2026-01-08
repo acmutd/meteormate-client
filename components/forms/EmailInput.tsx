@@ -3,21 +3,25 @@ import React from "react";
 interface EmailInputProps {
 	value: string;
 	onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 	placeholder?: string;
 	label?: string;
 	error?: string;
 	disabled?: boolean;
 	className?: string;
+	inputRef?: React.Ref<HTMLInputElement>;
 }
 
 export default function EmailInput({
 	value,
 	onChange,
+	onBlur,
 	placeholder = "Email",
 	label,
 	error,
 	disabled = false,
 	className = "",
+	inputRef,
 }: EmailInputProps) {
 	return (
 		<div className={`flex flex-col ${className}`}>
@@ -45,8 +49,11 @@ export default function EmailInput({
 					type="email"
 					value={value}
 					onChange={onChange}
+					onBlur={onBlur}
 					placeholder={placeholder}
 					disabled={disabled}
+					ref={inputRef}
+					autoComplete="email"
 					className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
 				/>
 			</div>

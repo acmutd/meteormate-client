@@ -3,23 +3,29 @@ import React, { useState } from "react";
 interface PasswordInputProps {
 	value: string;
 	onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 	placeholder?: string;
 	label?: string;
 	error?: string;
 	disabled?: boolean;
 	className?: string;
 	showToggle?: boolean;
+	autoComplete?: string;
+	inputRef?: React.Ref<HTMLInputElement>;
 }
 
 export default function PasswordInput({
 	value,
 	onChange,
+	onBlur,
 	placeholder = "Password",
 	label,
 	error,
 	disabled = false,
 	className = "",
 	showToggle = false,
+	autoComplete = "current-password",
+	inputRef,
 }: PasswordInputProps) {
 	const [showPassword, setShowPassword] = useState(false);
 
@@ -49,8 +55,11 @@ export default function PasswordInput({
 					type={showPassword ? "text" : "password"}
 					value={value}
 					onChange={onChange}
+					onBlur={onBlur}
 					placeholder={placeholder}
 					disabled={disabled}
+					autoComplete={autoComplete}
+					ref={inputRef}
 					className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
 				/>
 				{showToggle && (
@@ -58,7 +67,6 @@ export default function PasswordInput({
 						type="button"
 						onClick={() => setShowPassword(!showPassword)}
 						className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-						tabIndex={-1}
 					>
 						{showPassword ? (
 							<svg

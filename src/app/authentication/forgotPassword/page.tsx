@@ -1,24 +1,41 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import { getEmailValidationError } from "@/utils/validation";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+import EmailInput from "../../../../components/forms/EmailInput";
+import { useToast } from "@/components/ui/ToastProvider";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+	const { toast } = useToast();
+	const emailRef = useRef<HTMLInputElement | null>(null);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
   const [isSending, setIsSending] = useState(false);
+
+	useEffect(() => {
+		emailRef.current?.focus();
+	}, []);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    setEmailError(getEmailValidationError(value));
+    if (emailTouched) {
+      setEmailError(getEmailValidationError(value));
+    }
+  };
+
+  const handleEmailBlur = () => {
+    setEmailTouched(true);
+    setEmailError(getEmailValidationError(email));
   };
 
   const handleResetPassword = async () => {
-    // Validate email before proceeding
+    setEmailTouched(true);
+    
     const emailErr = getEmailValidationError(email);
     if (emailErr) {
       setEmailError(emailErr);
@@ -48,6 +65,11 @@ export default function VerifyEmailPage() {
     }
 
     localStorage.setItem("resetEmail", email);
+		toast({
+			type: "success",
+			title: "Verification code sent",
+			description: "Check your email for the 6-digit code.",
+		});
     router.push(
       `/authentication/verifyPassword?email=${encodeURIComponent(email)}`
     );
@@ -56,18 +78,43 @@ export default function VerifyEmailPage() {
     const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
       ? err.message 
       : "Something went wrong. Please try again.";
+    setEmailTouched(true);
     setEmailError(errorMessage);
+		toast({ type: "error", title: "Couldn't send code", description: errorMessage });
   } finally {
     setIsSending(false);
   }
 };
 
+	const onSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		void handleResetPassword();
+	};
 
 
 
   return (
     <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col w-full max-w-2xl px-10">
+				{/* Back arrow to login */}
+				<button
+					onClick={() => router.push("/authentication")}
+					className="absolute top-8 left-5 p-2 hover:bg-gray-100 rounded-full transition-colors"
+					aria-label="Back to login"
+					type="button"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						strokeWidth={2}
+						stroke="currentColor"
+						className="w-6 h-6"
+					>
+						<path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+					</svg>
+				</button>
+
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] p-2">
           Forgot Password
         </h1>
@@ -75,45 +122,27 @@ export default function VerifyEmailPage() {
           UTD Email
         </p>
 
-        <div className="relative w-full flex flex-col">
-          <div className="relative">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-              />
-            </svg>
-            <input
-              type="email"
-              value={email}
-              onChange={handleEmailChange}
-              placeholder="abc123452@utdallas.edu"
-              disabled={isSending}
-              className="pl-11 pr-10 border border-black py-3 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-          </div>
-          {emailError && (
-            <p className="text-red-500 text-xs mt-1">{emailError}</p>
-          )}
-        </div>
+				<form onSubmit={onSubmit} className="flex flex-col">
+					<EmailInput
+						value={email}
+						onChange={handleEmailChange}
+						onBlur={handleEmailBlur}
+						placeholder="abc123452@utdallas.edu"
+						disabled={isSending}
+						error={emailError}
+						inputRef={emailRef}
+					/>
 
-        {/* verify button */}
-        <button
-          onClick={handleResetPassword}
-          disabled={isSending || !!emailError || !email}
-          className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {isSending && <LoadingSpinner size="sm" />}
-          {isSending ? "Sending..." : "Reset Password"}
-        </button>
+					{/* verify button */}
+					<button
+						type="submit"
+						disabled={isSending || !!emailError || !email}
+						className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+					>
+						{isSending && <LoadingSpinner size="sm" />}
+						{isSending ? "Sending..." : "Reset Password"}
+					</button>
+				</form>
       </div>
     </LogoBox>
   );
