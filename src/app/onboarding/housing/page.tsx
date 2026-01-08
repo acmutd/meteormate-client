@@ -11,26 +11,38 @@ import { truncate } from "fs/promises";
 import { getAuth } from "firebase/auth";
 
 const sendOnboardingData = async () => {
-	const data = loadOnboardingData();
-	const body = JSON.stringify(data)
-	const auth = getAuth();
-	const user = auth.currentUser;
-	if (user) {
-		const token = await user.getIdToken();
-		await fetch("http://localhost:8000/api/survey", {
-			method: "PUT",
-			headers: { "Content-Type": "application/json",
-				"Authorization": `Bearer ${token}`
-			},
-			body: JSON.stringify(data),
-		});
+	try{
+		const data = loadOnboardingData();
+		const body = JSON.stringify(data)
+		const auth = getAuth();
+		const user = auth.currentUser;
+		if (user) {
+			const token = await user.getIdToken();
+			const response = await fetch("http://localhost:8000/api/survey", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`
+				},
+				body: JSON.stringify(data),
+			});
 
-		clearOnboardingData();
-	}
-	else{
-		console.log("user not found")
-	}
-	console.log(body)
+			if (!response.ok) {
+            	throw new Error(`HTTP error! Status: ${response.status}`);
+        	}
+
+			clearOnboardingData();
+		}
+		else{
+			throw new Error("User not currently signed in.");
+		}
+		// console.log(body)
+	} catch (error) {
+        if (error instanceof Error) {
+            console.error("Failed to send onboarding data:", error.message);
+        } else {
+            console.error("An unexpected error occurred:", error);
+        }
+    }
 }
 
 function OnCampusUI() {
