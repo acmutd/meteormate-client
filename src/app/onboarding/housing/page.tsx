@@ -59,6 +59,9 @@ function OnCampusUI() {
     const [selectedLLCPreference, setSelectedLLCPreference] = useState<boolean | null>(
 		null
 	);
+	const [selectedNumOfRoomates, setSelectedNumOfRoomates] = useState<string | null>(
+		null
+	);
 
 	const [hydrated, setHydrated] = useState(false);
 	
@@ -72,6 +75,7 @@ function OnCampusUI() {
 		}
 		setSelectedHonorsStatus(saved.honors ?? null);
 		setSelectedLLCPreference(saved.llc_interest ?? null);
+		setSelectedNumOfRoomates(saved.num_roommates ?? null);
 
 		setHydrated(true);
 	}, []);
@@ -82,20 +86,38 @@ function OnCampusUI() {
 			on_campus_locations: selectedLocation,
 			honors: selectedHonorsStatus,
 			llc_interest: selectedLLCPreference,
+			num_roommates: selectedNumOfRoomates
 		});
 	}, [
 		hydrated,
 		selectedLocation,
 		selectedHonorsStatus,
 		selectedLLCPreference,
+		selectedNumOfRoomates
 	]);
 
 	const handleLocationToggle = (value: string) => {
+		let newLocations;
 		if (selectedLocation.includes(value)) {
-			setSelectedLocation(selectedLocation.filter((item) => item !== value));
-		} else {
-			setSelectedLocation([...selectedLocation, value]);
-		}
+            newLocations = selectedLocation.filter((item) => item !== value);
+        } else {
+            newLocations = [...selectedLocation, value];
+        }
+
+		setSelectedLocation(newLocations);
+		// check if we need to reset freshman specific data
+		if (!newLocations.includes("freshman_dorms")) {
+            setSelectedLLCPreference(null);
+        }
+		
+		// check if we need to reset roomate data
+		const hasRoommateLocation = newLocations.some(loc => 
+            ["northside", "cc", "uv"].includes(loc)
+        );
+
+        if (!hasRoommateLocation) {
+            setSelectedNumOfRoomates(null);
+        }
 		};
 
 	const handleBooleanToggle = (
@@ -109,6 +131,23 @@ function OnCampusUI() {
 			setValue(newValue);
 		}
 	};
+
+	const handleToggle = (
+		currentValue: string | null,
+		setValue: (val: string | null) => void,
+		newValue: string
+	) => {
+		if (currentValue === newValue) {
+      		setValue(null);
+    	} else {
+      		setValue(newValue);
+    	}
+	};
+
+	// only freshman dorms selected shows LLC
+	const showFreshmanSpecifics = selectedLocation.includes("freshman_dorms");
+	// northside, cc, or uv
+	const showRoommateOptions = selectedLocation.includes("northside") || selectedLocation.includes("cc") || selectedLocation.includes("uv");
 
     return (
         <div>
@@ -169,36 +208,80 @@ function OnCampusUI() {
 					
 				</div>
 				
-				<p className="text-black text-sm mt-1 font-bold mb-2">
-					Are you interested in being part of the Living Learning Community?
-				</p>
-				<div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
-					<LifestylePreferencesCard
-						title="Yes, I would like to be a part of LLC"
-						imageSrc="/images/environment.webp"
-						isSelected={selectedLLCPreference === true}
-						onClick={() => handleBooleanToggle(selectedLLCPreference, setSelectedLLCPreference, true)}
-					/>
-					<LifestylePreferencesCard
-						title="No, I would not like to be a part of LLC"
-						imageSrc="/images/reading-book.webp"
-						isSelected={selectedLLCPreference === false}
-						onClick={() => handleBooleanToggle(selectedLLCPreference, setSelectedLLCPreference, false)}
-					/>
-					
-				</div>
+				{showFreshmanSpecifics && (
+					<>
+						<p className="text-black text-sm mt-1 font-bold mb-2">
+							Are you interested in being part of the Living Learning Community?
+						</p>
+						<div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
+							<LifestylePreferencesCard
+								title="Yes, I would like to be a part of LLC"
+								imageSrc="/images/environment.webp"
+								isSelected={selectedLLCPreference === true}
+								onClick={() => handleBooleanToggle(selectedLLCPreference, setSelectedLLCPreference, true)}
+							/>
+							<LifestylePreferencesCard
+								title="No, I would not like to be a part of LLC"
+								imageSrc="/images/reading-book.webp"
+								isSelected={selectedLLCPreference === false}
+								onClick={() => handleBooleanToggle(selectedLLCPreference, setSelectedLLCPreference, false)}
+							/>
+							
+						</div>
+					</>
+				)}
+
+				{showRoommateOptions && (
+					<>
+						<p className="text-black text-sm mt-1 font-bold mb-2">
+							How many roomates is ideal?
+						</p>
+						<div className="grid grid-cols-4 gap-4 mb-4 cursor-pointer">
+							<LifestylePreferencesCard
+								title="No preference"
+								imageSrc="/images/environment.webp" // need to change
+								isSelected={selectedNumOfRoomates === "no_preference"}
+								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "no_preference")}
+							/>
+							<LifestylePreferencesCard
+								title="One"
+								imageSrc="/images/reading-book.webp" // need to change
+								isSelected={selectedNumOfRoomates === "one"}
+								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "one")}
+							/>
+							<LifestylePreferencesCard
+								title="Two"
+								imageSrc="/images/reading-book.webp" // need to change
+								isSelected={selectedNumOfRoomates === "two"}
+								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "two")}
+							/>
+							<LifestylePreferencesCard
+								title="Three"
+								imageSrc="/images/reading-book.webp" // need to change
+								isSelected={selectedNumOfRoomates === "three"}
+								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "three")}
+							/>
+							
+						</div>
+					</>
+				)}
             </div>
 			<div className="flex items-center justify-center">
             <DoneButton
                                 className="mt-7"
                                 logo={<img src="/images/peechi_duo.webp" />}
                                 onClick={handleNextStep}
-								disabled = {selectedLLCPreference === null || selectedHonorsStatus === null || !selectedLocation}
+								disabled = {
+									!selectedLocation || 
+									selectedLocation.length === 0 ||
+									(showFreshmanSpecifics && (selectedLLCPreference === null || selectedHonorsStatus === null)) ||
+									(showRoommateOptions && !selectedNumOfRoomates)
+								}
 								
                             />
     		</div>
         </div>
-  );
+  	);
 }
 
 function OffCampusUI() {
