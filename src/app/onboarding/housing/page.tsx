@@ -64,6 +64,9 @@ function OnCampusUI() {
 	
 	useEffect(() => { // loading it once and the next use effect for the changes made and keeping track
 		const saved = loadOnboardingData();
+		updateOnboardingData({
+			have_lease_length: "academic_year"
+		})
 		if (Array.isArray(saved.on_campus_locations)) {
 			setSelectedLocation(saved.on_campus_locations);
 		}
