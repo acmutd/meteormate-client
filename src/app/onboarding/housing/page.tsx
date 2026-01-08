@@ -9,6 +9,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { loadOnboardingData, updateOnboardingData, clearOnboardingData } from "@/utils/onboardingStorage";
 import { truncate } from "fs/promises";
 import { getAuth } from "firebase/auth";
+import PriceRangeSlider from "../../../../components/PriceRangeSlider";
 
 const sendOnboardingData = async () => {
 	try{
@@ -19,7 +20,7 @@ const sendOnboardingData = async () => {
 		if (user) {
 			const token = await user.getIdToken();
 			const response = await fetch("http://localhost:8000/api/survey", {
-				method: "PUT",
+				method: "POST",
 				headers: { "Content-Type": "application/json",
 					"Authorization": `Bearer ${token}`
 				},
@@ -49,7 +50,7 @@ function OnCampusUI() {
 	const router = useRouter();
 	const handleNextStep = () => {
 		sendOnboardingData()
-		// router.push("/onboarding/dashboard");
+		router.push("/onboarding/dashboard");
 	};
 
     const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
@@ -288,13 +289,19 @@ function OffCampusUI() {
 	const router = useRouter();
 	const handleNextStep = async () => {
 		sendOnboardingData();
-		// router.push("/onboarding/dashboard");
+		router.push("/onboarding/dashboard");
 	};
 
     const [selectedLeaseStatus, setSelectedLeaseStatus] = useState<boolean | null>(
         null
     );
     const [selectedHaveLeaseLength, setSelectedHaveLeaseLength] = useState<string | null>(
+		null
+	);
+	const [selectedBudgetMin, setSelectedBudgetMin] = useState<number | null>(
+		null
+	);
+	const [selectedBudgetMax, setSelectedBudgetMax] = useState<number | null>(
 		null
 	);
 
@@ -304,6 +311,9 @@ function OffCampusUI() {
 		const saved = loadOnboardingData();
 		setSelectedLeaseStatus(saved.have_lease ?? null);
 		setSelectedHaveLeaseLength(saved.have_lease_length ?? null);
+		setSelectedBudgetMin(saved.budget_min ?? null);
+		setSelectedBudgetMax(saved.budget_max ?? null);
+
 
 		setHydrated(true);
 	}, []);
@@ -313,11 +323,15 @@ function OffCampusUI() {
 		updateOnboardingData({
 			have_lease: selectedLeaseStatus,
 			have_lease_length: selectedHaveLeaseLength,
+			budget_min: selectedBudgetMin,
+			budget_max: selectedBudgetMax,
 		});
 	}, [
 		hydrated,
 		selectedLeaseStatus,
 		selectedHaveLeaseLength,
+		selectedBudgetMin,
+		selectedBudgetMax
 	]);
 
     const handleToggle = (
@@ -373,31 +387,61 @@ function OffCampusUI() {
 					
 				</div>
 				
-				<h1 className="text-black text-xl font-bold">Have a lease: </h1>
-                <p className="text-black text-sm mb-3 mt-2">
-					Pick the option that best matches how long the roommate would stay.
+				<h1 className="text-black text-xl font-bold">Duration: </h1>
+				<p className="text-black text-sm mb-3 mt-2">
+					{selectedLeaseStatus
+						? "Pick the option that best matches how long you are looking to lease for."
+						: "Pick the option that best matches how long the roommate would stay."
+					}
 				</p>
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer"> 
 					<LifestylePreferencesCard
 						title="Semester"
 						imageSrc="/images/badge.webp"
 						isSelected={selectedHaveLeaseLength === "semester"}
-						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "semester")}
+						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "semester")
+						}
 					/>
 					<LifestylePreferencesCard
 						title="Academic Year"
 						imageSrc="/images/study.webp"
 						isSelected={selectedHaveLeaseLength === "academic_year"}
-						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "academic_year")}
+						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "academic_year")
+						}
 					/>
 					<LifestylePreferencesCard
 						title="Year"
 						imageSrc="/images/study.webp"
 						isSelected={selectedHaveLeaseLength === "year"}
-						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "year")}
+						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "year")
+						}
 					/>
 					
 				</div>
+				{selectedLeaseStatus && (
+					<>
+						<h1 className="text-black text-xl font-bold">Monthly Rent: </h1>
+						<p className="text-black text-sm mb-3 mt-2">
+							How much are you charging for the room? (This does NOT consider utilities)
+						</p>
+					</>
+				)}
+				{!selectedLeaseStatus && (
+					<>
+						<h1 className="text-black text-xl font-bold">Budget: </h1>
+						<p className="text-black text-sm mb-3 mt-2">
+							What is your preferred monthly rent budget?
+						</p>
+					</>
+				)}
+				<PriceRangeSlider
+					minValue={selectedBudgetMin ?? 600}
+					maxValue={selectedBudgetMax ?? 1400}
+					onMinChange={setSelectedBudgetMin}
+					onMaxChange={setSelectedBudgetMax}
+					min={0}
+					max={2000}
+  				/>
 				
 				
             </div>
@@ -406,7 +450,7 @@ function OffCampusUI() {
                                 className="mt-7"
                                 logo={<img src="/images/peechi_duo.webp" />}
                                 onClick={handleNextStep}
-								disabled = {!selectedHaveLeaseLength || !selectedLeaseStatus}
+								disabled = {!selectedHaveLeaseLength || selectedLeaseStatus === null}
 								
                             />
     		</div>
