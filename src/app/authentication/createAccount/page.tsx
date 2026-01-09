@@ -7,7 +7,6 @@ import {
 	doCreateUserWithEmailAndPassword,
 	doSendEmailVerification,
 } from "@/firebase/auth";
-//import { getAuth, sendEmailVerification } from 'firebase/auth';
 import { Check, X } from "lucide-react";
 import {
 	validatePassword,
@@ -19,6 +18,7 @@ import EmailInput from "../../../../components/forms/EmailInput";
 import PasswordInput from "../../../../components/forms/PasswordInput";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getAuthErrorMessage } from "@/utils/authErrors";
+import { callRegisterRoute } from "@/utils/api/auth"
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -58,7 +58,7 @@ export default function CreateAccountPage() {
 		setPassword(value);
 		const validation = validatePassword(value);
 		setPasswordValidation(validation);
-		
+
 		// Update confirm password error if confirm password is already filled
 		if (confirmPassword) {
 			setConfirmPasswordError(validatePasswordMatch(value, confirmPassword));
@@ -75,7 +75,7 @@ export default function CreateAccountPage() {
 
 	const handleCreateAccount = async () => {
 		setEmailTouched(true);
-		
+
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
@@ -99,13 +99,23 @@ export default function CreateAccountPage() {
 			if (!isSigningUp) {
 				setIsSigningUp(true);
 
-				const userCredential = await doCreateUserWithEmailAndPassword(
-					email,
-					password
-				);
-				const uid = userCredential.uid;
+				const utd_id = email.split('@')[0] // axm240143@utdallas.edu
 
-				await doSendEmailVerification(email, uid);
+				const authResponse = await callRegisterRoute(email, password, utd_id)
+				
+				if (!authResponse.ok) {
+					toast({
+						type: "error",
+						title: authResponse.code,
+						description: authResponse.error
+					});
+
+					return;
+				}
+
+				const userCredentials = authResponse.data;
+
+				await doSendEmailVerification(email, userCredentials.id);
 
 				localStorage.setItem("verificationEmail", email); // todo - maybe clear this once user is verified?
 
@@ -193,15 +203,15 @@ export default function CreateAccountPage() {
 						inputRef={emailRef}
 					/>
 
-				<PasswordInput
-					value={password}
-					onChange={handlePasswordChange}
-					onBlur={() => setPasswordValidation(validatePassword(password))}
-					label="Password"
-					disabled={isSigningUp}
-					showToggle
-					autoComplete="new-password"
-				/>
+					<PasswordInput
+						value={password}
+						onChange={handlePasswordChange}
+						onBlur={() => setPasswordValidation(validatePassword(password))}
+						label="Password"
+						disabled={isSigningUp}
+						showToggle
+						autoComplete="new-password"
+					/>
 
 					<PasswordInput
 						value={confirmPassword}
@@ -271,12 +281,11 @@ export default function CreateAccountPage() {
 					<button
 						type="submit"
 						disabled={!canSubmit}
-						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${
-							!canSubmit
+						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${!canSubmit
 							? "bg-gray-400 text-white cursor-not-allowed"
 							: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
-						}`}
-						>
+							}`}
+					>
 						{isSigningUp && <LoadingSpinner size="sm" />}
 						{isSigningUp ? "Creating..." : "Create Account"}
 					</button>
