@@ -116,19 +116,19 @@ export default function LoginPage() {
 			</button>
         <div className="flex flex-col justify-center items-center text-center ">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] pt-2">
-            Welcome to MeteorMate
+          Welcome to MeteorMate
         </h1>
         <p className="font-urbanist font-light md:text-[12px] text-[10px] pb-3">
-            Enhance your roommate search with AI powered matchmaking
+          Enhance your roommate search with AI powered matchmaking
         </p>
         {created && (
-            <div
-                className="w-[85%] mx-auto mb-3 rounded-md border border-red-400 bg-red-100 p-3 text-sm text-red-700"
-                role="status"
-                aria-live="polite"
-            >
-                Account has been created — log in with your credentials.
-            </div>
+          <div
+            className="w-[85%] mx-auto mb-3 rounded-md border border-red-400 bg-red-100 p-3 text-sm text-red-700"
+            role="status"
+            aria-live="polite"
+          >
+            Account has been created — log in with your credentials.
+          </div>
         )}
 
         <button
@@ -137,14 +137,16 @@ export default function LoginPage() {
         >
           Create an account
         </button>
-        </div>
 
-        {/* OR line */}
-        <div className="flex items-center justify-center w-[80%] gap-4 text-black py-4 mx-auto">
+      </div>
+
+      {/* OR line */}
+      <div className="flex items-center justify-center w-[80%] gap-4 text-black py-4 mx-auto">
         <hr className="grow border border-gray-800 border-b-0" />
         <span className="text-sm whitespace-nowrap">OR</span>
         <hr className="grow border border-gray-800 border-b-0" />
-        </div>
+      </div>
+
 
         {/* Login form (Enter submits) */}
         <form onSubmit={onSubmit} className="flex justify-center items-center">

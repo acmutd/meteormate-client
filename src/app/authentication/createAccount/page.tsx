@@ -146,7 +146,7 @@ export default function CreateAccountPage() {
 	// };
 
 	return (
-		<LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+		<LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
 			{/* Back arrow */}
 			<button
 				onClick={router.back}
