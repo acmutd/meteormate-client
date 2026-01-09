@@ -323,8 +323,8 @@ function OffCampusUI() {
 		const saved = loadOnboardingData();
 		setSelectedLeaseStatus(saved.have_lease ?? null);
 		setSelectedHaveLeaseLength(saved.have_lease_length ?? null);
-		setSelectedBudgetMin(saved.budget_min ?? null);
-		setSelectedBudgetMax(saved.budget_max ?? null);
+		setSelectedBudgetMin(saved.budget_min ?? 600);
+		setSelectedBudgetMax(saved.budget_max ?? 1400);
 
 
 		setHydrated(true);
