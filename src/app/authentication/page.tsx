@@ -75,11 +75,7 @@ export default function LoginPage() {
 				const pingResponse = await callActivityPing();
 
 				if (!pingResponse.ok) {
-					toast({
-						type: 'error',
-						title: pingResponse.code,
-						description: pingResponse.error
-					});
+					console.log(`Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`)
 				}
 
 				toast({
