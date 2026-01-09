@@ -1,5 +1,5 @@
 import { auth } from "@/firebase/firebase";
-import { MMApiError, Result, UserActivityPing, UserRegisterResponse } from "../types";
+import { parseApiError, Result, UserActivityPing, UserRegisterResponse } from "../types";
 
 export async function callRegisterRoute(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
     try {
@@ -16,8 +16,8 @@ export async function callRegisterRoute(email: string, password: string, utd_id:
         });
 
         if (!response.ok) {
-            const data = (await response.json()) as MMApiError
-            return { ok: false, error: data.detail, code: response.status.toString() }
+            const { message, code } = await parseApiError(response)
+            return { ok: false, error: message, code }
         }
 
         const data = (await response.json()) as UserRegisterResponse
@@ -50,8 +50,8 @@ export async function callActivityPing(): Promise<Result<UserActivityPing>> {
         });
 
         if (!response.ok) {
-            const data = (await response.json()) as MMApiError
-            return { ok: false, error: data.detail, code: "401" }
+            const { message, code } = await parseApiError(response)
+            return { ok: false, error: message, code }
         }
 
         const data = (await response.json()) as UserActivityPing
