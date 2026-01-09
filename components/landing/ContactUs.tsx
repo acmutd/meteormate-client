@@ -12,7 +12,7 @@ export default function ContactUs() {
 			id="contactUs"
 			className="bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col w-full !py-12"
 			style={{
-				backgroundImage: `url('/images/stars_footerr.png')`,
+				backgroundImage: `url('/images/stars_footerr.webp')`,
 			}}
 		>
 			{/* Main Footer Content */}
