@@ -94,7 +94,7 @@ export default function VerifyEmailPage() {
 
 
   return (
-    <LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col w-full max-w-2xl px-10">
 				{/* Back arrow to login */}
 				<button

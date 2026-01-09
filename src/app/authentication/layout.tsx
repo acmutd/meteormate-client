@@ -16,7 +16,7 @@ export default function AuthLayout({
 			<div
 				className="absolute inset-0 bg-cover bg-center bg-no-repeat"
 				style={{
-					backgroundImage: "url('/images/stars.png')",
+					backgroundImage: "url('/images/stars.webp')",
 					filter: "brightness(3) contrast(2)",
 				}}
 			></div>
