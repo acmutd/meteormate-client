@@ -12,45 +12,46 @@ import { getAuth } from "firebase/auth";
 import PriceRangeSlider from "../../../../components/PriceRangeSlider";
 
 const sendOnboardingData = async () => {
-	try{
-		const data = loadOnboardingData();
-		const body = JSON.stringify(data)
-		const auth = getAuth();
-		const user = auth.currentUser;
-		if (user) {
-			const token = await user.getIdToken();
-			const response = await fetch("http://localhost:8000/api/survey", {
-				method: "POST",
-				headers: { "Content-Type": "application/json",
-					"Authorization": `Bearer ${token}`
-				},
-				body: JSON.stringify(data),
-			});
+	const data = loadOnboardingData();
+	const body = JSON.stringify(data)
+	const auth = getAuth();
+	const user = auth.currentUser;
+	if (user) {
+		const token = await user.getIdToken();
+		const response = await fetch("http://localhost:8000/api/survey", {
+			method: "POST",
+			headers: { "Content-Type": "application/json",
+				"Authorization": `Bearer ${token}`
+			},
+			body: JSON.stringify(data),
+		});
 
-			if (!response.ok) {
-            	throw new Error(`HTTP error! Status: ${response.status}`);
-        	}
+		if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
 
-			clearOnboardingData();
-		}
-		else{
-			throw new Error("User not currently signed in.");
-		}
-		// console.log(body)
-	} catch (error) {
-        if (error instanceof Error) {
-            console.error("Failed to send onboarding data:", error.message);
-        } else {
-            console.error("An unexpected error occurred:", error);
-        }
-    }
+		clearOnboardingData();
+	}
+	else{
+		throw new Error("User not currently signed in.");
+	}
+	// console.log(body)
 }
 
 function OnCampusUI() {
 	const router = useRouter();
-	const handleNextStep = () => {
-		sendOnboardingData()
-		router.push("/onboarding/dashboard");
+	const handleNextStep = async () => {
+		try{
+			await sendOnboardingData()
+			router.push('/onboarding/dashboard')
+		}
+		catch (error) {
+			if (error instanceof Error) {
+				console.error("Submission failed:", error.message);
+			} else {
+				console.error("An unexpected error occurred:", error);
+			}
+		}
 	};
 
     const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
@@ -288,8 +289,17 @@ function OnCampusUI() {
 function OffCampusUI() {
 	const router = useRouter();
 	const handleNextStep = async () => {
-		sendOnboardingData();
-		router.push("/onboarding/dashboard");
+		try{
+			await sendOnboardingData()
+			router.push('/onboarding/dashboard')
+		}
+		catch (error) {
+			if (error instanceof Error) {
+				console.error("Submission failed:", error.message);
+			} else {
+				console.error("An unexpected error occurred:", error);
+			}
+		}
 	};
 
     const [selectedLeaseStatus, setSelectedLeaseStatus] = useState<boolean | null>(
