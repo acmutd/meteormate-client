@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { getCurrentUserIdToken } from "@/firebase/auth";
+import { useRouter } from "next/navigation";
 
 // Following "class UserResponse(BaseModel):" schema from backend
 type UserProfile = {
@@ -19,6 +20,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showId, setShowId] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchuser = async () => {
@@ -36,6 +38,7 @@ export default function Profile() {
       } catch (err) {
         console.error("Profile fetch error:", err);
         setError("Failed to load profile");
+        router.push("/authentication?toast=not-signed-in")
       } finally {
         setLoading(false);
       }
