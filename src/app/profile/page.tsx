@@ -3,15 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/api/auth";
-
-type UserProfile = {
-  id: string;
-  email: string;
-  utd_id: string;
-  created_at: Date;
-  survey_done: boolean;
-  profile_created: boolean;
-};
+import { UserProfile } from "@/types/userProfile";
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -60,13 +52,12 @@ export default function Profile() {
             Name
             <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
               <p className="ml-2">
-                {/* {userData.profile?.first_name
+                {userData.profile?.first_name
                   ? userData.profile?.first_name
                   : "(First Name Not Provided)"}{" "}
                 {userData.profile?.last_name
                   ? userData.profile.last_name
-                  : "(Last Name Not Provided)"}{" "} */}
-                (Placeholder)
+                  : "(Last Name Not Provided)"}
               </p>
             </div>
           </div>
