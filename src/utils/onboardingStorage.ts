@@ -12,7 +12,8 @@ export type OnboardingData = {
   budget_max?: number | null;
   move_in_date?: string | null;
   lease_length?: string | null;
-  dealbreakers?: string | null;
+  dealbreakers?: string[];
+  habits?: string[];
   on_campus_locations?: string[];
   honors?: boolean | null;
   llc_interest?: boolean | null;
