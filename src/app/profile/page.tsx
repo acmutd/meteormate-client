@@ -63,6 +63,72 @@ export default function Profile() {
           </div>
 
           <div className="text-md">
+            Account created
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">
+                {userData.created_at
+                  ? new Date(userData.created_at).toLocaleDateString()
+                  : "(Unknown)"}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            Gender
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">
+                {userData.profile?.gender
+                  ? userData.profile.gender
+                  : "(Not Provided)"}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            Major
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">
+                {userData.profile?.major
+                  ? userData.profile.major
+                  : "(Not Provided)"}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-md col-span-2">
+            Bio
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">
+                {userData.profile?.bio
+                  ? userData.profile.bio
+                  : "(Not Provided)"}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            Age
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">
+                {userData.profile?.age
+                  ? userData.profile.age
+                  : "(Not Provided)"}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-md">
+            Classification
+            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+              <p className="ml-2">
+                {userData.profile?.classification
+                  ? userData.profile.classification
+                  : "(Not Provided)"}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-md">
             UTD Email
             <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
               <p className="ml-2">
@@ -76,17 +142,6 @@ export default function Profile() {
             <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
               <p className="ml-2 ">
                 {userData.utd_id ? userData.utd_id : "(UTD ID Not Provided)"}
-              </p>
-            </div>
-          </div>
-
-          <div className="text-md">
-            Account created
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
-              <p className="ml-2">
-                {userData.created_at
-                  ? new Date(userData.created_at).toLocaleDateString()
-                  : "(Unknown)"}
               </p>
             </div>
           </div>
@@ -131,9 +186,6 @@ export default function Profile() {
               </button>
             </div>
           </div>
-
-          <br></br>
-          <div>(User profile fields coming soon once create profile page is done)</div>
         </div>
         {/* Debug: To see fetch response */}
         {/* <div>User data:</div> */}
