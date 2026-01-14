@@ -41,7 +41,7 @@ export default function Profile() {
           src={
             userData.profile?.profile_picture_url
               ? userData.profile?.profile_picture_url
-              : "images/peechi_duo.png"
+              : "/images/peechi_duo.png"
           }
           alt="Profile Picture"
           className="mt-4 w-24 h-24 rounded-full object-cover shadow-md bg-gray-300"
