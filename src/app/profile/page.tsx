@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
+import { fetchCurrentUser } from "@/api/auth";
 
 type UserProfile = {
   id: string;
@@ -23,14 +24,7 @@ export default function Profile() {
     const fetchuser = async () => {
       try {
         const token = await getCurrentUserIdToken();
-        const res = await fetch("http://127.0.0.1:8000/api/auth/me", {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        const data = await res.json();
+        const data = await fetchCurrentUser(token);
         setUser(data);
       } catch (err) {
         console.error("Profile fetch error:", err);
