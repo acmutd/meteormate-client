@@ -14,24 +14,33 @@ import PriceRangeSlider from "../../../../components/PriceRangeSlider";
 const sendOnboardingData = async () => {
 	try{
 		const data = loadOnboardingData();
-		const body = JSON.stringify(data)
+        const formattedData = {
+			...data,
+			move_in_date: data.move_in_date 
+				? new Date(data.move_in_date).toISOString().split('T')[0] 
+				: null
+		};
+		const body = JSON.stringify(formattedData)
+        // console.log("body:", body)
 		const auth = getAuth();
 		const user = auth.currentUser;
+
 		if (user) {
 			const token = await user.getIdToken();
+            // console.log("bearer token: ", token)
 			const response = await fetch("http://localhost:8000/api/survey", {
 				method: "POST",
 				headers: { "Content-Type": "application/json",
 					"Authorization": `Bearer ${token}`
 				},
-				body: JSON.stringify(data),
+				body: body,
 			});
 
 			if (!response.ok) {
             	throw new Error(`HTTP error! Status: ${response.status}`);
         	}
-
 			clearOnboardingData();
+            return true
 		}
 		else{
 			throw new Error("User not currently signed in.");
@@ -43,14 +52,19 @@ const sendOnboardingData = async () => {
         } else {
             console.error("An unexpected error occurred:", error);
         }
+        return false
     }
 }
 
 function OnCampusUI() {
 	const router = useRouter();
-	const handleNextStep = () => {
-		sendOnboardingData()
-		router.push("/onboarding/dashboard");
+	const handleNextStep = async () => {
+		const success = await sendOnboardingData()
+        if (success) {
+		    router.push("/onboarding/dashboard");
+        } else {
+            console.log("Something went wrong with the survey")
+        }
 	};
 
     const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
@@ -288,7 +302,12 @@ function OnCampusUI() {
 function OffCampusUI() {
 	const router = useRouter();
 	const handleNextStep = async () => {
-		sendOnboardingData();
+		const success = await sendOnboardingData()
+        if (success){
+            router.push("/onboarding/dashboard");
+        } else {
+            console.log("Something went wrong with the survey")
+        }
 		router.push("/onboarding/dashboard");
 	};
 

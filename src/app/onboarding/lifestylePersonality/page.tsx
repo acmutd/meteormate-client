@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import LifestylePreferencesCard from "../../../../components/LifestylePreferencesCard";
 import NextStepButton from "../../../../components/NextStepButton";
+import { DatePicker } from "../../../../components/DatePicker";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../../components/ProgressHeader";
 import { loadOnboardingData, updateOnboardingData } from "../../../utils/onboardingStorage";
@@ -22,9 +23,7 @@ export default function LifestylePersonalityPage() {
     const [selectedGuestsPreference, setSelectedGuestsPreferences] = useState<
 		string | null
 	>(null);
-    const [selectedRoommatePreference, setSelectedRoommatePreference] = useState<
-		string | null
-	>(null);
+    const [selectedMoveInDate, setSelectedMoveInDate] = useState<Date | null>(null);
 
 	const [hydrated, setHydrated] = useState(false);  // again to keep track of the sekected oreferebces abd stuff
 
@@ -33,10 +32,9 @@ export default function LifestylePersonalityPage() {
 		setselectedCookingPreference(saved.cooking_frequency ?? null);
 		setselectedPetPreferences(saved.pet_preference ?? null);
 		setSelectedGuestsPreferences(saved.guests_frequency ?? null);
-		setSelectedRoommatePreference(saved.roomate_closeness ?? null);
 		setselectedLivingPreference(saved.housing_intent ?? null);
-
-		setHydrated(true);
+        setSelectedMoveInDate(saved.move_in_date ? new Date(saved.move_in_date) : null);
+        setHydrated(true);
 	}, []);
 
 	useEffect(() => {
@@ -45,17 +43,21 @@ export default function LifestylePersonalityPage() {
 			cooking_frequency: selectedCookingPreference,
 			pet_preference: selectedPetPreferences,
 			guests_frequency: selectedGuestsPreference,
-			roomate_closeness: selectedRoommatePreference,
 			housing_intent: selectedLivingPreference,
+            move_in_date: selectedMoveInDate
 		});
 	}, [
 		hydrated,
 		selectedCookingPreference,
 		selectedPetPreferences,
 		selectedGuestsPreference,
-		selectedRoommatePreference,
 		selectedLivingPreference,
+        selectedMoveInDate
 	]);
+
+    const handleDateChange = (date: Date | null) => {
+        setSelectedMoveInDate(date);
+    };
 
 	const handleToggle = (
 		currentValue: string | null,
@@ -72,6 +74,7 @@ export default function LifestylePersonalityPage() {
 			selectedCookingPreference,
 			selectedPetPreferences,
 			selectedLivingPreference,
+            selectedMoveInDate
 		});
 
 		router.push(`/onboarding/housing?living=${encodeURIComponent(selectedLivingPreference ?? "")}`);
@@ -158,28 +161,16 @@ export default function LifestylePersonalityPage() {
 				</div>
 
 				<p className="text-black text-sm mt-1 mb-2">
-					How close would you like to be with your roommates?
+					What is your move in date?
 				</p>
 				
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
-					<LifestylePreferencesCard
-						title="Not Close"
-						imageSrc="/images/roommate.webp"
-						isSelected={selectedRoommatePreference === "not_close"}
-						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "not_close")}
-					/>
-					<LifestylePreferencesCard
-						title="Friends"
-						imageSrc="/images/high-five.webp"
-						isSelected={selectedRoommatePreference === "friends"}
-						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "friends")}
-					/>
-					<LifestylePreferencesCard
-						title="Close Friends"
-						imageSrc="/images/best-friends.webp"
-						isSelected={selectedRoommatePreference === "close_friends"}
-						onClick={() => handleToggle(selectedRoommatePreference, setSelectedRoommatePreference, "close_friends")}
-					/>
+					<DatePicker
+                        value={selectedMoveInDate}
+                        onChange={handleDateChange}
+                        placeholder="Select a date"
+                        minDate={new Date()}
+                    />
 				</div>
                 
 				<p className="text-black text-sm mt-1 mb-2">
@@ -213,7 +204,7 @@ export default function LifestylePersonalityPage() {
 						className="mt-7"
 						logo={<img src="/images/peechi_duo.webp" />}
 						onClick={handleNextStep}
-						disabled={!selectedLivingPreference || !selectedRoommatePreference || !selectedCookingPreference || !selectedGuestsPreference || !selectedPetPreferences}
+						disabled={!selectedLivingPreference || !selectedMoveInDate || !selectedCookingPreference || !selectedGuestsPreference || !selectedPetPreferences}
 					/>
 				</div>
 			</div>
