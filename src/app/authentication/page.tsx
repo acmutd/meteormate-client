@@ -1,45 +1,69 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import LogoBox from "../../../components/LogoBox";
 import { doSignInWithEmailAndPassword } from "../../firebase/auth";
 import { useAuth } from "../../contexts/authContext";
 import { useSearchParams } from "next/navigation";
-import { validateUTDEmail, getEmailValidationError } from "@/utils/validation";
-import {
-	checkRateLimit,
-	formatRateLimitMessage,
-	recordFailure,
-	recordSuccess,
-} from "@/utils/rateLimit";
+import { getEmailValidationError } from "@/utils/validation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import EmailInput from "../../../components/forms/EmailInput";
+import PasswordInput from "../../../components/forms/PasswordInput";
+import { useToast } from "@/components/ui/ToastProvider";
+import { getAuthErrorMessage } from "@/utils/authErrors";
+import { callActivityPing } from "@/utils/api/auth";
 
 export default function LoginPage() {
 	const router = useRouter();
+	const { toast } = useToast();
 	const auth = useAuth(); // avoid destructuring directly
 	const userLoggedIn = auth?.userLoggedIn;
+	const emailRef = useRef<HTMLInputElement | null>(null);
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
-	const [safetyMessage, setSafetyMessage] = useState("");
+	const [emailTouched, setEmailTouched] = useState(false);
 	const [isSigningIn, setIsSigningIn] = useState(false);
+	const toastShownRef = useRef(false);
 
-  // to know if we should show the red banner and disable/hide the "create an account" button
-  const searchParams = useSearchParams();
-  const created = searchParams.get("created") === "1";
+	// to know if we should show the red banner and disable/hide the "create an account" button
+	const searchParams = useSearchParams();
+	const created = searchParams.get("created") === "1";
 
-  // If already logged in, redirect
-  useEffect(() => {
-    if (userLoggedIn) {
-      router.push("../authentication"); // this pushs it back to the authentication
-    }
-  }, [userLoggedIn, router]);
+	// If already logged in, redirect
+	useEffect(() => {
+		if (userLoggedIn) {
+			router.push("../authentication"); // this pushs it back to the authentication
+		}
+	}, [userLoggedIn, router]);
+
+	useEffect(() => {
+		emailRef.current?.focus();
+	}, []);
+
+	useEffect(() => {
+		if (!toastShownRef.current && searchParams.get("toast") === "not-signed-in") {
+			toast({
+				type: "error",
+				title: "Not Signed In",
+				description: "You must be signed in to access your profile. Please log in to continue."
+			});
+			toastShownRef.current = true;
+		}
+	}, [searchParams, toast]);
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setEmail(value);
-		setEmailError(getEmailValidationError(value));
+		if (emailTouched) {
+			setEmailError(getEmailValidationError(value));
+		}
+	};
+
+	const handleEmailBlur = () => {
+		setEmailTouched(true);
+		setEmailError(getEmailValidationError(email));
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,168 +71,139 @@ export default function LoginPage() {
 	};
 
 	const handleLogin = async () => {
-		const rateCheck = checkRateLimit("login");
-		if (!rateCheck.allowed) {
-			setEmailError("");
-			setSafetyMessage(formatRateLimitMessage("login", rateCheck));
-			return;
-		}
-		setSafetyMessage("");
+		setEmailTouched(true);
 
-		// Validate email
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
 			return;
 		}
 
-	//then we try to get if is signing in is true whne the value is flipped then we set the value to be actually true and then call signing with email and password and then router.push it to the createAccount page
-    try {
-      if (!isSigningIn) {
-        setIsSigningIn(true);
-        await doSignInWithEmailAndPassword(email, password);
-        recordSuccess("login");
-        router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
-      }
-    } catch (err: unknown) { //just in case there's a problem signing in 
-      console.error("Login error:", err);
-      const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
-        ? err.message 
-        : "Login failed";
-      recordFailure("login");
-      setEmailError(errorMessage); // for what reasons
-      setSafetyMessage(
-        "If you keep seeing this, reset your password before trying again. Repeated failed logins will temporarily lock further attempts."
-      );
-    } finally {
-      setIsSigningIn(false);
-    }
-  };
+		//then we try to get if is signing in is true whne the value is flipped then we set the value to be actually true and then call signing with email and password and then router.push it to the createAccount page
+		try {
+			if (!isSigningIn) {
+				setIsSigningIn(true);
+				await doSignInWithEmailAndPassword(email, password);
+				const pingResponse = await callActivityPing();
 
-  return (
-    <LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
-        <div className="flex flex-col justify-center items-center text-center ">
-        <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] pt-2">
-            Welcome to MeteorMate
-        </h1>
-        <p className="font-urbanist font-light md:text-[12px] text-[10px] pb-3">
-            Enhance your roommate search with AI powered matchmaking
-        </p>
-        {created && (
-            <div
-                className="w-[85%] mx-auto mb-3 rounded-md border border-red-400 bg-red-100 p-3 text-sm text-red-700"
-                role="status"
-                aria-live="polite"
-            >
-                Account has been created — log in with your credentials.
-            </div>
-        )}
-        {safetyMessage && (
-            <div
-                className="w-[85%] mx-auto mb-3 rounded-md border border-amber-400 bg-amber-100 p-3 text-sm text-amber-800"
-                role="status"
-                aria-live="polite"
-            >
-                {safetyMessage}
-            </div>
-        )}
+				if (!pingResponse.ok) {
+					console.log(`Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`)
+				}
 
-        <button
-          onClick={() => router.push("/authentication/createAccount")}
-          className="cursor-pointer border border-black py-3 rounded-3xl w-[85%] font-light text-[12px] md:text-[15px] m-2"
-        >
-          Create an account
-        </button>
-        </div>
+				toast({
+					type: "success",
+					title: "Welcome back!",
+					description: "You’re now logged in.",
+				});
+				router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
+			}
+		} catch (err: unknown) { //just in case there's a problem signing in 
+			console.error("Login error:", err);
+			const { message } = getAuthErrorMessage(err);
+			toast({ type: "error", title: "Login failed", description: message });
+			setEmailTouched(true);
+			setEmailError(message);
+		} finally {
+			setIsSigningIn(false);
+		}
+	};
 
-        {/* OR line */}
-        <div className="flex items-center justify-center w-[80%] gap-4 text-black py-4 mx-auto">
-        <hr className="grow border border-gray-800 border-b-0" />
-        <span className="text-sm whitespace-nowrap">OR</span>
-        <hr className="grow border border-gray-800 border-b-0" />
-        </div>
+	const onSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		void handleLogin();
+	};
 
-        {/* Login form */}
-        <div className="flex justify-center items-center">
-            <div className="flex flex-col text-left w-[85%] space-y-4 relative">
-                {/* Email field */}
-                <div className="flex flex-col">
-                    <div className="relative">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-                            />
-                        </svg>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={handleEmailChange}
-                            placeholder="Email"
-                            disabled={isSigningIn}
-                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                    </div>
-                    {emailError && (
-                        <p className="text-red-500 text-xs mt-1">{emailError}</p>
-                    )}
-                </div>
+	return (
+		<LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+			{/* Back arrow to landing */}
+			<button
+				onClick={() => router.push("/")}
+				className="absolute top-8 left-5 p-2 hover:bg-gray-100 rounded-full transition-colors"
+				aria-label="Back to landing page"
+				type="button"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth={2}
+					stroke="currentColor"
+					className="w-6 h-6"
+				>
+					<path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+				</svg>
+			</button>
+			<div className="flex flex-col justify-center items-center text-center ">
+				<h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] pt-2">
+					Welcome to MeteorMate
+				</h1>
+				<p className="font-urbanist font-light md:text-[12px] text-[10px] pb-3">
+					Enhance your roommate search with AI powered matchmaking
+				</p>
+				{created && (
+					<div
+						className="w-[85%] mx-auto mb-3 rounded-md border border-red-400 bg-red-100 p-3 text-sm text-red-700"
+						role="status"
+						aria-live="polite"
+					>
+						Account has been created — log in with your credentials.
+					</div>
+				)}
 
-                {/* Password field */}
-                <div className="flex flex-col">
-                    <div className="relative">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-                            />
-                        </svg>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            placeholder="Password"
-                            disabled={isSigningIn}
-                            className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                    </div>
-                </div>
+				<button
+					onClick={() => router.push("/authentication/createAccount")}
+					className="cursor-pointer border border-black py-3 rounded-3xl w-[85%] font-light text-[12px] md:text-[15px] m-2"
+				>
+					Create an account
+				</button>
+			</div>
 
-                <button
-                    onClick={handleLogin}
-                    disabled={isSigningIn}
-                    className="bg-[#509275] text-white rounded-3xl hover:bg-gray-800 transition cursor-pointer py-3 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                    {isSigningIn && <LoadingSpinner size="sm" />}
-                    {isSigningIn ? "Logging in..." : "Login"}
-                </button>
-            </div>
-        </div>
+			{/* OR line */}
+			<div className="flex items-center justify-center w-[80%] gap-4 text-black py-4 mx-auto">
+				<hr className="grow border border-gray-800 border-b-0" />
+				<span className="text-sm whitespace-nowrap">OR</span>
+				<hr className="grow border border-gray-800 border-b-0" />
+			</div>
 
-        {/* Forgot password */}
-        <div className="text-right mt-2">
-            <button
-                onClick={() => router.push("/authentication/forgotPassword")}
-                className="text-black text-sm hover:underline cursor-pointer"
-            >
-                Forgot password?
-            </button>
-        </div>
-    </LogoBox>);
+			{/* Login form (Enter submits) */}
+			<form onSubmit={onSubmit} className="flex justify-center items-center">
+				<div className="flex flex-col text-left w-[85%] space-y-4 relative">
+					<EmailInput
+						value={email}
+						onChange={handleEmailChange}
+						onBlur={handleEmailBlur}
+						disabled={isSigningIn}
+						error={emailError}
+						inputRef={emailRef}
+					/>
+
+					<PasswordInput
+						value={password}
+						onChange={handlePasswordChange}
+						disabled={isSigningIn}
+						showToggle
+						autoComplete="current-password"
+					/>
+
+					<button
+						type="submit"
+						disabled={isSigningIn}
+						className="bg-[#509275] text-white rounded-3xl hover:bg-gray-800 transition cursor-pointer py-3 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+					>
+						{isSigningIn && <LoadingSpinner size="sm" />}
+						{isSigningIn ? "Logging in..." : "Login"}
+					</button>
+				</div>
+			</form>
+
+			{/* Forgot password */}
+			<div className="text-right mt-2">
+				<button
+					onClick={() => router.push("/authentication/forgotPassword")}
+					className="text-black text-sm hover:underline cursor-pointer"
+				>
+					Forgot password?
+				</button>
+			</div>
+		</LogoBox>);
 }

@@ -1,12 +1,16 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import { validatePasswordMatch, validatePassword } from "@/utils/validation";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+import PasswordInput from "../../../../components/forms/PasswordInput";
+import { useToast } from "@/components/ui/ToastProvider";
 
 export default function NewPasswordPage() {
   const router = useRouter();
+	const { toast } = useToast();
+	const passwordRef = useRef<HTMLInputElement | null>(null);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,6 +19,7 @@ export default function NewPasswordPage() {
   const [code, setCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+	const [passwordValidation, setPasswordValidation] = useState(() => validatePassword(""));
 
   // Load email + code saved earlier
   useEffect(() => {
@@ -30,9 +35,14 @@ export default function NewPasswordPage() {
     // }
   }, [router]);
 
+	useEffect(() => {
+		passwordRef.current?.focus();
+	}, []);
+
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPassword(value);
+		setPasswordValidation(validatePassword(value));
     // Live update match error if confirm password is already filled
     if (confirmPassword) {
       setConfirmPasswordError(validatePasswordMatch(value, confirmPassword));
@@ -55,8 +65,6 @@ export default function NewPasswordPage() {
       return;
     }
 
-    // Validate password requirements
-    const passwordValidation = validatePassword(password);
     if (!passwordValidation.isValid) {
       setErrorMsg("Password does not meet requirements. Please ensure it has at least 8 characters, includes uppercase, lowercase, number, and special character.");
       return;
@@ -103,6 +111,7 @@ export default function NewPasswordPage() {
       localStorage.removeItem("resetCode");
 
       // Redirect to login
+			toast({ type: "success", title: "Password updated", description: "You can log in with your new password." });
       router.push("../authentication");
     } catch (err: unknown) {
       console.error("Reset password error:", err);
@@ -110,84 +119,52 @@ export default function NewPasswordPage() {
         ? err.message 
         : "Something went wrong.";
       setErrorMsg(errorMessage);
+			toast({ type: "error", title: "Couldn't update password", description: errorMessage });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+	const canSubmit =
+		!isSubmitting &&
+		passwordValidation.isValid &&
+		!!confirmPassword &&
+		validatePasswordMatch(password, confirmPassword) === "" &&
+		!!email &&
+		!!code;
+
+	const onSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		void handleSubmit();
+	};
+
   return (
-    <LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col w-full max-w-2xl px-10">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] p-2">
           Input New Password
         </h1>
 
-        {/* password */}
-        <div className="flex flex-col pb-3">
-          <label className="block text-sm font-urbanist font-light text-gray-700 mb-2">
-            Password
-          </label>
-          <div className="relative">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-              />
-            </svg>
-            <input
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-              placeholder="Password"
-              disabled={isSubmitting}
-              className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-          </div>
-        </div>
+				<form onSubmit={onSubmit} className="flex flex-col gap-3">
+				<PasswordInput
+					value={password}
+					onChange={handlePasswordChange}
+					label="Password"
+					disabled={isSubmitting}
+					showToggle
+					autoComplete="new-password"
+					inputRef={passwordRef}
+				/>
 
-        {/* verify password */}
-        <div className="flex flex-col">
-          <label className="block text-sm font-urbanist font-light text-gray-700 mb-2">
-            Verify Password
-          </label>
-          <div className="relative">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-black"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-              />
-            </svg>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              placeholder="Re-Enter Password"
-              disabled={isSubmitting}
-              className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[12px] md:text-[15px] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-          </div>
-          {confirmPasswordError && (
-            <p className="text-red-500 text-xs mt-1">
-              {confirmPasswordError}
-            </p>
-          )}
-        </div>
+					<PasswordInput
+						value={confirmPassword}
+						onChange={handleConfirmPasswordChange}
+						label="Verify Password"
+						error={confirmPasswordError}
+						disabled={isSubmitting}
+						showToggle
+						autoComplete="new-password"
+					/>
 
         {errorMsg && (
           <p className="text-red-500 text-xs mt-2">{errorMsg}</p>
@@ -195,13 +172,14 @@ export default function NewPasswordPage() {
 
         {/* submit button */}
         <button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
+          type="submit"
+          disabled={!canSubmit}
           className="mt-4 mb-4 bg-[#509275] text-white py-2 rounded-3xl hover:bg-gray-800 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isSubmitting && <LoadingSpinner size="sm" />}
           {isSubmitting ? "Updating..." : "Update Password"}
         </button>
+				</form>
       </div>
     </LogoBox>
   );

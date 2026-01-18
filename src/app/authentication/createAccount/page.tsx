@@ -1,34 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import {
 	doCreateUserWithEmailAndPassword,
 	doSendEmailVerification,
 } from "@/firebase/auth";
-//import { getAuth, sendEmailVerification } from 'firebase/auth';
 import { Check, X } from "lucide-react";
 import {
-	validateUTDEmail,
 	validatePassword,
 	validatePasswordMatch,
 	getEmailValidationError,
 } from "@/utils/validation";
-import { authErrorMapping } from "@/utils/authErrors";
-import {
-	checkRateLimit,
-	formatRateLimitMessage,
-	recordFailure,
-	recordSuccess,
-} from "@/utils/rateLimit";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+import EmailInput from "../../../../components/forms/EmailInput";
+import PasswordInput from "../../../../components/forms/PasswordInput";
+import { useToast } from "@/components/ui/ToastProvider";
+import { getAuthErrorMessage } from "@/utils/authErrors";
+import { callRegisterRoute } from "@/utils/api/auth"
 
 export default function CreateAccountPage() {
 	const router = useRouter();
+	const { toast } = useToast();
+	const emailRef = useRef<HTMLInputElement | null>(null);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [emailError, setEmailError] = useState("");
+	const [emailTouched, setEmailTouched] = useState(false);
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState("");
 	const [passwordValidation, setPasswordValidation] = useState(
@@ -36,12 +35,22 @@ export default function CreateAccountPage() {
 	);
 
 	const [isSigningUp, setIsSigningUp] = useState(false);
-	const [safetyMessage, setSafetyMessage] = useState("");
+
+	useEffect(() => {
+		emailRef.current?.focus();
+	}, []);
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setEmail(value);
-		setEmailError(getEmailValidationError(value));
+		if (emailTouched) {
+			setEmailError(getEmailValidationError(value));
+		}
+	};
+
+	const handleEmailBlur = () => {
+		setEmailTouched(true);
+		setEmailError(getEmailValidationError(email));
 	};
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +58,7 @@ export default function CreateAccountPage() {
 		setPassword(value);
 		const validation = validatePassword(value);
 		setPasswordValidation(validation);
-		
+
 		// Update confirm password error if confirm password is already filled
 		if (confirmPassword) {
 			setConfirmPasswordError(validatePasswordMatch(value, confirmPassword));
@@ -65,15 +74,8 @@ export default function CreateAccountPage() {
 	};
 
 	const handleCreateAccount = async () => {
-		const rateCheck = checkRateLimit("signup");
-		if (!rateCheck.allowed) {
-			setEmailError("");
-			setSafetyMessage(formatRateLimitMessage("signup", rateCheck));
-			return;
-		}
-		setSafetyMessage("");
+		setEmailTouched(true);
 
-		// Validate email
 		const emailErr = getEmailValidationError(email);
 		if (emailErr) {
 			setEmailError(emailErr);
@@ -97,40 +99,55 @@ export default function CreateAccountPage() {
 			if (!isSigningUp) {
 				setIsSigningUp(true);
 
-				const userCredential = await doCreateUserWithEmailAndPassword(
-					email,
-					password
-				);
-				const uid = userCredential.uid;
-				recordSuccess("signup");
+				const utd_id = email.split('@')[0] // axm240143@utdallas.edu
 
-				await doSendEmailVerification(email, uid);
+				const authResponse = await callRegisterRoute(email, password, utd_id)
+				
+				if (!authResponse.ok) {
+					toast({
+						type: "error",
+						title: authResponse.code,
+						description: authResponse.error
+					});
+
+					return;
+				}
+
+				const userCredentials = authResponse.data;
+
+				await doSendEmailVerification(email, userCredentials.id);
 
 				localStorage.setItem("verificationEmail", email); // todo - maybe clear this once user is verified?
 
+				toast({
+					type: "success",
+					title: "Account created",
+					description: "We sent you a verification code. Check your email to continue.",
+				});
 				router.push("/authentication/verifyEmail");
 			}
 		} catch (err: unknown) {
 			console.error("Signup error:", err);
-			recordFailure("signup");
-			
-			const errCode = err && typeof err === "object" && "code" in err ? String(err.code) : undefined;
-			const mappedError = errCode ? authErrorMapping[errCode] : undefined;
-			
-			if (mappedError) {
-				setEmailError(mappedError);
-			} else {
-				const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
-					? err.message 
-					: "Sign Up failed";
-				setEmailError(errorMessage);
-			}
-			setSafetyMessage(
-				"Too many rapid sign-up attempts will temporarily pause account creation. Slow down and double-check your info, or contact a developer on Discord."
-			);
+			const { message } = getAuthErrorMessage(err);
+			toast({ type: "error", title: "Sign up failed", description: message });
+			setEmailTouched(true);
+			setEmailError(message);
 		} finally {
 			setIsSigningUp(false);
 		}
+	};
+
+	const canSubmit =
+		!isSigningUp &&
+		!!email &&
+		!getEmailValidationError(email) &&
+		passwordValidation.isValid &&
+		!!confirmPassword &&
+		validatePasswordMatch(password, confirmPassword) === "";
+
+	const onSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		void handleCreateAccount();
 	};
 
 	// once the handleCreatingAccount is pressed and once the button is pressed too, the sendVerificationEmail is generated
@@ -139,7 +156,7 @@ export default function CreateAccountPage() {
 	// };
 
 	return (
-		<LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+		<LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
 			{/* Back arrow */}
 			<button
 				onClick={router.back}
@@ -173,113 +190,39 @@ export default function CreateAccountPage() {
 				</div>
 			</div>
 
-			{safetyMessage && (
-				<div className="w-[80%] mx-auto mb-3 rounded-md border border-amber-400 bg-amber-100 p-3 text-sm text-amber-800">
-					{safetyMessage}
-				</div>
-			)}
-
 			{/* Form fields */}
 			<div className="flex justify-center items-center">
-				<div className="flex flex-col text-left w-[80%] space-y-4">
-					{/* email */}
-					<div className="flex flex-col">
-						<label className="block text-[clamp(10px,2vh,20px)] font-urbanist font-light text-gray-700 mb-2">
-							UTD Email
-						</label>
-						<div className="relative">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								strokeWidth="1.5"
-								stroke="currentColor"
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-[clamp(1rem,3vh,1.25rem)] h-[clamp(1rem,3vh,1.25rem)] text-black"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-								/>
-							</svg>
-							<input
-								type="email"
-								value={email}
-								onChange={handleEmailChange}
-								placeholder="Email"
-								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full"
-							/>
-						</div>
-						{emailError && (
-							<p className="text-red-500 text-xs mt-1">{emailError}</p>
-						)}
-					</div>
+				<form onSubmit={onSubmit} className="flex flex-col text-left w-[80%] space-y-4">
+					<EmailInput
+						value={email}
+						onChange={handleEmailChange}
+						onBlur={handleEmailBlur}
+						label="UTD Email"
+						error={emailError}
+						disabled={isSigningUp}
+						inputRef={emailRef}
+					/>
 
-					{/* password */}
-					<div className="flex flex-col">
-						<label className="block text-[clamp(10px,2vh,20px)] font-urbanist font-light text-gray-700 mb-2">
-							Password
-						</label>
-						<div className="relative">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								strokeWidth="1.5"
-								stroke="currentColor"
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-[clamp(1rem,3vh,1.25rem)] h-[clamp(1rem,3vh,1.25rem)] text-black"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-								/>
-							</svg>
-							<input
-								type="password"
-								value={password}
-								onChange={handlePasswordChange}
-								placeholder="Password"
-								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full"
-							/>
-						</div>
-					</div>
+					<PasswordInput
+						value={password}
+						onChange={handlePasswordChange}
+						onBlur={() => setPasswordValidation(validatePassword(password))}
+						label="Password"
+						disabled={isSigningUp}
+						showToggle
+						autoComplete="new-password"
+					/>
 
-					{/* verify password */}
-					<div className="flex flex-col">
-						<label className="block text-[clamp(10px,2vh,20px)] font-urbanist font-light text-gray-700 mb-2">
-							Verify Password
-						</label>
-						<div className="relative">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								strokeWidth="1.5"
-								stroke="currentColor"
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 w-[clamp(1rem,3vh,1.25rem)] h-[clamp(1rem,3vh,1.25rem)] text-black"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-								/>
-							</svg>
-							<input
-								type="password"
-								value={confirmPassword}
-								onChange={handleConfirmPasswordChange}
-								placeholder="Re-Enter Password"
-								disabled={isSigningUp}
-								className="pl-11 pr-4 border border-black py-2 rounded-3xl font-light text-[clamp(10px,2vh,15px)] text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-							/>
-						</div>
-						{confirmPasswordError && (
-							<p className=" text-red-500 text-xs">
-								{confirmPasswordError}
-							</p>
-						)}
-					</div>
+					<PasswordInput
+						value={confirmPassword}
+						onChange={handleConfirmPasswordChange}
+						onBlur={() => setConfirmPasswordError(validatePasswordMatch(password, confirmPassword))}
+						label="Verify Password"
+						error={confirmPasswordError}
+						disabled={isSigningUp}
+						showToggle
+						autoComplete="new-password"
+					/>
 
 					<div>
 						<p className="[font-size:clamp(10px,2vh,14px)]">Passwords must:</p>
@@ -336,18 +279,17 @@ export default function CreateAccountPage() {
 
 					{/* create account button */}
 					<button
-						onClick={handleCreateAccount}
-						disabled={isSigningUp || !passwordValidation.isValid}
-						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${
-							isSigningUp || !passwordValidation.isValid
+						type="submit"
+						disabled={!canSubmit}
+						className={`mt-4 mb-4 py-2 px-6 rounded-3xl transition-colors duration-200 flex items-center justify-center gap-2 ${!canSubmit
 							? "bg-gray-400 text-white cursor-not-allowed"
 							: "bg-[#509275] text-white hover:bg-gray-800 cursor-pointer"
-						}`}
-						>
+							}`}
+					>
 						{isSigningUp && <LoadingSpinner size="sm" />}
 						{isSigningUp ? "Creating..." : "Create Account"}
 					</button>
-				</div>
+				</form>
 			</div>
 		</LogoBox>
 	);
