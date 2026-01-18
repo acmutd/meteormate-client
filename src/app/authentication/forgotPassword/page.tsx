@@ -6,6 +6,7 @@ import { getEmailValidationError } from "@/utils/validation";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import EmailInput from "../../../../components/forms/EmailInput";
 import { useToast } from "@/components/ui/ToastProvider";
+import { resetPasswordAction } from "@/app/actions/auth";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
@@ -42,49 +43,45 @@ export default function VerifyEmailPage() {
       return;
     }
 
-  try {
-    setIsSending(true);
+    try {
+      setIsSending(true);
 
-    const response = await fetch(
-      "http://localhost:8000/api/auth/send-verification-code",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          purpose: "reset", // tell backend this is a reset, not signup verification
-        }),
+      const result = await resetPasswordAction(email, {
+        get: (key: string) => {
+          if (key === "x-forwarded-for") return null;
+          if (key === "x-real-ip") return null;
+          return null;
+        }
+      });
+
+      if (!result.success) {
+        toast({ type: "error", title: "Couldn't send code", description: result.error });
+        setEmailTouched(true);
+        setEmailError(result.error || "Failed to send reset code");
+        return;
       }
-    );
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error(data.detail || "Failed to send verification code.");
+      localStorage.setItem("resetEmail", email);
+      toast({
+        type: "success",
+        title: "Verification code sent",
+        description: "Check your email for the 6-digit code.",
+      });
+      router.push(
+        `/authentication/verifyPassword?email=${encodeURIComponent(email)}`
+      );
+    } catch (err: unknown) {
+      console.error("Error sending reset verification:", err);
+      const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
+        ? err.message 
+        : "Something went wrong. Please try again.";
+      setEmailTouched(true);
+      setEmailError(errorMessage);
+      toast({ type: "error", title: "Couldn't send code", description: errorMessage });
+    } finally {
+      setIsSending(false);
     }
-
-    localStorage.setItem("resetEmail", email);
-		toast({
-			type: "success",
-			title: "Verification code sent",
-			description: "Check your email for the 6-digit code.",
-		});
-    router.push(
-      `/authentication/verifyPassword?email=${encodeURIComponent(email)}`
-    );
-  } catch (err: unknown) {
-    console.error("Error sending reset verification:", err);
-    const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
-      ? err.message 
-      : "Something went wrong. Please try again.";
-    setEmailTouched(true);
-    setEmailError(errorMessage);
-		toast({ type: "error", title: "Couldn't send code", description: errorMessage });
-  } finally {
-    setIsSending(false);
-  }
-};
+  };
 
 	const onSubmit = (e: React.FormEvent) => {
 		e.preventDefault();

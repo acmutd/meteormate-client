@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import {
-	doCreateUserWithEmailAndPassword,
 	doSendEmailVerification,
 } from "@/firebase/auth";
 import { Check, X } from "lucide-react";
@@ -18,7 +17,10 @@ import EmailInput from "../../../../components/forms/EmailInput";
 import PasswordInput from "../../../../components/forms/PasswordInput";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getAuthErrorMessage } from "@/utils/authErrors";
-import { callRegisterRoute } from "@/utils/api/auth"
+import { callRegisterRoute } from "@/utils/api/auth";
+import { signupAction } from "@/app/actions/auth";
+import { signInWithCustomToken } from "firebase/auth";
+import { auth as firebaseAuth } from "@/firebase/firebase";
 
 export default function CreateAccountPage() {
 	const router = useRouter();
@@ -82,13 +84,11 @@ export default function CreateAccountPage() {
 			return;
 		}
 
-		// Validate password
 		if (!passwordValidation.isValid) {
 			setEmailError("Please fix password requirements before continuing.");
 			return;
 		}
 
-		// Validate password match
 		const passwordMatchError = validatePasswordMatch(password, confirmPassword);
 		if (passwordMatchError) {
 			setConfirmPasswordError(passwordMatchError);
@@ -99,9 +99,27 @@ export default function CreateAccountPage() {
 			if (!isSigningUp) {
 				setIsSigningUp(true);
 
-				const utd_id = email.split('@')[0] // axm240143@utdallas.edu
+				const result = await signupAction(email, password, {
+					get: (key: string) => {
+						if (key === "x-forwarded-for") return null;
+						if (key === "x-real-ip") return null;
+						return null;
+					}
+				});
 
-				const authResponse = await callRegisterRoute(email, password, utd_id)
+				if (!result.success) {
+					toast({
+						type: "error",
+						title: "Signup failed",
+						description: result.error
+					});
+					return;
+				}
+
+				await signInWithCustomToken(firebaseAuth, result.token);
+
+				const utd_id = email.split('@')[0];
+				const authResponse = await callRegisterRoute(email, password, utd_id);
 				
 				if (!authResponse.ok) {
 					toast({
@@ -109,7 +127,6 @@ export default function CreateAccountPage() {
 						title: authResponse.code,
 						description: authResponse.error
 					});
-
 					return;
 				}
 
@@ -117,7 +134,7 @@ export default function CreateAccountPage() {
 
 				await doSendEmailVerification(email, userCredentials.id);
 
-				localStorage.setItem("verificationEmail", email); // todo - maybe clear this once user is verified?
+				localStorage.setItem("verificationEmail", email);
 
 				toast({
 					type: "success",

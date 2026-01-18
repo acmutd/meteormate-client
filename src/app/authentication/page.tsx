@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import LogoBox from "../../../components/LogoBox";
-import { doSignInWithEmailAndPassword } from "../../firebase/auth";
 import { useAuth } from "../../contexts/authContext";
 import { useSearchParams } from "next/navigation";
 import { getEmailValidationError } from "@/utils/validation";
@@ -12,6 +11,9 @@ import PasswordInput from "../../../components/forms/PasswordInput";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getAuthErrorMessage } from "@/utils/authErrors";
 import { callActivityPing } from "@/utils/api/auth";
+import { loginAction } from "@/app/actions/auth";
+import { signInWithCustomToken } from "firebase/auth";
+import { auth as firebaseAuth } from "@/firebase/firebase";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -83,7 +85,23 @@ export default function LoginPage() {
 		try {
 			if (!isSigningIn) {
 				setIsSigningIn(true);
-				await doSignInWithEmailAndPassword(email, password);
+				
+				const result = await loginAction(email, password, {
+					get: (key: string) => {
+						if (key === "x-forwarded-for") return null;
+						if (key === "x-real-ip") return null;
+						return null;
+					}
+				});
+
+				if (!result.success) {
+					toast({ type: "error", title: "Login failed", description: result.error });
+					setEmailTouched(true);
+					setEmailError(result.error || "Login failed");
+					return;
+				}
+
+				await signInWithCustomToken(firebaseAuth, result.token);
 				const pingResponse = await callActivityPing();
 
 				if (!pingResponse.ok) {
@@ -95,9 +113,9 @@ export default function LoginPage() {
 					title: "Welcome back!",
 					description: "You’re now logged in.",
 				});
-				router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
+				router.push("../dashboard");
 			}
-		} catch (err: unknown) { //just in case there's a problem signing in 
+		} catch (err: unknown) {
 			console.error("Login error:", err);
 			const { message } = getAuthErrorMessage(err);
 			toast({ type: "error", title: "Login failed", description: message });
