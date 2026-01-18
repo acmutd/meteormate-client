@@ -25,6 +25,7 @@ export default function LoginPage() {
 	const [emailError, setEmailError] = useState("");
 	const [emailTouched, setEmailTouched] = useState(false);
 	const [isSigningIn, setIsSigningIn] = useState(false);
+	const toastShownRef = useRef(false);
 
 	// to know if we should show the red banner and disable/hide the "create an account" button
 	const searchParams = useSearchParams();
@@ -40,6 +41,17 @@ export default function LoginPage() {
 	useEffect(() => {
 		emailRef.current?.focus();
 	}, []);
+
+	useEffect(() => {
+		if (!toastShownRef.current && searchParams.get("toast") === "not-signed-in") {
+			toast({
+				type: "error",
+				title: "Not Signed In",
+				description: "You must be signed in to access your profile. Please log in to continue."
+			});
+			toastShownRef.current = true;
+		}
+	}, [searchParams, toast]);
 
 	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
