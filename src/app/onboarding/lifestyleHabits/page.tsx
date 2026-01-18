@@ -16,7 +16,12 @@ export default function LifestyleHabitsPage() {
     const [selectedCloseness, setSelectedCloseness] = useState<string | null>(
         null
     );
-    const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
+    const [selectedSmokeVape, setSelectedSmokeVape] = useState<boolean | null>(
+        null
+    );
+    const [selectedDrink, setSelectedDrink] = useState<boolean | null>(
+        null
+    );
     const [selectedDealbreakers, setSelectedDealbreakers] = useState<string[]>([]);
 
     const [hydrated, setHydrated] = useState(false); // flag for pages
@@ -24,9 +29,8 @@ export default function LifestyleHabitsPage() {
     useEffect(() => {
         const saved = loadOnboardingData();
         setSelectedCloseness(saved.roomate_closeness ?? null);
-        if (Array.isArray(saved.habits)) {
-            setSelectedHabits(saved.habits);
-        }
+        setSelectedSmokeVape(saved.smoke_vape ?? false);
+        setSelectedDrink(saved.drink ?? false);
         if (Array.isArray(saved.dealbreakers)) {
             setSelectedDealbreakers(saved.dealbreakers);
         }
@@ -39,10 +43,11 @@ export default function LifestyleHabitsPage() {
 
     updateOnboardingData({
             roomate_closeness: selectedCloseness,
-            habits: selectedHabits,
+            smoke_vape: selectedSmokeVape,
+            drink: selectedDrink,
             dealbreakers: selectedDealbreakers,
     });
-  }, [hydrated, selectedCloseness, selectedHabits, selectedDealbreakers]);
+  }, [hydrated, selectedCloseness, selectedSmokeVape, selectedDrink, selectedDealbreakers]);
     
     const handleToggle = (
         currentValue: string | null,
@@ -52,14 +57,17 @@ export default function LifestyleHabitsPage() {
             setValue(currentValue === newValue ? null : newValue);
     };
 
-    const handleHabitsToggle = (habit: string) => {
-        setSelectedHabits((prev) => {
-            if (prev.includes(habit)) {
-                return prev.filter((i) => i !== habit);
-            }
-            return [...prev, habit];
-        }
-    )};
+    const handleBooleanToggle = (
+		currentValue: boolean | null,
+		setValue: (val: boolean | null) => void,
+		newValue: boolean
+	) => {
+		if (currentValue === newValue) {
+			setValue(false);
+		} else {
+			setValue(newValue);
+		}
+	};
 
     const handleDealbreakerToggle = (dealbreaker: string) => {
         setSelectedDealbreakers((prev) => {
@@ -71,7 +79,7 @@ export default function LifestyleHabitsPage() {
     )};
 
     const handleNextStep = () => {
-        console.log(selectedCloseness, selectedHabits, selectedDealbreakers)
+        console.log(selectedCloseness, selectedSmokeVape, selectedDrink, selectedDealbreakers)
         router.push("/onboarding/interests");
     };
     return (
@@ -115,14 +123,14 @@ export default function LifestyleHabitsPage() {
                     <LifestylePreferencesCard
                         title="Smoking/Vaping"
                         imageSrc="/images/orderly_card.webp"
-                        isSelected={selectedHabits.includes("smoke_vape")}
-                        onClick={() => handleHabitsToggle("smoke_vape")}
+                        isSelected={selectedSmokeVape === true}
+                        onClick={() => handleBooleanToggle(selectedSmokeVape, setSelectedSmokeVape, true)}
                     />
                     <LifestylePreferencesCard
                         title="Drinking"
                         imageSrc="/images/tidy_card.webp"
-                        isSelected={selectedHabits.includes("drink")}
-                        onClick={() => handleHabitsToggle("drink")}
+                        isSelected={selectedDrink === true}
+                        onClick={() => handleBooleanToggle(selectedDrink, setSelectedDrink, true)}
                     />
                 </div>
                 <h1 className="text-black text-xl font-bold">Dealbreakers</h1>
