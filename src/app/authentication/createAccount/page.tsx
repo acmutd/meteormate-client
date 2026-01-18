@@ -15,6 +15,7 @@ import {
 	validatePasswordMatch,
 	getEmailValidationError,
 } from "@/utils/validation";
+import { authErrorMapping } from "@/utils/authErrors";
 import {
 	checkRateLimit,
 	formatRateLimitMessage,
@@ -112,8 +113,12 @@ export default function CreateAccountPage() {
 		} catch (err: unknown) {
 			console.error("Signup error:", err);
 			recordFailure("signup");
-			if (err && typeof err === "object" && "code" in err && err.code === "auth/email-already-in-use") {
-				setEmailError("An account with this email already exists.");
+			
+			const errCode = err && typeof err === "object" && "code" in err ? String(err.code) : undefined;
+			const mappedError = errCode ? authErrorMapping[errCode] : undefined;
+			
+			if (mappedError) {
+				setEmailError(mappedError);
 			} else {
 				const errorMessage = err && typeof err === "object" && "message" in err && typeof err.message === "string" 
 					? err.message 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import StatusLayout from "./StatusLayout";
+import { getAuthErrorMessage } from "../../../utils/authErrors";
 
 type ErrorPageProps = {
 	error: Error & { digest?: string };
@@ -23,30 +24,7 @@ function sanitizeErrorMessage(error: Error & { digest?: string; code?: string })
 	if (error?.code) {
 		const code = String(error.code);
 		if (code.startsWith("auth/")) {
-			switch (code) {
-				case "auth/email-already-in-use":
-					return "An account with this email already exists.";
-				case "auth/invalid-email":
-					return "The email address is invalid.";
-				case "auth/operation-not-allowed":
-					return "This operation is not allowed.";
-				case "auth/weak-password":
-					return "The password is too weak.";
-				case "auth/user-disabled":
-					return "This account has been disabled.";
-				case "auth/user-not-found":
-					return "No account found with this email.";
-				case "auth/wrong-password":
-					return "Incorrect password.";
-				case "auth/too-many-requests":
-					return "Too many attempts. Please try again later.";
-				case "auth/network-request-failed":
-					return "Network error. Please check your connection.";
-				case "auth/invalid-credential":
-					return "Invalid email or password.";
-				default:
-					return "An authentication error occurred.";
-			}
+			return getAuthErrorMessage(code);
 		}
 	}
 
