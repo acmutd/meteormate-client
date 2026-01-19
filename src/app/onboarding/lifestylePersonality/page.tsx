@@ -23,7 +23,7 @@ export default function LifestylePersonalityPage() {
     const [selectedGuestsPreference, setSelectedGuestsPreferences] = useState<
 		string | null
 	>(null);
-    const [selectedMoveInDate, setSelectedMoveInDate] = useState<Date | null>(null);
+    const [selectedMoveInDate, setSelectedMoveInDate] = useState<string | null>(null);
 
 	const [hydrated, setHydrated] = useState(false);  // again to keep track of the sekected oreferebces abd stuff
 
@@ -33,7 +33,7 @@ export default function LifestylePersonalityPage() {
 		setselectedPetPreferences(saved.pet_preference ?? null);
 		setSelectedGuestsPreferences(saved.guests_frequency ?? null);
 		setselectedLivingPreference(saved.housing_intent ?? null);
-        setSelectedMoveInDate(saved.move_in_date ? new Date(saved.move_in_date) : null);
+        setSelectedMoveInDate(saved.move_in_date ?? null);
         setHydrated(true);
 	}, []);
 
@@ -55,7 +55,7 @@ export default function LifestylePersonalityPage() {
         selectedMoveInDate
 	]);
 
-    const handleDateChange = (date: Date | null) => {
+    const handleDateChange = (date: string | null) => {
         setSelectedMoveInDate(date);
     };
 
@@ -79,6 +79,16 @@ export default function LifestylePersonalityPage() {
 
 		router.push(`/onboarding/housing?living=${encodeURIComponent(selectedLivingPreference ?? "")}`);
 	};
+
+    // gets today based on local time to avoid utc shift
+    const todayAsLocalYMD = () => {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
 	return (
 		<div>
 			<ProgressHeader 
@@ -169,7 +179,7 @@ export default function LifestylePersonalityPage() {
                         value={selectedMoveInDate}
                         onChange={handleDateChange}
                         placeholder="Select a date"
-                        minDate={new Date()}
+                        minDate={todayAsLocalYMD()}
                     />
 				</div>
                 

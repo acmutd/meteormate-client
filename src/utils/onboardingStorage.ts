@@ -10,7 +10,7 @@ export type OnboardingData = {
     housing_intent?: string | null;
     budget_min?: number | null;
     budget_max?: number | null;
-    move_in_date?: Date | null;
+    move_in_date?: string | null;
     lease_length?: string | null;
     dealbreakers?: string[];
     smoke_vape?: boolean | null;

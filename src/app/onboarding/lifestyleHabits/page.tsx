@@ -29,7 +29,7 @@ export default function LifestyleHabitsPage() {
     useEffect(() => {
         const saved = loadOnboardingData();
         setSelectedCloseness(saved.roomate_closeness ?? null);
-        setSelectedSmokeVape(saved.smoke_vape ?? false);
+        setSelectedSmokeVape(saved.smoke_vape ?? null);
         setSelectedDrink(saved.drink ?? false);
         if (Array.isArray(saved.dealbreakers)) {
             setSelectedDealbreakers(saved.dealbreakers);

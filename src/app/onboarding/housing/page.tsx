@@ -308,7 +308,6 @@ function OffCampusUI() {
         } else {
             console.log("Something went wrong with the survey")
         }
-		router.push("/onboarding/dashboard");
 	};
 
     const [selectedLeaseStatus, setSelectedLeaseStatus] = useState<boolean | null>(
