@@ -23,7 +23,7 @@ export default function HeroSection() {
 		<section
 			id="home"
 			className="relative min-h-screen w-screen bg-black bg-cover bg-top-left bg-no-repeat text-white"
-			style={{ backgroundImage: `url('/hero_section_background.webp')` }}
+			style={{ backgroundImage: `url('/hero_section_background.svg')` }}
 		>
 			{/* spacing for fixed navbar */}
 			<div className="pt-24 md:pt-28">
