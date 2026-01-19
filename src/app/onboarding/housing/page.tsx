@@ -459,7 +459,7 @@ function OffCampusUI() {
             <div className="flex items-center justify-center">
                 <DoneButton
                     className="mt-7"
-                    logo={<Image src="/images/peechi_duo.webp" alt="Peechi mascot"/>}
+                    logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
                     onClick={handleNextStep}
                     disabled={!selectedHaveLeaseLength || selectedLeaseStatus === null}
 
