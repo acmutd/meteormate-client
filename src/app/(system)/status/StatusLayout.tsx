@@ -29,7 +29,7 @@ export default function StatusLayout({
 			<div
 				className="absolute inset-0 opacity-60"
 				style={{
-					backgroundImage: "url('/stars.webp')",
+					backgroundImage: "url('/images/stars.png')",
 					backgroundSize: "cover",
 					backgroundPosition: "center",
 				}}
@@ -42,7 +42,7 @@ export default function StatusLayout({
 				<div className="flex justify-center mb-[clamp(0.5rem,2vh,1.5rem)]">
 					<div className="relative">
 						<Image
-							src="/MM_logo_V1.webp"
+							src="/images/MM_logo_V1.png"
 							alt="MeteorMate logo"
 							width={88}
 							height={88}

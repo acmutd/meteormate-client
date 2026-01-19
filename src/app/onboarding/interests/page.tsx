@@ -1,14 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import NextStepButton from "../../../components/NextStepButton";
+import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
-import InterestCard from '../../../components/InterestCard';
-import ProgressHeader from "../../../components/ProgressHeader";
+import InterestCard from '../../../../components/InterestCard';
+import ProgressHeader from "../../../../components/ProgressHeader";
 import {
   loadOnboardingData,
   updateOnboardingData,
-} from "@/utils/onboardingStorage";
-import Image from "next/image";
+} from "../../../utils/onboardingStorage";
 
 const INTEREST_ROWS = [
 	['Climbing', 'Anime', 'Running', 'Instruments', 'Reading', 'Gaming'],
@@ -88,7 +87,7 @@ export default function InterestsPage() {
 			</div>
 			<NextStepButton
 				className="mt-3 mb-4"
-				logo={<Image src="/peechi_duo.webp"  alt="Peechi mascot"/>}
+				logo={<img src="/images/peechi_duo.webp" />}
 				onClick={handleNextStep}
 			/>
 		</div>

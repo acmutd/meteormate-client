@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import { AuthProvider } from "../contexts/authContext";
-import ScreenBlocker from "../components/ScreenBlocker";
+import ScreenBlocker from "../../components/ScreenBlocker";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 
 export default function RootLayout({

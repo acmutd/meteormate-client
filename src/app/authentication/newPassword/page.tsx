@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import LogoBox from "../../../components/LogoBox";
+import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import { validatePasswordMatch, validatePassword } from "@/utils/validation";
-import LoadingSpinner from "../../../components/LoadingSpinner";
-import PasswordInput from "@/components/forms/PasswordInput";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
+import PasswordInput from "../../../../components/forms/PasswordInput";
 import { useToast } from "@/components/ui/ToastProvider";
 
 export default function NewPasswordPage() {
@@ -139,7 +139,7 @@ export default function NewPasswordPage() {
 	};
 
   return (
-    <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col w-full max-w-2xl px-10">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] p-2">
           Input New Password

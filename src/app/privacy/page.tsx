@@ -16,7 +16,7 @@ export default function PrivacyPage() {
                 onClick={() => router.push("/")}
             >
                 <Image
-                    src="/MM_logo_V1.webp"
+                    src="/images/MM_logo_V1.png"
                     alt="MeteorMate Logo"
                     width={56}
                     height={56}
@@ -162,7 +162,7 @@ export default function PrivacyPage() {
       <div
         className="fixed inset-0 -z-10 opacity-30"
         style={{
-          backgroundImage: `url('/stars.webp')`,
+          backgroundImage: `url('/images/stars.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

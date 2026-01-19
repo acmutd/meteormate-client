@@ -1,13 +1,12 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
-import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
-import NextStepButton from "@/components/NextStepButton";
-import { DatePicker } from "@/components/DatePicker";
+import LifestylePreferencesCard from "../../../../components/LifestylePreferencesCard";
+import NextStepButton from "../../../../components/NextStepButton";
+import { DatePicker } from "../../../../components/DatePicker";
 import { useRouter } from "next/navigation";
-import ProgressHeader from "@/components/ProgressHeader";
-import { loadOnboardingData, updateOnboardingData } from "@/utils/onboardingStorage";
-import Image from "next/image";
+import ProgressHeader from "../../../../components/ProgressHeader";
+import { loadOnboardingData, updateOnboardingData } from "../../../utils/onboardingStorage";
 
 export default function LifestylePersonalityPage() {
 	const router = useRouter();
@@ -105,19 +104,19 @@ export default function LifestylePersonalityPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Never"
-						imageSrc="/fire-sign-15238.webp" //need to change this
+						imageSrc="/images/fire-sign-15238.webp" //need to change this
 						isSelected={selectedCookingPreference === "never"}
 						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "never")}
 					/>
 					<LifestylePreferencesCard
 						title="Rarely"
-						imageSrc="/flambee.webp" // change this
+						imageSrc="/images/flambee.webp" // change this
 						isSelected={selectedCookingPreference === "rarely"}
 						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "rarely")}
 					/>
 					<LifestylePreferencesCard
 						title="Often"
-						imageSrc="/cooking-pots.webp" // change this
+						imageSrc="/images/cooking-pots.webp" // change this
 						isSelected={selectedCookingPreference === "often"}
 						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "often")}
 					/>
@@ -129,19 +128,19 @@ export default function LifestylePersonalityPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer"> 
 					<LifestylePreferencesCard
 						title="I'm okay with pets"
-						imageSrc="/pawprint.webp"
+						imageSrc="/images/pawprint.webp"
 						isSelected={selectedPetPreferences === "okay"}
 						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "okay")}
 					/>
 					<LifestylePreferencesCard
 						title="I'm not okay with pets"
-						imageSrc="/no-pets.webp"
+						imageSrc="/images/no-pets.webp"
 						isSelected={selectedPetPreferences === "not_okay"}
 						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "not_okay")}
 					/>
 					<LifestylePreferencesCard
 						title="I have a pet"
-						imageSrc="/pet.webp"
+						imageSrc="/images/pet.webp"
 						isSelected={selectedPetPreferences === "have_a_pet"}
 						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "have_a_pet")}
 					/>
@@ -153,19 +152,19 @@ export default function LifestylePersonalityPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Never"
-						imageSrc="/no-crowd.webp"
+						imageSrc="/images/no-crowd.webp"
 						isSelected={selectedGuestsPreference === "never"}
 						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "never")}
 					/>
 					<LifestylePreferencesCard
 						title="Sometimes"
-						imageSrc="/group.webp"
+						imageSrc="/images/group.webp"
 						isSelected={selectedGuestsPreference === "sometimes"}
 						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "sometimes")}
 					/>
 					<LifestylePreferencesCard
 						title="Often"
-						imageSrc="/friends.webp"
+						imageSrc="/images/friends.webp"
 						isSelected={selectedGuestsPreference === "often"}
 						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "often")}
 					/>
@@ -185,13 +184,13 @@ export default function LifestylePersonalityPage() {
 				</div>
                 
 				<p className="text-black text-sm mt-1 mb-2">
-					Do you plan on living on-campus or off-campus?
+					Do you plan on living on-Campus or off-Campus?
 				</p>
 				
 				<div className="grid grid-cols-2 place-items-center gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
-						title="On-Campus"
-						imageSrc="/school.webp"
+						title="On Campus"
+						imageSrc="/images/school.webp"
 						isSelected={selectedLivingPreference === "on_campus"}
 						onClick={() => {
 							handleToggle(selectedLivingPreference, setselectedLivingPreference, "on_campus");
@@ -199,8 +198,8 @@ export default function LifestylePersonalityPage() {
 
 					/>
 					<LifestylePreferencesCard
-						title="Off-Campus"
-						imageSrc="/residential.webp"
+						title="Off Campus"
+						imageSrc="/images/residential.webp"
 						isSelected={selectedLivingPreference === "off_campus"}
 						onClick={() => {
 							handleToggle(selectedLivingPreference, setselectedLivingPreference, "off_campus");
@@ -213,7 +212,7 @@ export default function LifestylePersonalityPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<Image src="/peechi_duo.webp"  alt="Peechi mascot"/>}
+						logo={<img src="/images/peechi_duo.webp" />}
 						onClick={handleNextStep}
 						disabled={!selectedLivingPreference || !selectedMoveInDate || !selectedCookingPreference || !selectedGuestsPreference || !selectedPetPreferences}
 					/>

@@ -47,7 +47,7 @@ export default function Navbar() {
 				<div className="relative flex items-center gap-4 group cursor-pointer" onClick={() => router.push("/")}>
 					<div className="relative">
 						<Image
-							src="/MM_logo_V1.webp"
+							src="/images/MM_logo_V1.webp"
 							alt="MeteorMate Logo"
 							width={56}
 							height={56}
