@@ -6,7 +6,7 @@ export type OnboardingData = {
     cooking_frequency?: string | null;
     pet_preference?: string | null;
     guests_frequency?: string | null;
-    roomate_closeness?: string | null;
+    roommate_closeness?: string | null;
     housing_intent?: string | null;
     budget_min?: number | null;
     budget_max?: number | null;
