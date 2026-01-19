@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import LogoBox from "../../../../components/LogoBox";
+import LogoBox from "../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import {
 	doSendEmailVerification,
@@ -12,9 +12,9 @@ import {
 	validatePasswordMatch,
 	getEmailValidationError,
 } from "@/utils/validation";
-import LoadingSpinner from "../../../../components/LoadingSpinner";
-import EmailInput from "../../../../components/forms/EmailInput";
-import PasswordInput from "../../../../components/forms/PasswordInput";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import EmailInput from "@/components/forms/EmailInput";
+import PasswordInput from "@/components/forms/PasswordInput";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getAuthErrorMessage } from "@/utils/authErrors";
 import { callRegisterRoute } from "@/utils/api/auth"
@@ -155,7 +155,7 @@ export default function CreateAccountPage() {
 	// };
 
 	return (
-		<LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+		<LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
 			{/* Back arrow */}
 			<button
 				onClick={router.back}

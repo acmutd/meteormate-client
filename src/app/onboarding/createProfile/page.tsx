@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import NextStepButton from "../../../../components/NextStepButton";
+import NextStepButton from "../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
-import ProgressHeader from "../../../../components/ProgressHeader";
+import ProgressHeader from "../../../components/ProgressHeader";
 import { useRef, useState } from "react"; // mostly only for the profile picture
 
 export default function CreateProfilePage() {
@@ -30,7 +30,7 @@ export default function CreateProfilePage() {
 		Number(age) > 0;
 
 
-	// const PeechiDuo = require("../../../public/images/peechi_duo.webp");
+	// const PeechiDuo = require("../../../public/peechi_duo.webp");
 
 	const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setGender(e.target.value);

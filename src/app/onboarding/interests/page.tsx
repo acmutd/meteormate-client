@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import NextStepButton from "../../../../components/NextStepButton";
+import NextStepButton from "@/components/NextStepButton";
 import { useRouter } from "next/navigation";
-import InterestCard from '../../../../components/InterestCard';
-import ProgressHeader from "../../../../components/ProgressHeader";
+import InterestCard from '@/components/InterestCard';
+import ProgressHeader from "@/components/ProgressHeader";
 import {
   loadOnboardingData,
   updateOnboardingData,

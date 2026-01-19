@@ -13,7 +13,7 @@ export default function GetStarted() {
 			id="getStarted"
 			className="min-h-screen bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col items-center justify-center"
 			style={{
-				backgroundImage: `url('/images/STARS__GRAYSCALE_LOGO_png.webp')`,
+				backgroundImage: `url('/STARS__GRAYSCALE_LOGO_png.webp')`,
 			}}
 		>
 			<div className="flex flex-col items-center">
