@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import NextStepButton from "../../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../../components/ProgressHeader";
@@ -96,7 +97,7 @@ export default function CreateProfilePage() {
 						className="w-32 h-32 rounded-full border-2 border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center hover:opacity-80"
 					>
 						{preview ? (
-						<img
+						<Image
 							src={preview}
 							alt="Profile"
 							className="w-full h-full object-cover"
@@ -282,7 +283,7 @@ export default function CreateProfilePage() {
 				<div className="flex justify-center">
 					<NextStepButton
 					className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
-					logo={<img src="/images/peechi_duo.webp" />}
+					logo={<Image src="/images/peechi_duo.webp" alt="Peechi mascot" />}
 					onClick={handleNextStep}
 					disabled={!isFormValid}
 					/>

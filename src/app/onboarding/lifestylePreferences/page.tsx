@@ -8,7 +8,8 @@ import ProgressHeader from "../../../../components/ProgressHeader";
 import {
   loadOnboardingData,
   updateOnboardingData,
-} from "../../../utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
+} from "@/utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
+import Image from "next/image";
 
 export default function LifestylePreferencesPage() {
 	const router = useRouter();
@@ -139,7 +140,7 @@ export default function LifestylePreferencesPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<img src="/images/peechi_duo.webp" />}
+						logo={<Image src="/images/peechi_duo.webp" alt="Peechi mascot" />}
 						onClick={handleNextStep}
 						disabled = {!selectedCleanliness || !selectedNoiseTolerance || !selectedWakeupTime}
 					/>

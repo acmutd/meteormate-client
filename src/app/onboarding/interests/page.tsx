@@ -7,7 +7,8 @@ import ProgressHeader from "../../../../components/ProgressHeader";
 import {
   loadOnboardingData,
   updateOnboardingData,
-} from "../../../utils/onboardingStorage";
+} from "@/utils/onboardingStorage";
+import Image from "next/image";
 
 const INTEREST_ROWS = [
 	['Climbing', 'Anime', 'Running', 'Instruments', 'Reading', 'Gaming'],
@@ -87,7 +88,7 @@ export default function InterestsPage() {
 			</div>
 			<NextStepButton
 				className="mt-3 mb-4"
-				logo={<img src="/images/peechi_duo.webp" />}
+				logo={<Image src="/images/peechi_duo.webp" alt="Peechi mascot" />}
 				onClick={handleNextStep}
 			/>
 		</div>

@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import LogoBox from "../../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import {
-	doCreateUserWithEmailAndPassword,
 	doSendEmailVerification,
 } from "@/firebase/auth";
 import { Check, X } from "lucide-react";

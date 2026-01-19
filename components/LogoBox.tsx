@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 
 interface MeteorCardProps {
 	children: React.ReactNode;
@@ -14,12 +15,12 @@ const MeteorCard: React.FC<MeteorCardProps> = ({
 	logoAlt = "MeteorMate Logo",
 	className = "",
 }) => {
+	if (!logoSrc) return null;
 	return (
 		<div className={`relative w-full max-w-xl mx-auto ${className}`}>
 			{/* Logo peeking out the top */}
 			<div className="absolute [top:clamp(-2.5rem,-5vh,-3.5rem)] left-1/2 transform -translate-x-1/2 z-10">
-				{/* eslint-disable-next-line @next/next/no-img-element */}
-				<img
+				<Image
 					src={logoSrc}
 					alt={logoAlt}
 					className="size-[clamp(4rem,15vh,6rem)]"

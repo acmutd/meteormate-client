@@ -6,7 +6,8 @@ import NextStepButton from "../../../../components/NextStepButton";
 import { DatePicker } from "../../../../components/DatePicker";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../../components/ProgressHeader";
-import { loadOnboardingData, updateOnboardingData } from "../../../utils/onboardingStorage";
+import { loadOnboardingData, updateOnboardingData } from "@/utils/onboardingStorage";
+import Image from "next/image";
 
 export default function LifestylePersonalityPage() {
 	const router = useRouter();
@@ -212,7 +213,7 @@ export default function LifestylePersonalityPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<img src="/images/peechi_duo.webp" />}
+						logo={<Image src="/images/peechi_duo.webp" alt="Peechi mascot" />}
 						onClick={handleNextStep}
 						disabled={!selectedLivingPreference || !selectedMoveInDate || !selectedCookingPreference || !selectedGuestsPreference || !selectedPetPreferences}
 					/>
