@@ -114,7 +114,7 @@ export default function LoginPage() {
 	};
 
 	return (
-		<LogoBox logoSrc="/images/MM_logo_V1.png" logoAlt="MeteorMate Logo">
+		<LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
 			{/* Back arrow to landing */}
 			<button
 				onClick={() => router.push("/")}
