@@ -26,7 +26,7 @@ const LifestylePreferencesCard = ({
 			<img
 				src={imageSrc}
 				className="h-12 w-12 object-cover p-2"
-			/>
+			 alt={""}/>
 			</div>
 			<p className="text-lg text-gray-800 text-center">{title}</p>
 			
