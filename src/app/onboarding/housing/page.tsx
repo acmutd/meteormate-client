@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import LifestylePreferencesCard from "../../../../components/LifestylePreferencesCard";
-import DoneButton from "../../../../components/DoneButton";
-import ProgressHeader from "../../../../components/ProgressHeader";
+import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
+import DoneButton from "@/components/DoneButton";
+import ProgressHeader from "@/components/ProgressHeader";
 import React, { useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { loadOnboardingData, updateOnboardingData, clearOnboardingData } from "@/utils/onboardingStorage";
-import { truncate } from "fs/promises";
 import { getAuth } from "firebase/auth";
-import PriceRangeSlider from "../../../../components/PriceRangeSlider";
+import PriceRangeSlider from "@/components/PriceRangeSlider";
+import Image from "next/image";
 
 const sendOnboardingData = async () => {
 	try{
@@ -161,7 +161,7 @@ function OnCampusUI() {
     return (
         <div>
             <ProgressHeader 
-				title="On Campus"
+				title="On-Campus"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
 				currentStep={5}
 			/>
@@ -173,25 +173,25 @@ function OnCampusUI() {
 				<div className="grid grid-cols-4 gap-2 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Northside"
-						imageSrc="/images/houses.webp" //need to change this
+						imageSrc="/houses.webp" //need to change this
 						isSelected={selectedLocation.includes("northside")}
 						onClick={() => handleLocationToggle("northside")}
 					/>
 					<LifestylePreferencesCard
 						title="University Village"
-						imageSrc="/images/houses.webp" //need to change this
+						imageSrc="/houses.webp" //need to change this
 						isSelected={selectedLocation.includes("uv")}
 						onClick={() => handleLocationToggle("uv")}
 					/>
 					<LifestylePreferencesCard
 						title="Canyon Creek"
-						imageSrc="/images/houses.webp" //need to change this
+						imageSrc="/houses.webp" //need to change this
 						isSelected={selectedLocation.includes("cc")}
 						onClick={() => handleLocationToggle("cc")}
 					/>
 					<LifestylePreferencesCard
 						title="Freshmen Dorms"
-						imageSrc="/images/3D-buildings.webp" // change this
+						imageSrc="/3D-buildings.webp" // change this
 						isSelected={selectedLocation.includes("freshman_dorms")}
 						onClick={() => handleLocationToggle("freshman_dorms")}
 					/>
@@ -203,14 +203,14 @@ function OnCampusUI() {
 				</p>
 				<div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer"> 
 					<LifestylePreferencesCard
-						title="Yes, I am an honors student"
-						imageSrc="/images/badge.webp"
+						title="Yes, I am an Honors student"
+						imageSrc="/badge.webp"
 						isSelected={selectedHonorsStatus === true}
 						onClick={() => handleBooleanToggle(selectedHonorsStatus, setSelectedHonorsStatus, true)}
 					/>
 					<LifestylePreferencesCard
-						title="No, I am not an honors student"
-						imageSrc="/images/study.webp"
+						title="No, I am not an Honors student"
+						imageSrc="/study.webp"
 						isSelected={selectedHonorsStatus === false}
 						onClick={() => handleBooleanToggle(selectedHonorsStatus, setSelectedHonorsStatus, false)}
 					/>
@@ -220,18 +220,18 @@ function OnCampusUI() {
 				{showFreshmanSpecifics && (
 					<>
 						<p className="text-black text-sm mt-1 font-bold mb-2">
-							Are you interested in being part of the Living Learning Community?
+							Are you interested in being part of the Living Learning Community (LLC)?
 						</p>
 						<div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
 							<LifestylePreferencesCard
 								title="Yes, I would like to be a part of LLC"
-								imageSrc="/images/environment.webp"
+								imageSrc="/environment.webp"
 								isSelected={selectedLLCPreference === true}
 								onClick={() => handleBooleanToggle(selectedLLCPreference, setSelectedLLCPreference, true)}
 							/>
 							<LifestylePreferencesCard
 								title="No, I would not like to be a part of LLC"
-								imageSrc="/images/reading-book.webp"
+								imageSrc="/reading-book.webp"
 								isSelected={selectedLLCPreference === false}
 								onClick={() => handleBooleanToggle(selectedLLCPreference, setSelectedLLCPreference, false)}
 							/>
@@ -248,25 +248,25 @@ function OnCampusUI() {
 						<div className="grid grid-cols-4 gap-4 mb-4 cursor-pointer">
 							<LifestylePreferencesCard
 								title="No preference"
-								imageSrc="/images/environment.webp" // need to change
+								imageSrc="/environment.webp" // need to change
 								isSelected={selectedNumOfRoommates === "no_preference"}
 								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "no_preference")}
 							/>
 							<LifestylePreferencesCard
 								title="One"
-								imageSrc="/images/reading-book.webp" // need to change
+								imageSrc="/reading-book.webp" // need to change
 								isSelected={selectedNumOfRoommates === "one"}
 								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "one")}
 							/>
 							<LifestylePreferencesCard
 								title="Two"
-								imageSrc="/images/reading-book.webp" // need to change
+								imageSrc="/reading-book.webp" // need to change
 								isSelected={selectedNumOfRoommates === "two"}
 								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "two")}
 							/>
 							<LifestylePreferencesCard
 								title="Three"
-								imageSrc="/images/reading-book.webp" // need to change
+								imageSrc="/reading-book.webp" // need to change
 								isSelected={selectedNumOfRoommates === "three"}
 								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "three")}
 							/>
@@ -278,7 +278,7 @@ function OnCampusUI() {
 			<div className="flex items-center justify-center">
             <DoneButton
                                 className="mt-7"
-                                logo={<img src="/images/peechi_duo.webp" />}
+                                logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
                                 onClick={handleNextStep}
 								disabled = {
 									!selectedLocation || 
@@ -286,7 +286,6 @@ function OnCampusUI() {
 									(showFreshmanSpecifics && (selectedLLCPreference === null || selectedHonorsStatus === null)) ||
 									(showRoommateOptions && !selectedNumOfRoommates)
 								}
-								
                             />
     		</div>
         </div>
@@ -386,13 +385,13 @@ function OffCampusUI() {
 				<div className="grid grid-cols-2 gap-2 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="I have a lease and need a roommate"
-						imageSrc="/images/houses.webp" //need to change this
+						imageSrc="/houses.webp" //need to change this
 						isSelected={selectedLeaseStatus === true}
 						onClick={() => handleBooleanToggle(selectedLeaseStatus, setSelectedLeaseStatus, true)}
 					/>
 					<LifestylePreferencesCard
 						title="I do not have a lease"
-						imageSrc="/images/3D-buildings.webp" // change this
+						imageSrc="/3D-buildings.webp" // change this
 						isSelected={selectedLeaseStatus === false}
 						onClick={() => handleBooleanToggle(selectedLeaseStatus, setSelectedLeaseStatus, false)}
 					/>
@@ -409,21 +408,21 @@ function OffCampusUI() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer"> 
 					<LifestylePreferencesCard
 						title="Semester"
-						imageSrc="/images/badge.webp"
+						imageSrc="/badge.webp"
 						isSelected={selectedHaveLeaseLength === "semester"}
 						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "semester")
 						}
 					/>
 					<LifestylePreferencesCard
 						title="Academic Year"
-						imageSrc="/images/study.webp"
+						imageSrc="/study.webp"
 						isSelected={selectedHaveLeaseLength === "academic_year"}
 						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "academic_year")
 						}
 					/>
 					<LifestylePreferencesCard
 						title="Year"
-						imageSrc="/images/study.webp"
+						imageSrc="/study.webp"
 						isSelected={selectedHaveLeaseLength === "year"}
 						onClick={() => handleToggle(selectedHaveLeaseLength, setSelectedHaveLeaseLength, "year")
 						}
@@ -460,7 +459,7 @@ function OffCampusUI() {
 			<div className="flex items-center justify-center">
             <DoneButton
                                 className="mt-7"
-                                logo={<img src="/images/peechi_duo.webp" />}
+                                logo={<img src="/peechi_duo.webp" />}
                                 onClick={handleNextStep}
 								disabled = {!selectedHaveLeaseLength || selectedLeaseStatus === null}
 								

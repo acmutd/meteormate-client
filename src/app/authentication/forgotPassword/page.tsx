@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import LogoBox from "../../../../components/LogoBox";
+import LogoBox from "../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import { getEmailValidationError } from "@/utils/validation";
-import LoadingSpinner from "../../../../components/LoadingSpinner";
-import EmailInput from "../../../../components/forms/EmailInput";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import EmailInput from "@/components/forms/EmailInput";
 import { useToast } from "@/components/ui/ToastProvider";
 
 export default function VerifyEmailPage() {
@@ -94,7 +94,7 @@ export default function VerifyEmailPage() {
 
 
   return (
-    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+    <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col w-full max-w-2xl px-10">
 				{/* Back arrow to login */}
 				<button

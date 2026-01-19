@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
 import {useState, useEffect} from "react";
-import LifestylePreferencesCard from "../../../../components/LifestylePreferencesCard";
-import NextStepButton from "../../../../components/NextStepButton";
+import LifestylePreferencesCard from "../../../components/LifestylePreferencesCard";
+import NextStepButton from "../../../components/NextStepButton";
 import {useRouter} from "next/navigation";
-import ProgressHeader from "../../../../components/ProgressHeader";
+import ProgressHeader from "../../../components/ProgressHeader";
 import {
     loadOnboardingData,
     updateOnboardingData,
 } from "@/utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
+import Image from "next/image";
 
 export default function LifestyleHabitsPage() {
     const router = useRouter();
@@ -94,19 +95,19 @@ export default function LifestyleHabitsPage() {
                 <div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
                     <LifestylePreferencesCard
                         title="Not Close"
-                        imageSrc="/images/roommate.webp"
+                        imageSrc="/roommate.webp"
                         isSelected={selectedCloseness === "not_close"}
                         onClick={() => handleToggle(selectedCloseness, setSelectedCloseness, "not_close")}
                     />
                     <LifestylePreferencesCard
                         title="Friends"
-                        imageSrc="/images/high-five.webp"
+                        imageSrc="/high-five.webp"
                         isSelected={selectedCloseness === "friends"}
                         onClick={() => handleToggle(selectedCloseness, setSelectedCloseness, "friends")}
                     />
                     <LifestylePreferencesCard
                         title="Close Friends"
-                        imageSrc="/images/best-friends.webp"
+                        imageSrc="/best-friends.webp"
                         isSelected={selectedCloseness === "close_friends"}
                         onClick={() => handleToggle(selectedCloseness, setSelectedCloseness, "close_friends")}
                     />
@@ -118,14 +119,14 @@ export default function LifestyleHabitsPage() {
                 <div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
                     <LifestylePreferencesCard
                         title="Smoking/Vaping"
-                        imageSrc="/images/orderly_card.webp"
+                        imageSrc="/orderly_card.webp"
                         isSelected={selectedSmokeVape === true}
                         onClick={() => toggleNullableTrue(selectedSmokeVape, setSelectedSmokeVape)}
                     />
 
                     <LifestylePreferencesCard
                         title="Drinking"
-                        imageSrc="/images/tidy_card.webp"
+                        imageSrc="/tidy_card.webp"
                         isSelected={selectedDrink === true}
                         onClick={() => toggleNullableTrue(selectedDrink, setSelectedDrink)}
                     />
@@ -137,19 +138,19 @@ export default function LifestyleHabitsPage() {
                 <div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
                     <LifestylePreferencesCard
                         title="Smoking/Vaping"
-                        imageSrc="/images/quiet_card.webp"
+                        imageSrc="/quiet_card.webp"
                         isSelected={selectedDealbreakers.includes("smoke_vape")}
                         onClick={() => handleDealbreakerToggle("smoke_vape")}
                     />
                     <LifestylePreferencesCard
                         title="Drinking"
-                        imageSrc="/images/moderate_card.webp"
+                        imageSrc="/moderate_card.webp"
                         isSelected={selectedDealbreakers.includes("drink")}
                         onClick={() => handleDealbreakerToggle("drink")}
                     />
                     <LifestylePreferencesCard
                         title="Same Gender Roommates"
-                        imageSrc="/images/social_card.webp"
+                        imageSrc="/social_card.webp"
                         isSelected={selectedDealbreakers.includes("same_gender")}
                         onClick={() => handleDealbreakerToggle("same_gender")}
                     />
@@ -157,7 +158,7 @@ export default function LifestyleHabitsPage() {
                 <div className="flex justify-center">
                     <NextStepButton
                         className="mt-7"
-                        logo={<img src="/images/peechi_duo.webp"/>}
+                        logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
                         onClick={handleNextStep}
                         disabled={!selectedCloseness}
                     />
