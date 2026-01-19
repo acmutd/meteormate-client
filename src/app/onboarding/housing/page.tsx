@@ -14,13 +14,7 @@ import PriceRangeSlider from "../../../../components/PriceRangeSlider";
 const sendOnboardingData = async () => {
 	try{
 		const data = loadOnboardingData();
-        const formattedData = {
-			...data,
-			move_in_date: data.move_in_date 
-				? new Date(data.move_in_date).toISOString().split('T')[0] 
-				: null
-		};
-		const body = JSON.stringify(formattedData)
+		const body = JSON.stringify(data)
         // console.log("body:", body)
 		const auth = getAuth();
 		const user = auth.currentUser;
