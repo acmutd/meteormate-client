@@ -1,7 +1,6 @@
 # Created by Ryan Polasky | 7/12/25
 # ACM MeteorMate | All Rights Reserved
 
-import os
 import logging
 import sys
 
@@ -10,12 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from backend.config import settings
-from backend.database import engine, Base
-from backend.routes import auth, survey, matches, cron, profiles
-
-# Fixes Vercel import issue (I think?)
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from ..backend.config import settings
+from ..backend.database import engine, Base
+from ..backend.routes import auth, survey, matches, cron, profiles
 
 # Logging setup
 logger = logging.getLogger("meteormate")
