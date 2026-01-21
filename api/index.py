@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 
 from backend.config import settings
 from backend.database import engine, Base
-from backend.api import auth, survey, matches, cron, profiles
+from backend.routes import auth, survey, matches, cron, profiles
 
 # Logging setup
 logger = logging.getLogger("meteormate")
@@ -58,11 +58,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 # Routes
-app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(survey.router, prefix="/api/survey", tags=["survey"])
-app.include_router(matches.router, prefix="/api/matches", tags=["matches"])
-app.include_router(cron.router, prefix="/api/cron", tags=["cron"])
-app.include_router(profiles.router, prefix="/api/profiles", tags=["user_profiles"])
+app.include_router(auth.router, prefix="/routes/auth", tags=["auth"])
+app.include_router(survey.router, prefix="/routes/survey", tags=["survey"])
+app.include_router(matches.router, prefix="/routes/matches", tags=["matches"])
+app.include_router(cron.router, prefix="/routes/cron", tags=["cron"])
+app.include_router(profiles.router, prefix="/routes/profiles", tags=["user_profiles"])
 
 
 @app.get("/")
