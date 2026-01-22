@@ -16,7 +16,7 @@ export default function PrivacyPage() {
                 onClick={() => router.push("/")}
             >
                 <Image
-                    src="/images/MM_logo_V1.png"
+                    src="/images/MM_logo_V1.webp"
                     alt="MeteorMate Logo"
                     width={56}
                     height={56}

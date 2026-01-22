@@ -55,6 +55,7 @@ export default function LifestylePreferencesPage() {
 	const handleNextStep = () => {
 		router.push("/onboarding/lifestyleHabits");
 	};
+	
 	return (
 		<div>
 			<ProgressHeader 

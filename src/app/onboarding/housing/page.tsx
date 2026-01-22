@@ -7,7 +7,7 @@ import ProgressHeader from "../../../../components/ProgressHeader";
 import React, { useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { loadOnboardingData, updateOnboardingData, clearOnboardingData } from "@/utils/onboardingStorage";
-import { truncate } from "fs/promises";
+import { truncate } from "fs/promises"; 
 import { getAuth } from "firebase/auth";
 import PriceRangeSlider from "../../../../components/PriceRangeSlider";
 
