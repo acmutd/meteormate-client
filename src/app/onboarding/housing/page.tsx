@@ -14,43 +14,52 @@ import PriceRangeSlider from "../../../../components/PriceRangeSlider";
 const sendOnboardingData = async () => {
 	try{
 		const data = loadOnboardingData();
-		const body = JSON.stringify(data)
+		//const body = JSON.stringify(data)
 		const auth = getAuth();
 		const user = auth.currentUser;
-		if (user) {
-			const token = await user.getIdToken();
-			const response = await fetch("http://localhost:8000/api/survey", {
-				method: "POST",
-				headers: { "Content-Type": "application/json",
-					"Authorization": `Bearer ${token}`
-				},
-				body: JSON.stringify(data),
-			});
-
-			if (!response.ok) {
-            	throw new Error(`HTTP error! Status: ${response.status}`);
-        	}
-
-			clearOnboardingData();
+		
+		if(!user) {
+			return { ok: false, error: "user not currently signed in."};
 		}
-		else{
-			throw new Error("User not currently signed in.");
+
+		const token = await user.getIdToken();
+		const response = await fetch("http://localhost:8000/api/survey", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(data),
+		});
+
+		if (!response.ok) {
+			let detail = "";
+			try {
+				const errJson = await response.json();
+				detail = errJson?.detail ? ` (${errJson.detail})` : "";
+			} catch {}
+			return { ok: false, error: `HTTP error ${response.status}${detail}` };
 		}
-		// console.log(body)
-	} catch (error) {
-        if (error instanceof Error) {
-            console.error("Failed to send onboarding data:", error.message);
-        } else {
-            console.error("An unexpected error occurred:", error);
-        }
-    }
-}
+		clearOnboardingData();
+			return { ok: true };
+		} catch (error) {
+			const msg = error instanceof Error ? error.message : "Unexpected error";
+			return { ok: false, error: msg };
+		}
+
+};
 
 function OnCampusUI() {
 	const router = useRouter();
-	const handleNextStep = () => {
-		sendOnboardingData()
-		router.push("/onboarding/dashboard");
+	const handleNextStep = async () => {
+		const result = await sendOnboardingData();
+
+		if (!result.ok) {
+			console.error("Failed to send onboarding data:", result.error);
+			return;
+		}
+
+		router.push("/onboarding/dashboard"); // placeholder is fine for now
 	};
 
     const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
@@ -60,7 +69,7 @@ function OnCampusUI() {
     const [selectedLLCPreference, setSelectedLLCPreference] = useState<boolean | null>(
 		null
 	);
-	const [selectedNumOfRoomates, setSelectedNumOfRoomates] = useState<string | null>(
+	const [selectedNumOfRoommates, setSelectedNumOfRoommates] = useState<string | null>(
 		null
 	);
 
@@ -76,7 +85,7 @@ function OnCampusUI() {
 		}
 		setSelectedHonorsStatus(saved.honors ?? null);
 		setSelectedLLCPreference(saved.llc_interest ?? null);
-		setSelectedNumOfRoomates(saved.num_roommates ?? null);
+		setSelectedNumOfRoommates(saved.num_roommates ?? null);
 
 		setHydrated(true);
 	}, []);
@@ -87,14 +96,14 @@ function OnCampusUI() {
 			on_campus_locations: selectedLocation,
 			honors: selectedHonorsStatus,
 			llc_interest: selectedLLCPreference,
-			num_roommates: selectedNumOfRoomates
+			num_roommates: selectedNumOfRoommates
 		});
 	}, [
 		hydrated,
 		selectedLocation,
 		selectedHonorsStatus,
 		selectedLLCPreference,
-		selectedNumOfRoomates
+		selectedNumOfRoommates
 	]);
 
 	const handleLocationToggle = (value: string) => {
@@ -111,13 +120,13 @@ function OnCampusUI() {
             setSelectedLLCPreference(null);
         }
 		
-		// check if we need to reset roomate data
+		// check if we need to reset roommate data
 		const hasRoommateLocation = newLocations.some(loc => 
             ["northside", "cc", "uv"].includes(loc)
         );
 
         if (!hasRoommateLocation) {
-            setSelectedNumOfRoomates(null);
+            setSelectedNumOfRoommates(null);
         }
 		};
 
@@ -235,32 +244,32 @@ function OnCampusUI() {
 				{showRoommateOptions && (
 					<>
 						<p className="text-black text-sm mt-1 font-bold mb-2">
-							How many roomates is ideal?
+							How many roommates is ideal?
 						</p>
 						<div className="grid grid-cols-4 gap-4 mb-4 cursor-pointer">
 							<LifestylePreferencesCard
 								title="No preference"
 								imageSrc="/images/environment.webp" // need to change
-								isSelected={selectedNumOfRoomates === "no_preference"}
-								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "no_preference")}
+								isSelected={selectedNumOfRoommates === "no_preference"}
+								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "no_preference")}
 							/>
 							<LifestylePreferencesCard
 								title="One"
 								imageSrc="/images/reading-book.webp" // need to change
-								isSelected={selectedNumOfRoomates === "one"}
-								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "one")}
+								isSelected={selectedNumOfRoommates === "one"}
+								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "one")}
 							/>
 							<LifestylePreferencesCard
 								title="Two"
 								imageSrc="/images/reading-book.webp" // need to change
-								isSelected={selectedNumOfRoomates === "two"}
-								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "two")}
+								isSelected={selectedNumOfRoommates === "two"}
+								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "two")}
 							/>
 							<LifestylePreferencesCard
 								title="Three"
 								imageSrc="/images/reading-book.webp" // need to change
-								isSelected={selectedNumOfRoomates === "three"}
-								onClick={() => handleToggle(selectedNumOfRoomates, setSelectedNumOfRoomates, "three")}
+								isSelected={selectedNumOfRoommates === "three"}
+								onClick={() => handleToggle(selectedNumOfRoommates, setSelectedNumOfRoommates, "three")}
 							/>
 							
 						</div>
@@ -276,7 +285,7 @@ function OnCampusUI() {
 									!selectedLocation || 
 									selectedLocation.length === 0 ||
 									(showFreshmanSpecifics && (selectedLLCPreference === null || selectedHonorsStatus === null)) ||
-									(showRoommateOptions && !selectedNumOfRoomates)
+									(showRoommateOptions && !selectedNumOfRoommates)
 								}
 								
                             />
@@ -288,9 +297,16 @@ function OnCampusUI() {
 function OffCampusUI() {
 	const router = useRouter();
 	const handleNextStep = async () => {
-		sendOnboardingData();
-		router.push("/onboarding/dashboard");
+		const result = await sendOnboardingData();
+
+		if (!result.ok) {
+			console.error("Failed to send onboarding data:", result.error);
+			return;
+		}
+
+		router.push("/onboarding/dashboard"); // placeholder is fine for now
 	};
+
 
     const [selectedLeaseStatus, setSelectedLeaseStatus] = useState<boolean | null>(
         null
