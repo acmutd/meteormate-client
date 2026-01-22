@@ -30,10 +30,10 @@ export default function HeroSection() {
 				<div className="flex items-center justify-between">
 					<div className="flex-1 ml-10 lg:mb-20 lg:mt-15 md:mt-5 self-start">
 						<p className="md:text-xs text-sm font-bold">
-							Your UTD roomate match starts here.
+							Your UTD roommate match starts here.
 						</p>
 						<h1 className="mt-4 lg:text-5xl text-3xl font-extrabold">
-							Find your perfect roomate
+							Find your perfect roommate
 						</h1>
 						<h1 className="md:text-3xl lg:text-5xl font-extrabold">
 							here at UT Dallas!

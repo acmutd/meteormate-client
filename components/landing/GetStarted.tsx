@@ -24,7 +24,7 @@ export default function GetStarted() {
 				<h1 className="outfit-regular text-[20px]">
 					Join other UTD students on the hunt for the
 				</h1>
-				<h1 className="outfit-regular text-[20px]">perfect roomate!</h1>
+				<h1 className="outfit-regular text-[20px]">perfect roommate!</h1>
 			</div>
 			{/* Button for start your search */}
 			<div className="flex justify-center items-center">

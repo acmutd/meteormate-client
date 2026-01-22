@@ -53,7 +53,7 @@ export default function LifestylePreferencesPage() {
   	};
 
 	const handleNextStep = () => {
-		router.push("/onboarding/interests");
+		router.push("/onboarding/lifestyleHabits");
 	};
 	return (
 		<div>
