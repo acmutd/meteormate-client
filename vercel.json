@@ -4,7 +4,11 @@
       "handle": "filesystem"
     },
     {
-      "src": "/api/(.*)",
+      "src": "^/api/?$",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "^/api/(.*)$",
       "dest": "/api/index.py"
     },
     {
