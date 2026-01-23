@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Cropper from "react-easy-crop";
+import Cropper, { Area } from "react-easy-crop";
 
 interface ImageCropperProps {
   image: string;
-  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void;
+  onCropComplete: (croppedArea: Area, croppedAreaPixels: Area) => void;
 }
 
 export default function ImageCropper({
@@ -28,7 +28,7 @@ export default function ImageCropper({
   );
 }
 
-export async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> {
+export async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<string> {
   const image = new window.Image();
   image.src = imageSrc;
   await new Promise((resolve) => (image.onload = resolve));
