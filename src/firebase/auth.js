@@ -32,8 +32,7 @@ export const doPasswordChange = (newPassword) => {
 
 export const doSendEmailVerification = async (email, uid) => {
     try {
-        // todo - change this to actual host when deploying
-        const response = await fetch('http://localhost:8000/api/auth/send-verification-code', {
+        const response = await fetch('/api/auth/send-verification-code', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

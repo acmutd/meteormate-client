@@ -65,7 +65,7 @@ export default function VerifyEmailPage() {
 				return;
 			}
 
-			const response = await fetch("http://localhost:8000/api/auth/verify-email", {
+			const response = await fetch("/api/auth/verify-email", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -100,7 +100,7 @@ export default function VerifyEmailPage() {
 		}
 
 		try {
-			const res = await fetch("http://localhost:8000/api/auth/send-verification-code", {
+			const res = await fetch("/api/auth/send-verification-code", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ email, purpose: "verify" }),

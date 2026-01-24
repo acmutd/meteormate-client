@@ -75,7 +75,7 @@ export default function VerifyPassword() {
 
       // 🔗 Hit your new backend endpoint
       const response = await fetch(
-        "http://localhost:8000/api/auth/verify-reset-code",
+        "/api/auth/verify-reset-code",
         {
           method: "POST",
           headers: {

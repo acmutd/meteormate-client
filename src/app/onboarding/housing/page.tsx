@@ -22,7 +22,7 @@ const sendOnboardingData = async () => {
         if (user) {
             const token = await user.getIdToken();
             // console.log("bearer token: ", token)
-            const response = await fetch("http://localhost:8000/api/survey", {
+            const response = await fetch("/api/survey", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

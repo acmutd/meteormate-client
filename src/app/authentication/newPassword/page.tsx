@@ -87,7 +87,7 @@ export default function NewPasswordPage() {
       setIsSubmitting(true);
 
       const response = await fetch(
-        "http://localhost:8000/api/auth/reset-password",
+        "/api/auth/reset-password",
         {
           method: "POST",
           headers: {
