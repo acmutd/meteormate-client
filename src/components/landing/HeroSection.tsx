@@ -23,7 +23,7 @@ export default function HeroSection() {
 		<section
 			id="home"
 			className="relative min-h-screen w-screen bg-black bg-cover bg-top-left bg-no-repeat text-white"
-			style={{ backgroundImage: `url('/images/hero_section_background.webp')` }}
+			style={{ backgroundImage: `url('/hero_section_background.svg')` }}
 		>
 			{/* spacing for fixed navbar */}
 			<div className="pt-24 md:pt-28">
@@ -76,7 +76,7 @@ export default function HeroSection() {
 					</div>
 					<div className="flex items-end justify-end pb-0 pr-10 lg:pt-28 md:pt-20 w-1/2">
 						<Image
-							src="/images/laptop_model.webp"
+							src="/laptop_model.webp"
 							alt="Laptop showing MeteorMate interface"
 							width={800}
 							height={600}

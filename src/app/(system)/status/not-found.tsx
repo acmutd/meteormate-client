@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import StatusLayout from "./StatusLayout";
 
 export default function NotFoundPage() {
@@ -40,7 +39,7 @@ export default function NotFoundPage() {
 				<div className="rounded-2xl border border-orange-400/20 bg-orange-500/10 px-4 py-[clamp(0.5rem,1.5vh,0.75rem)] text-[clamp(0.75rem,1.5vh,0.875rem)]">
 					<p className="font-semibold text-orange-300 mb-1">Page Not Found</p>
 					<p className="text-white/90">
-						This page doesn't exist or may have been moved. This is not a planned downtime - just a missing page.
+						This page doesn&apos;t exist or may have been moved. This is not a planned downtime - just a missing page.
 					</p>
 				</div>
 
@@ -50,7 +49,7 @@ export default function NotFoundPage() {
 				<ul className="list-disc list-inside space-y-0.5 text-[clamp(0.7rem,1.3vh,0.8rem)]">
 					<li>Check the URL for typos or trailing slashes.</li>
 					<li>
-						If you think this should exist, send us a quick note and we'll get it back on
+						If you think this should exist, send us a quick note and we&apos;ll get it back on
 						track.
 					</li>
 				</ul>

@@ -46,7 +46,7 @@ export default function MaintenanceView({ reason }: MaintenanceViewProps) {
 				<div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm">
 					<p className="font-semibold text-emerald-300 mb-1">Planned Downtime</p>
 					<p className="text-white/90">
-						This is a scheduled maintenance window. We're making improvements behind the scenes to enhance your experience.
+						This is a scheduled maintenance window. We&apos;re making improvements behind the scenes to enhance your experience.
 					</p>
 				</div>
 
@@ -56,7 +56,7 @@ export default function MaintenanceView({ reason }: MaintenanceViewProps) {
 				</p>
 				<ul className="list-disc list-inside space-y-1 text-sm md:text-base">
 					<li>All background systems keep your data safe during this pause.</li>
-					<li>Try refreshing in a few minutes to see if we're back online.</li>
+					<li>Try refreshing in a few minutes to see if we&apos;re back online.</li>
 					<li>
 						If this feels unexpected, let us know on Discord so a developer can verify the
 						switch.
