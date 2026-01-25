@@ -5,7 +5,10 @@ on:
     types: [submodule-updated]
   workflow_dispatch:
   schedule:
-    - cron: "0 3 * * *" # daily at 3 UTC
+    - cron: "0 3 * * *"
+
+permissions:
+  contents: write
 
 jobs:
   update-submodules:
