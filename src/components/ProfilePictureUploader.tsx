@@ -63,7 +63,7 @@ export default function ProfilePictureUploader({
             ? selectedImage
             : initialImageUrl
               ? initialImageUrl
-              : "/images/peechi_duo.webp"
+              : "/peechi_duo.webp"
         }
         alt="Profile"
         className="w-24 h-24 rounded-full object-cover shadow-md bg-gray-300 cursor-pointer"
@@ -85,8 +85,8 @@ export default function ProfilePictureUploader({
             style={{ opacity: 0.5 }}
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center w-[350px] max-w-full">
-              <div className="relative w-[300px] h-[300px] bg-gray-100 rounded overflow-hidden">
+            <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center w-87 max-w-full">
+              <div className="relative w-75 h-75 bg-gray-100 rounded overflow-hidden">
                 <ImageCropper
                   image={cropImage}
                   onCropComplete={handleCropComplete}
