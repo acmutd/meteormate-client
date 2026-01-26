@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import ImageCropper, { getCroppedImg } from "./ImageCropper";
 import { Area } from "react-easy-crop";
+import Image from "next/image";
 
 interface ProfilePictureUploaderProps {
   initialImageUrl?: string;
@@ -57,7 +58,7 @@ export default function ProfilePictureUploader({
 
   return (
     <div className="relative mt-4 flex flex-col items-center">
-      <img
+      <Image
         src={
           selectedImage
             ? selectedImage
@@ -66,7 +67,9 @@ export default function ProfilePictureUploader({
               : "/peechi_duo.webp"
         }
         alt="Profile"
-        className="w-24 h-24 rounded-full object-cover shadow-md bg-gray-300 cursor-pointer"
+        className="w-24 h-24  object-cover shadow-md bg-gray-300 cursor-pointer"
+        width={1000}
+        height={1000}
         draggable="false"
         onClick={handleImageClick}
         title="Click to upload a new profile picture"
