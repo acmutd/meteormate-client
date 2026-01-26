@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface LifestylePreferencesCardProps {
 	// define props
@@ -14,6 +15,7 @@ const LifestylePreferencesCard = ({
 	isSelected,
 	onClick,
 }: LifestylePreferencesCardProps) => {
+	if (!imageSrc) return null;
 	return (
 		<div
 			className={`rounded-xl px-14 py-4 w-full flex flex-col items-center drop-shadow-xl border-1 border-[#C4C7CA]  hover:scale-105 hover:bg-gray-100 ${
@@ -23,10 +25,10 @@ const LifestylePreferencesCard = ({
 		>
 			{/* The circular image */}
 			<div className="rounded-full bg-linear-to-r from-[#FF9100] to-[#FFC94C] p-1">
-			<img
+			<Image
 				src={imageSrc}
 				className="h-12 w-12 object-cover p-2"
-			/>
+			 alt={""}/>
 			</div>
 			<p className="text-lg text-gray-800 text-center">{title}</p>
 			

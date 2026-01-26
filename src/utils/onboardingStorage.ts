@@ -58,7 +58,7 @@ export function clearOnboardingData() {
 // const submitOnboarding = async () => {
 //   const data = loadOnboardingData();
 
-//   await fetch("/api/onboarding/submit", {
+//   await fetch("/routes/onboarding/submit", {
 //     method: "POST",
 //     headers: { "Content-Type": "application/json" },
 //     body: JSON.stringify(data),

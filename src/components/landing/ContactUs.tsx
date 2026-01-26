@@ -12,7 +12,7 @@ export default function ContactUs() {
 			id="contactUs"
 			className="bg-black bg-no-repeat bg-center bg-contain text-white flex flex-col w-full !py-12"
 			style={{
-				backgroundImage: `url('/images/stars_footerr.webp')`,
+				backgroundImage: `url('/stars_footerr.webp')`,
 			}}
 		>
 			{/* Main Footer Content */}
@@ -23,7 +23,7 @@ export default function ContactUs() {
 					<div className="flex flex-col items-center md:items-start gap-3">
 						<div className="flex items-center gap-3">
 							<Image
-								src="/images/MM_logo_V1.webp"
+								src="/MM_logo_V1.webp"
 								alt="MeteorMate Logo"
 								width={40}
 								height={40}

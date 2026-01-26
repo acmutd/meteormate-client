@@ -142,9 +142,9 @@ export default function Profile() {
             Created Profile?
             <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
               <p className="ml-2">
-                {userData.profile_created === true
+                {userData.profile_created
                   ? "Yes"
-                  : userData.profile_created === false
+                  : !userData.profile_created
                   ? "No"
                   : "(Unknown)"}
               </p>
@@ -155,9 +155,9 @@ export default function Profile() {
             Completed Survey?
             <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
               <p className="ml-2">
-                {userData.survey_done === true
+                {userData.survey_done
                   ? "Yes"
-                  : userData.survey_done === false
+                  : !userData.survey_done
                   ? "No"
                   : "(Unknown)"}
               </p>
