@@ -16,7 +16,7 @@ export default function ScreenBlocker() {
 				<div className="mt-5 border-t border-gray-200 pt-2 -mb-3">
 					<div className="flex items-center justify-center gap-1 mt-2">
 						<Image
-							src="/images/peechi_star.webp"
+							src="/peechi_star.webp"
 							alt="MeteorMate Star Icon"
 							width={20}
 							height={20}

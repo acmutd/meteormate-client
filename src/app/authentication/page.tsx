@@ -1,14 +1,14 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import LogoBox from "../../../components/LogoBox";
+import LogoBox from "../../components/LogoBox";
 import { doSignInWithEmailAndPassword } from "../../firebase/auth";
 import { useAuth } from "../../contexts/authContext";
 import { useSearchParams } from "next/navigation";
 import { getEmailValidationError } from "@/utils/validation";
-import LoadingSpinner from "../../../components/LoadingSpinner";
-import EmailInput from "../../../components/forms/EmailInput";
-import PasswordInput from "../../../components/forms/PasswordInput";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import EmailInput from "@/components/forms/EmailInput";
+import PasswordInput from "@/components/forms/PasswordInput";
 import { useToast } from "@/components/ui/ToastProvider";
 import { getAuthErrorMessage } from "@/utils/authErrors";
 import { callActivityPing } from "@/utils/api/auth";
@@ -139,7 +139,7 @@ export default function LoginPage() {
 	};
 
 	return (
-		<LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+		<LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
 			{/* Back arrow to landing */}
 			<button
 				onClick={() => router.push("/")}

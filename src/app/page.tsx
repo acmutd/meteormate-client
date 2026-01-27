@@ -1,10 +1,10 @@
 "use client";
 import "./globals.css";
-import Navbar from "../../components/landing/Navbar";
-import HeroSection from "../../components/landing/HeroSection";
-import HowItWorks from "../../components/landing/HowItWorks";
-import GetStarted from "../../components/landing/GetStarted";
-import ContactUs from "../../components/landing/ContactUs";
+import Navbar from "@/components/landing/Navbar";
+import HeroSection from "@/components/landing/HeroSection";
+import HowItWorks from "@/components/landing/HowItWorks";
+import GetStarted from "@/components/landing/GetStarted";
+import ContactUs from "@/components/landing/ContactUs";
 
 export default function Home() {
 	return (

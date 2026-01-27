@@ -4,6 +4,7 @@ import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/api/auth";
 import { UserProfile } from "@/types/userProfile";
+import Image from "next/image";
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -37,16 +38,16 @@ export default function Profile() {
   return (
     <div className="min-h-screen w-screen flex flex-col justify-center items-center relative">
       <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
-        <img
+        <Image
           src={
             userData.profile?.profile_picture_url
               ? userData.profile?.profile_picture_url
-              : "/images/peechi_duo.png"
+              : "/peechi_duo.webp"
           }
           alt="Profile Picture"
           className="mt-4 w-24 h-24 rounded-full object-cover shadow-md bg-gray-300"
           draggable="false"
-        ></img>
+        ></Image>
         <div className="grid grid-cols-2 gap-4 w-full p-4">
           <div className="text-md">
             Name
@@ -150,9 +151,9 @@ export default function Profile() {
             Created Profile?
             <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
               <p className="ml-2">
-                {userData.profile_created === true
+                {userData.profile_created
                   ? "Yes"
-                  : userData.profile_created === false
+                  : !userData.profile_created
                   ? "No"
                   : "(Unknown)"}
               </p>
@@ -163,9 +164,9 @@ export default function Profile() {
             Completed Survey?
             <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
               <p className="ml-2">
-                {userData.survey_done === true
+                {userData.survey_done
                   ? "Yes"
-                  : userData.survey_done === false
+                  : !userData.survey_done
                   ? "No"
                   : "(Unknown)"}
               </p>

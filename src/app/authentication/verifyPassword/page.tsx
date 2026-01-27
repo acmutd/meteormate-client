@@ -1,8 +1,8 @@
 "use client";
 import React, { useRef, useState } from "react";
-import LogoBox from "../../../../components/LogoBox";
+import LogoBox from "../../../components/LogoBox";
 import { useRouter, useSearchParams } from "next/navigation";
-import LoadingSpinner from "../../../../components/LoadingSpinner";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 export default function VerifyPassword() {
   const router = useRouter();
@@ -75,7 +75,7 @@ export default function VerifyPassword() {
 
       // 🔗 Hit your new backend endpoint
       const response = await fetch(
-        "http://localhost:8000/api/auth/verify-reset-code",
+        "/api/auth/verify-reset-code",
         {
           method: "POST",
           headers: {
@@ -111,7 +111,7 @@ export default function VerifyPassword() {
   };
 
   return (
-    <LogoBox logoSrc="/images/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+    <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
       <div className="flex flex-col justify-center items-center text-center w-[400px]">
         <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px]">
           Verify Password

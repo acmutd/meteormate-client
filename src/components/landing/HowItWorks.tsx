@@ -37,7 +37,7 @@ function FeatureCard({
 export default function HowItWorks() {
 	const features = [
 		{
-			imageSrc: "/images/landing_logo1_S2.webp",
+			imageSrc: "/landing_logo1_S2.webp",
 			imageAlt: "AI Powered Matchmaking Icon",
 			title: "AI Powered Matchmaking",
 			description:
@@ -46,7 +46,7 @@ export default function HowItWorks() {
 			imageHeight: 68,
 		},
 		{
-			imageSrc: "/images/L2.webp",
+			imageSrc: "/L2.webp",
 			imageAlt: "Data Driven Insights Icon",
 			title: "Data Driven Insights",
 			description:
@@ -55,7 +55,7 @@ export default function HowItWorks() {
 			imageHeight: 68,
 		},
 		{
-			imageSrc: "/images/L3.webp",
+			imageSrc: "/L3.webp",
 			imageAlt: "Multistep Verification Icon",
 			title: "Multistep Verification",
 			description:
@@ -64,7 +64,7 @@ export default function HowItWorks() {
 			imageHeight: 68,
 		},
 		{
-			imageSrc: "/images/L4.webp",
+			imageSrc: "/L4.webp",
 			imageAlt: "Privacy First Icon",
 			title: "Privacy First",
 			description:
@@ -73,7 +73,7 @@ export default function HowItWorks() {
 			imageHeight: 72,
 		},
 		{
-			imageSrc: "/images/L5.webp",
+			imageSrc: "/L5.webp",
 			imageAlt: "Personalized Matchmaking Icon",
 			title: "Personalized Matchmaking",
 			description:
@@ -82,7 +82,7 @@ export default function HowItWorks() {
 			imageHeight: 68,
 		},
 		{
-			imageSrc: "/images/L6.webp",
+			imageSrc: "/L6.webp",
 			imageAlt: "Social Integration Icon",
 			title: "Social Integration",
 			description:
@@ -96,7 +96,7 @@ export default function HowItWorks() {
 		<LandingSection
 			id="howItWorks"
 			className="w-screen min-h-screen bg-black flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-			style={{ backgroundImage: `url('/images/stars.webp')` }}
+			style={{ backgroundImage: `url('/stars.webp')` }}
 		>
 			<h1 className="text-white text-[60px] font-extrabold">
 				Fast Solution and Best Matches
