@@ -86,6 +86,7 @@ export default function CreateProfilePage() {
 				title="Create Your Profile"
 				subtitle="Tell us about yourself to find your perfect roommate match."
 				currentStep={1}
+                progressImage="/peechi_progress_1.svg"
 			/>
 			<div className="bg-[#F1EBE2] rounded-lg shadow-xl py-8 px-15 mt-4 w-full flex flex-col">
 				{/* profile picture */}

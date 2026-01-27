@@ -62,6 +62,7 @@ export default function LifestylePreferencesPage() {
 				title="Lifestyle Preferences"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
 				currentStep={2}
+                progressImage="/peechi_progress_2.svg"
 			/>
 			<div className="py-8 px-15 w-full flex flex-col">
 				<h1 className="text-black text-xl font-bold">Wake-up Time</h1>
