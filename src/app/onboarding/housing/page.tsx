@@ -9,7 +9,6 @@ import {useSearchParams, useRouter} from "next/navigation";
 import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
 import {getAuth} from "firebase/auth";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
-import Image from "next/image";
 
 const sendOnboardingData = async () => {
     try {
@@ -278,7 +277,6 @@ function OnCampusUI() {
 			<div className="flex items-center justify-center">
             <DoneButton
                                 className="mt-7"
-                                logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
                                 onClick={handleNextStep}
 								disabled = {
 									!selectedLocation ||
@@ -459,7 +457,6 @@ function OffCampusUI() {
             <div className="flex items-center justify-center">
                 <DoneButton
                     className="mt-7"
-                    logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
                     onClick={handleNextStep}
                     disabled={!selectedHaveLeaseLength || selectedLeaseStatus === null}
 
