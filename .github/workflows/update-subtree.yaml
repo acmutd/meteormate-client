@@ -30,7 +30,7 @@ jobs:
       - name: Setup backend remote
         run: |
           git remote remove backend || true
-          git remote add backend https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ORG/backend.git
+          git remote add backend https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/acmutd/meteormate-backend.git
 
       # Pull backend branch into subtree
       - name: Update backend subtree
