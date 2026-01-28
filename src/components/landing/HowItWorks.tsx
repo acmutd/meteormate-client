@@ -51,7 +51,7 @@ export default function HowItWorks() {
             imageAlt: "AI Powered Matchmaking",
             title: "AI Powered Matchmaking",
             description:
-                "Our algorithm weighs lifestyle, cleanliness, and personality traits to find the roommate that actually fits your day-to-day.",
+                "Our algorithm weighs lifestyle, cleanliness, and personality traits to find the roommate that fits you.",
         },
         {
             imageSrc: "/L2.webp",
