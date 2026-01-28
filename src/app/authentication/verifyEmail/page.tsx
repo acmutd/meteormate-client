@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import LogoBox from "../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
@@ -8,10 +8,14 @@ export default function VerifyEmailPage() {
 	const router = useRouter();
 	const [code, setCode] = useState(Array(6).fill(""));
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-	const [email] = useState<string | null>(null);
+	const [email, setEmail] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isVerifying, setIsVerifying] = useState(false);
-
+	
+	useEffect(() => {
+		setEmail(localStorage.getItem("verificationEmail"));
+	}, []);
+	
 	const handleChange = (value: string, index: number) => {
 		if (/^\d$/.test(value)) {
 			const newCode = [...code];
