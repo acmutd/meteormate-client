@@ -107,7 +107,7 @@ export default function CreateProfilePage() {
 					<h1 className="text-black font-medium text-sm mb-3">Your Profile Picture</h1>
 					<div
 						onClick={handleImageClick}
-						className="w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80 bg-white"
+						className="bg-[#F6F3ED] w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
 					>
 						{preview ? (
 							<Image
@@ -119,31 +119,13 @@ export default function CreateProfilePage() {
 							/>
 						) : (
 							<>
-								<svg
-									className="w-12 h-12 text-black mb-1"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={1.5}
-										d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-									/>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={1.5}
-										d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-									/>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M12 9v2m0 0v2m0-2h2m-2 0H10"
-									/>
-								</svg>
+								<Image
+									src="/upload_photo_picture.svg"
+									alt="Upload Photo"
+									width={128}
+									height={128}
+									className="size-12 mb-3"
+								/>
 								<span className="text-black text-[10px] text-center leading-tight">
 									Upload your<br />photo
 								</span>
@@ -343,7 +325,6 @@ export default function CreateProfilePage() {
 								value={birthday}
 								onChange={setBirthday}
 								placeholder="Select your birthday"
-								maxDate={new Date().toISOString().split('T')[0]}
 							/>
 						</div>
 					</div>
