@@ -279,7 +279,7 @@ function OnCampusUI() {
 			<div className="flex items-center justify-center">
             <DoneButton
                                 className="mt-7"
-                                logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
+                                logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot"/>}
                                 onClick={handleNextStep}
 								disabled = {
 									!selectedLocation ||
@@ -463,7 +463,7 @@ function OffCampusUI() {
             <div className="flex items-center justify-center">
                 <DoneButton
                     className="mt-7"
-                    logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
+                    logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot"/>}
                     onClick={handleNextStep}
                     disabled={!selectedHaveLeaseLength || selectedLeaseStatus === null}
 

@@ -120,7 +120,7 @@ export default function LoginPage() {
 					title: "Welcome back!",
 					description: "You’re now logged in.",
 				});
-				router.push(completed ? "/dashboard" : "/survey"); // hopefully this works
+				router.push(completed ? "/forgotPassword" : "../onboarding/createProfile"); // hopefully this works
 			}
 		} catch (err: unknown) { //just in case there's a problem signing in 
 			console.error("Login error:", err);

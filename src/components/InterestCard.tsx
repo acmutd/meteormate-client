@@ -20,6 +20,7 @@ export default function InterestCard({ name, isSelected, onToggle }: InterestCar
     >
       <div className="relative w-12 h-12 mb-2">
         <Image
+          width={1000} height={1000}
           src={`/createProfileInterests/${name}.webp`}
           alt={name}
           fill
