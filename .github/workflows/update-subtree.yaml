@@ -1,0 +1,52 @@
+name: Update backend subtree
+
+on:
+  repository_dispatch:
+    types: [subtree-updated]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"  # daily at 3am
+
+permissions:
+  contents: write
+
+jobs:
+  update-subtree:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout frontend repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # required for subtree merges
+
+      # Configure Git user
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      # Setup backend remote using HTTPS + token
+      - name: Setup backend remote
+        run: |
+          git remote remove backend || true
+          git remote add backend https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/acmutd/meteormate-backend.git
+
+      # Detect branch and pull corresponding backend branch into subtree
+      - name: Update backend subtree
+        run: |
+          BRANCH=${GITHUB_REF#refs/heads/}
+          echo "Pulling backend branch $BRANCH into subtree..."
+          git subtree pull --prefix=backend backend $BRANCH --squash || echo "No updates"
+
+      # Commit and push only if there are changes
+      - name: Commit and push changes
+        run: |
+          if ! git diff --quiet; then
+            git add backend
+            git commit -m "chore: update backend subtree from $BRANCH"
+            git push origin $BRANCH
+          else
+            echo "No changes to commit"
+          fi
