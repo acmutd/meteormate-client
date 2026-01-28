@@ -3,116 +3,120 @@ import Image from "next/image";
 import LandingSection from "./LandingSection";
 
 interface FeatureCardProps {
-	imageSrc: string;
-	imageAlt: string;
-	title: string;
-	description: string;
-	imageWidth: number;
-	imageHeight: number;
+    imageSrc: string;
+    imageAlt: string;
+    title: string;
+    description: string;
+    // Removed imageWidth/Height from props to enforce CSS sizing
 }
 
 function FeatureCard({
-	imageSrc,
-	imageAlt,
-	title,
-	description,
-	imageWidth,
-	imageHeight,
-}: FeatureCardProps) {
-	return (
-		<div className="inter-tight-regular text-black bg-white border-0 rounded-xl flex flex-col text-center justify-center items-center px-8 py-5 w-80 h-60">
-			<Image
-				src={imageSrc}
-				alt={imageAlt}
-				width={imageWidth}
-				height={imageHeight}
-				className="justify-center items-center"
-			/>
-			<h1 className="font-bold h-10">{title}</h1>
-			<p className="h-30">{description}</p>
-		</div>
-	);
+                         imageSrc,
+                         imageAlt,
+                         title,
+                         description,
+                     }: FeatureCardProps) {
+    return (
+        <div
+            className="flex flex-col items-start gap-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 hover:border-orange-500/30 hover:bg-white/10 transition-all duration-300 group">
+            {/* Icon Container - Fixed height, flex centered */}
+            <div
+                className="relative h-16 w-16 md:h-20 md:w-20 flex-shrink-0 rounded-xl p-3 group-hover:scale-105 transition-transform">
+                <Image
+                    src={imageSrc}
+                    alt={imageAlt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-contain p-2"
+                />
+            </div>
+
+            <div className="space-y-2">
+                <h3 className="text-lg font-bold text-white group-hover:text-orange-400 transition-colors">
+                    {title}
+                </h3>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                    {description}
+                </p>
+            </div>
+        </div>
+    );
 }
 
 export default function HowItWorks() {
-	const features = [
-		{
-			imageSrc: "/landing_logo1_S2.webp",
-			imageAlt: "AI Powered Matchmaking Icon",
-			title: "AI Powered Matchmaking",
-			description:
-				"Our advanced algorithm analyzes personality traits and preferences to find you the ideal roommate.",
-			imageWidth: 88,
-			imageHeight: 68,
-		},
-		{
-			imageSrc: "/L2.webp",
-			imageAlt: "Data Driven Insights Icon",
-			title: "Data Driven Insights",
-			description:
-				"View comprehensive compatibility metrics and compare potential roommates using interactive charts and graphs.",
-			imageWidth: 92,
-			imageHeight: 68,
-		},
-		{
-			imageSrc: "/L3.webp",
-			imageAlt: "Multistep Verification Icon",
-			title: "Multistep Verification",
-			description:
-				"Secure system with your school email and social media verification ensures all users are genuine UTD students.",
-			imageWidth: 100,
-			imageHeight: 68,
-		},
-		{
-			imageSrc: "/L4.webp",
-			imageAlt: "Privacy First Icon",
-			title: "Privacy First",
-			description:
-				"Your data is always protected. You control what information you share and who can see it.",
-			imageWidth: 116,
-			imageHeight: 72,
-		},
-		{
-			imageSrc: "/L5.webp",
-			imageAlt: "Personalized Matchmaking Icon",
-			title: "Personalized Matchmaking",
-			description:
-				"Tinder styled swiping interface with detailed profile and compatibility scores makes finding your roommate fun and intuitive.",
-			imageWidth: 88,
-			imageHeight: 68,
-		},
-		{
-			imageSrc: "/L6.webp",
-			imageAlt: "Social Integration Icon",
-			title: "Social Integration",
-			description:
-				"Optional social media connection for enhanced matching and verification.",
-			imageWidth: 100,
-			imageHeight: 80,
-		},
-	];
+    // Removed width/height from data array
+    const features: FeatureCardProps[] = [
+        {
+            imageSrc: "/L1.webp", // Updated from original code reference
+            imageAlt: "AI Powered Matchmaking",
+            title: "AI Powered Matchmaking",
+            description:
+                "Our algorithm weighs lifestyle, cleanliness, and personality traits to find the roommate that actually fits your day-to-day.",
+        },
+        {
+            imageSrc: "/L2.webp",
+            imageAlt: "Data Driven Insights",
+            title: "Data Driven Insights",
+            description:
+                "Compare potential roommates with compatibility scores and metrics that make the decision simple.",
+        },
+        {
+            imageSrc: "/L3.webp",
+            imageAlt: "Multistep Verification",
+            title: "Multistep Verification",
+            description:
+                "School email plus optional social verification helps ensure everyone on the platform is a real UTD student.",
+        },
+        {
+            imageSrc: "/L4.webp",
+            imageAlt: "Privacy First",
+            title: "Privacy First",
+            description:
+                "You’re always in control of what you share. Reveal more details only when you’re comfortable.",
+        },
+        {
+            imageSrc: "/L5.webp",
+            imageAlt: "Personalized Matchmaking",
+            title: "Swipe-based Matching",
+            description:
+                "A Tinder-style interface with detailed profiles makes finding your roommate feel familiar and low-friction.",
+        },
+        {
+            imageSrc: "/L6.webp",
+            imageAlt: "Social Integration",
+            title: "Social Integration",
+            description:
+                "Optionally connect socials to add another layer of signal for compatibility and verification.",
+        },
+    ];
 
-	return (
-		<LandingSection
-			id="howItWorks"
-			className="w-screen min-h-screen bg-black flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-			style={{ backgroundImage: `url('/stars.webp')` }}
-		>
-			<h1 className="text-white text-[60px] font-extrabold">
-				Fast Solution and Best Matches
-			</h1>
-			<p className="text-white inter-tight-regular text-[20px]">
-				Find your ideal roommate match with our comprehensive platform
-			</p>
-			<p className="text-white inter-tight-regular mb-8 text-[20px]">
-				designed specificially for students just like you
-			</p>
-			<div className="grid grid-cols-3 gap-10">
-				{features.map((feature, index) => (
-					<FeatureCard key={index} {...feature} />
-				))}
-			</div>
-		</LandingSection>
-	);
+    return (
+        <LandingSection
+            id="howItWorks"
+            className="w-full bg-black bg-cover bg-center bg-no-repeat py-24 md:py-32"
+            style={{backgroundImage: `url('/stars.webp')`}}
+        >
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="text-center mb-16 space-y-4">
+          <span
+              className="inline-block py-1 px-3 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-xs font-medium tracking-wider uppercase">
+            Features
+          </span>
+                    <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                        Built for <span
+                        className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-200">Comets</span>
+                    </h2>
+                    <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
+                        Everything you need to find your perfect match, verified and secure.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {features.map((feature, index) => (
+                        <FeatureCard key={index} {...feature} />
+                    ))}
+                </div>
+            </div>
+        </LandingSection>
+    );
 }
-
