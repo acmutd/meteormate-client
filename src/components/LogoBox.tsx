@@ -23,6 +23,8 @@ const MeteorCard: React.FC<MeteorCardProps> = ({
 				<Image
 					src={logoSrc}
 					alt={logoAlt}
+					width={1000}
+					height={1000}
 					className="size-[clamp(4rem,15vh,6rem)]"
 					style={{
 						filter: `

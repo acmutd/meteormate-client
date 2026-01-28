@@ -42,11 +42,7 @@ export default function StatusLayout({
 				<div className="flex justify-center mb-[clamp(0.5rem,2vh,1.5rem)]">
 					<div className="relative">
 						<Image
-<<<<<<< HEAD
-							src="/images/MM_logo_V1.webp"
-=======
 							src="/MM_logo_V1.webp"
->>>>>>> origin/main
 							alt="MeteorMate logo"
 							width={88}
 							height={88}

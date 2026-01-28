@@ -3,7 +3,7 @@ import { parseApiError, Result, UserActivityPing, UserRegisterResponse } from ".
 
 export async function callRegisterRoute(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
     try {
-        const response = await fetch(`/api/auth/register`, {
+        const response = await fetch("http://127.0.0.1:3000/auth/register", {
             'method': 'POST',
             'headers': {
                 'Content-Type': 'application/json',
