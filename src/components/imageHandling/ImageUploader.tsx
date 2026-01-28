@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import ImageCropper, { getCroppedImg } from "./ImageCropper";
 import { Area } from "react-easy-crop";
 import Image from "next/image";
+import { getCurrentUserIdToken } from "@/firebase/auth";
 
 interface ProfilePictureUploaderProps {
   initialImageUrl?: string;
@@ -17,6 +18,7 @@ export default function ProfilePictureUploader({
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [uploading, setUploading] = useState(false); // Todo: Add loading screen
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageClick = () => {
@@ -40,15 +42,39 @@ export default function ProfilePictureUploader({
     setCroppedAreaPixels(croppedPixels);
   };
 
+  const uploadCroppedImage = async (croppedDataUrl: string) => {
+    setUploading(true);
+    try {
+      const token = await getCurrentUserIdToken();
+      const res = await fetch("http://127.0.0.1:3000/api/profiles/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ base64: croppedDataUrl }),
+      });
+      if (!res.ok) throw new Error("Failed to upload iamge");
+      const data = await res.json();
+      const urls = data?.profile_picture_url;
+      if (urls && urls.length > 0) {
+        setSelectedImage(urls[urls.length - 1]);
+        if (onImageChange) onImageChange(urls[urls.length - 1]);
+      }
+    } catch {
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleCropConfirm = async () => {
     if (!cropImage || !croppedAreaPixels) return;
     try {
       const croppedDataUrl = await getCroppedImg(cropImage, croppedAreaPixels);
-      setSelectedImage(croppedDataUrl);
       setShowCropper(false);
       setCropImage(null);
       setCroppedAreaPixels(null);
-      if (onImageChange) onImageChange(croppedDataUrl);
+      await uploadCroppedImage(croppedDataUrl);
     } catch {
       setShowCropper(false);
       setCropImage(null);
@@ -67,7 +93,7 @@ export default function ProfilePictureUploader({
               : "/peechi_duo.webp"
         }
         alt="Profile"
-        className="w-24 h-24  object-cover shadow-md bg-gray-300 cursor-pointer"
+        className="w-30 h-30 rounded-xl object-cover shadow-md bg-gray-300 cursor-pointer"
         width={1000}
         height={1000}
         draggable="false"

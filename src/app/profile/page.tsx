@@ -4,7 +4,7 @@ import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/api/auth";
 import { UserProfile } from "@/types/userProfile";
-import ProfilePictureUploader from "@/components/ProfilePictureUploader";
+import ProfilePictureUploader from "@/components/imageHandling/ImageUploader";
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
