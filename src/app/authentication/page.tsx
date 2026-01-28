@@ -15,7 +15,7 @@ import { callActivityPing } from "@/utils/api/auth";
 
 async function hasSurvey(idToken: string): Promise<boolean> {
 	const res = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}/survey/me`,
+		`${process.env.NEXT_PUBLIC_API_BASE_URL}/survey/me`,
 		{
 			method: "GET",
 			headers: {

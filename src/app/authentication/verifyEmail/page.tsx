@@ -15,7 +15,7 @@ export default function VerifyEmailPage() {
 	useEffect(() => {
 		setEmail(localStorage.getItem("verificationEmail"));
 	}, []);
-	
+
 	const handleChange = (value: string, index: number) => {
 		if (/^\d$/.test(value)) {
 			const newCode = [...code];
@@ -69,7 +69,7 @@ export default function VerifyEmailPage() {
 				return;
 			}
 
-			const response = await fetch("/api/auth/verify-email", {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify-email`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -104,7 +104,7 @@ export default function VerifyEmailPage() {
 		}
 
 		try {
-			const res = await fetch("/api/auth/send-verification-code", {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/send-verification-code`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ email, purpose: "verify" }),

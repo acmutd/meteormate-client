@@ -87,7 +87,7 @@ export default function NewPasswordPage() {
       setIsSubmitting(true);
 
       const response = await fetch(
-        "/api/auth/reset-password",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/reset-password`,
         {
           method: "POST",
           headers: {
