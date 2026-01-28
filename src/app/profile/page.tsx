@@ -4,7 +4,7 @@ import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/api/auth";
 import { UserProfile } from "@/types/userProfile";
-import ProfilePictureUploader from "@/components/imageHandling/ImageUploader";
+import ImageUploader from "@/components/imageHandling/ImageUploader";
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -17,6 +17,7 @@ export default function Profile() {
     const fetchuser = async () => {
       try {
         const token = await getCurrentUserIdToken();
+        console.log(token);
         const data = await fetchCurrentUser(token);
         setUser(data);
       } catch (err) {
@@ -38,7 +39,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen w-screen flex flex-col justify-center items-center relative">
       <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
-        <ProfilePictureUploader></ProfilePictureUploader>
+        <ImageUploader></ImageUploader>
         <div className="grid grid-cols-2 gap-4 w-full p-4">
           <div className="text-md">
             Name
