@@ -26,6 +26,12 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
+      # Add backend remote using the GitHub token
+      - name: Setup backend remote
+        run: |
+          git remote remove backend || true
+          git remote add backend https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ORG/backend.git
+
       # Pull backend branch into subtree
       - name: Update backend subtree
         run: |
@@ -34,7 +40,7 @@ jobs:
           echo "Pulling backend $BRANCH into subtree"
           
           # Pull subtree, ignore if nothing changed
-          git subtree pull --prefix=backend git@github.com:ORG/backend.git $BRANCH --squash || echo "No updates"
+          git subtree pull --prefix=backend backend $BRANCH --squash || echo "No updates"
 
       # Commit changes if any
       - name: Commit and push
@@ -45,4 +51,3 @@ jobs:
             git push origin $BRANCH
           else
             echo "No changes to commit"
-          fi
