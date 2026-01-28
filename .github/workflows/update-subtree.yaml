@@ -42,15 +42,25 @@ jobs:
           # This command creates a merge commit automatically if there are updates
           git subtree pull --prefix=backend backend $BRANCH --squash --message "chore: update backend subtree from $BRANCH"
 
-      # Push changes (if the pull created a commit)
+      # Push changes (with safety rebase)
       - name: Push changes
         run: |
           BRANCH=${GITHUB_REF#refs/heads/}
-          # Check if we have commits that origin doesn't have
+          
+          # Check if we have new commits to push
           if [ "$(git rev-list HEAD...origin/$BRANCH --count)" -gt 0 ]; then
-            echo "Updates detected. Pushing..."
+            echo "Updates detected. Preparing to push..."
+            
+            # 1. Fetch latest changes from origin again
+            git fetch origin $BRANCH
+            
+            # 2. Rebase our new subtree commit on top of the latest origin/main
+            git rebase origin/$BRANCH
+            
+            # 3. Push
             git push origin $BRANCH
           else
             echo "No updates from backend."
           fi
+
 
