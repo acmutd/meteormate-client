@@ -19,7 +19,7 @@ const LifestylePreferencesCard = ({
 	return (
 		<div
 			className={`rounded-xl px-14 py-4 w-full flex flex-col items-center drop-shadow-xl border-1 border-[#C4C7CA]  hover:scale-105 hover:bg-gray-100 ${
-				isSelected ? "ring-2 ring-[#FF9100]" : "bg-white"
+				isSelected ? "ring-2 ring-[#FF9100] bg-white" : "bg-white"
 			}`}
 			onClick={onClick}
 		>
