@@ -1,11 +1,11 @@
 # Created by Ryan Polasky | 9/20/25
 # ACM MeteorMate | All Rights Reserved
 
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Self
 from datetime import datetime, date
 from pydantic import BaseModel, field_validator
 
-from ..config import settings
+from config import settings
 
 Gender = Literal["female", "male", "non_binary", "prefer_not_to_say", "other"]
 Classification = Literal["freshman", "sophomore", "junior", "senior", "graduate"]
