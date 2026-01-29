@@ -39,7 +39,7 @@ export default function ImageUploader({
     setUploading(true);
     try {
       const token = await getCurrentUserIdToken();
-      const res = await fetch("/api/profiles/upload", {
+      const res = await fetch("http://127.0.0.1:3000/api/profiles/upload", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
