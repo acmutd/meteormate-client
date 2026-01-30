@@ -3,10 +3,10 @@ import React from "react";
 import Image from "next/image";
 
 interface MeteorCardProps {
-	children: React.ReactNode;
-	logoSrc?: string;
-	logoAlt?: string;
-	className?: string;
+    children: React.ReactNode;
+    logoSrc?: string;
+    logoAlt?: string;
+    className?: string;
 }
 
 const MeteorCard: React.FC<MeteorCardProps> = ({

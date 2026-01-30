@@ -1,0 +1,61 @@
+name: Force Update Backend Subtree
+
+on:
+  repository_dispatch:
+    types: [subtree-updated]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  force-sync-subtree:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Frontend
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Force Sync Backend
+        run: |
+          # 1. Define variables
+          BACKEND_REPO="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/acmutd/meteormate-backend.git"
+          BRANCH=${GITHUB_REF#refs/heads/} # e.g., 'main' or 'dev'
+          
+          echo "Syncing backend folder for branch: $BRANCH"
+
+          # 2. Add remote (idempotent)
+          git remote remove backend || true
+          git remote add backend $BACKEND_REPO
+          git fetch backend $BRANCH
+
+          # 3. THE NUCLEAR OPTION:
+          # Remove the existing backend folder entirely
+          git rm -rf backend || echo "Backend folder didn't exist yet"
+          
+          # Commit the removal (temp step to ensure clean state)
+          # We use --allow-empty in case it was already empty
+          git commit -m "chore: clear backend folder for sync" --allow-empty
+
+          # 4. Read-tree (The magic command)
+          # This reads the backend branch into the 'backend/' prefix without merging history
+          git read-tree --prefix=backend/ -u backend/$BRANCH
+
+          # 5. Commit and Push
+          git add backend
+          
+          # Check if there are changes to commit
+          if ! git diff --quiet --cached; then
+            git commit -m "chore: force sync backend from $BRANCH"
+            git push origin $BRANCH
+          else
+            echo "Backend is already up to date."
+          fi
