@@ -1,90 +1,91 @@
-name: Force Update Backend Subtree
+Looking at the logs more carefully, I see the problem. The `repository_dispatch` event isn't passing the `client_payload` correctly. Look here:
+
+```
+2026-01-30T20:42:33.8990995Z [36;1mif [ "repository_dispatch" = "repository_dispatch" ]; then[0m
+2026-01-30T20:42:33.8991651Z [36;1m  BRANCH=""[0m
+```
+
+The branch is empty string `""` because `${{ github.event.client_payload.branch }}` is empty.
+
+This means the **backend dispatch isn't sending the payload correctly**.
+
+---
+
+## Fix the Backend Workflow
+
+The issue is likely the JSON escaping. Let's use `gh` CLI instead which handles this better:
+
+### Backend: `.github/workflows/notify-parent.yml`
+
+```yaml
+name: Notify parent repo
 
 on:
-  repository_dispatch:
-    types: [subtree-updated]
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to sync'
-        required: false
-        default: 'main'
-  schedule:
-    - cron: "0 3 * * *"
-
-permissions:
-  contents: write
+  push:
+    branches: [main, dev]
 
 jobs:
-  force-sync-subtree:
+  notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Determine branch to sync
-        id: get-branch
-        run: |
-          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            BRANCH="${{ github.event.client_payload.branch }}"
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            BRANCH="${{ inputs.branch }}"
-          else
-            BRANCH="main"
-          fi
-          
-          # Fallback if BRANCH is still empty
-          if [ -z "$BRANCH" ]; then
-            echo "WARNING: Branch was empty, defaulting to main"
-            BRANCH="main"
-          fi
-          
-          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
-          echo "Will sync branch: ${BRANCH}"
-
-      - name: Checkout Frontend
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ steps.get-branch.outputs.branch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Force Sync Backend
+      - name: Dispatch subtree update event
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ steps.get-branch.outputs.branch }}
         run: |
-          set -e
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Dispatching for branch: $BRANCH_NAME"
           
-          echo "========================================"
-          echo "Syncing backend folder for branch: $BRANCH"
-          echo "========================================"
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/acmutd/meteormate-client/dispatches \
+            -f event_type="subtree-updated" \
+            -f client_payload[branch]="$BRANCH_NAME"
+```
+
+The `gh` CLI handles JSON encoding properly and is already available on GitHub runners.
+
+---
+
+**Or if you prefer curl**, the issue might be quote escaping. Try this:
+
+```yaml
+name: Notify parent repo
+
+on:
+  push:
+    branches: [main, dev]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch subtree update event
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Dispatching for branch: $BRANCH_NAME"
           
-          BACKEND_REPO="https://x-access-token:${GH_TOKEN}@github.com/acmutd/meteormate-backend.git"
+          JSON_PAYLOAD=$(cat <<EOF
+          {
+            "event_type": "subtree-updated",
+            "client_payload": {
+              "branch": "${BRANCH_NAME}"
+            }
+          }
+          EOF
+          )
           
-          git remote remove backend 2>/dev/null || true
-          git remote add backend "$BACKEND_REPO"
+          echo "Payload: $JSON_PAYLOAD"
           
-          echo "Fetching backend $BRANCH..."
-          git fetch backend "$BRANCH"
-          
-          echo "Removing existing backend folder..."
-          if [ -d "backend" ]; then
-            git rm -rf backend
-            git commit -m "chore: clear backend folder for sync" || true
-          fi
-          
-          echo "Reading backend tree into backend/ prefix..."
-          git read-tree --prefix=backend/ -u "backend/$BRANCH"
-          
-          git add backend
-          
-          if git diff --cached --quiet; then
-            echo "✅ Backend is already up to date."
-          else
-            git commit -m "chore: force sync backend from $BRANCH"
-            git push origin "$BRANCH"
-            echo "✅ Successfully synced backend!"
-          fi
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/acmutd/meteormate-client/dispatches \
+            -d "$JSON_PAYLOAD"
+```
+
+I recommend the `gh` CLI version - it's cleaner and less error-prone.
