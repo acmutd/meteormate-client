@@ -17,6 +17,7 @@ export default function Profile() {
     const fetchuser = async () => {
       try {
         const token = await getCurrentUserIdToken();
+        // console.log(token);
         const data = await fetchCurrentUser(token);
         setUser(data);
       } catch (err) {
@@ -38,7 +39,9 @@ export default function Profile() {
   return (
     <div className="min-h-screen w-screen flex flex-col justify-center items-center relative">
       <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
-        <ProfileGallery userId={userData.id} />
+        <p className="mt-2">
+          <ProfileGallery userId={userData.id} />
+        </p>
         <div className="grid grid-cols-2 gap-4 w-full p-4">
           <div className="text-md">
             Name
@@ -145,8 +148,8 @@ export default function Profile() {
                 {userData.profile_created
                   ? "Yes"
                   : !userData.profile_created
-                  ? "No"
-                  : "(Unknown)"}
+                    ? "No"
+                    : "(Unknown)"}
               </p>
             </div>
           </div>
@@ -158,8 +161,8 @@ export default function Profile() {
                 {userData.survey_done
                   ? "Yes"
                   : !userData.survey_done
-                  ? "No"
-                  : "(Unknown)"}
+                    ? "No"
+                    : "(Unknown)"}
               </p>
             </div>
           </div>
