@@ -16,12 +16,9 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     async function fetchProfileImages() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/profiles/get/${userId}`,
-          {
-            method: "GET",
-          },
-        );
+        const res = await fetch(`/api/profiles/get/${userId}`, {
+          method: "GET",
+        });
         if (!res.ok) throw new Error("Failed to recieve profile images");
         const data = await res.json();
         if (
@@ -60,10 +57,13 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   if (loading) return <div>Loading images...</div>;
 
   // Ensure we always have 5 slots
-  const filledImages = [
-    ...images,
-    ...Array(MAX_IMAGES - images.length).fill(DEFAULT_IMAGE),
-  ].slice(0, MAX_IMAGES);
+  const filledImages =
+    images.length < MAX_IMAGES
+      ? [
+          ...images,
+          ...Array(MAX_IMAGES - images.length).fill(DEFAULT_IMAGE),
+        ].slice(0, MAX_IMAGES)
+      : images.slice(0, MAX_IMAGES);
 
   return (
     <div className="flex flex-col gap-6 mt-4">
