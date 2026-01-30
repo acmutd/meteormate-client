@@ -4,6 +4,11 @@ on:
   repository_dispatch:
     types: [subtree-updated]
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to sync'
+        required: false
+        default: 'main'
   schedule:
     - cron: "0 3 * * *"
 
@@ -14,10 +19,25 @@ jobs:
   force-sync-subtree:
     runs-on: ubuntu-latest
     steps:
+      - name: Determine branch to sync
+        id: get-branch
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            BRANCH="${{ github.event.client_payload.branch }}"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+          else
+            BRANCH="main"
+          fi
+          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+          echo "Will sync branch: ${BRANCH}"
+
       - name: Checkout Frontend
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ steps.get-branch.outputs.branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
@@ -25,38 +45,40 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Force Sync Backend
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.get-branch.outputs.branch }}
         run: |
-          # 1. Define variables
-          BACKEND_REPO="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/acmutd/meteormate-backend.git"
-          BRANCH="${{ github.event.client_payload.branch || github.ref_name }}"
+          set -e
+          
           echo "Syncing backend folder for branch: $BRANCH"
           
-          git checkout $BRANCH || git checkout -b $BRANCH
-
-          # 2. Add remote (idempotent)
-          git remote remove backend || true
-          git remote add backend $BACKEND_REPO
-          git fetch backend $BRANCH
-
-          # 3. THE NUCLEAR OPTION:
-          # Remove the existing backend folder entirely
-          git rm -rf backend || echo "Backend folder didn't exist yet"
+          BACKEND_REPO="https://x-access-token:${GH_TOKEN}@github.com/acmutd/meteormate-backend.git"
           
-          # Commit the removal (temp step to ensure clean state)
-          # We use --allow-empty in case it was already empty
-          git commit -m "chore: clear backend folder for sync" --allow-empty
-
-          # 4. Read-tree (The magic command)
-          # This reads the backend branch into the 'backend/' prefix without merging history
-          git read-tree --prefix=backend/ -u backend/$BRANCH
-
-          # 5. Commit and Push
+          git remote remove backend 2>/dev/null || true
+          git remote add backend "$BACKEND_REPO"
+          
+          echo "Fetching backend/$BRANCH..."
+          if ! git fetch backend "$BRANCH"; then
+            echo "ERROR: Branch '$BRANCH' does not exist in backend repo!"
+            exit 1
+          fi
+          
+          echo "Removing existing backend folder..."
+          if [ -d "backend" ]; then
+            git rm -rf backend
+            git commit -m "chore: clear backend folder for sync" || true
+          fi
+          
+          echo "Reading backend tree into backend/ prefix..."
+          git read-tree --prefix=backend/ -u "backend/$BRANCH"
+          
           git add backend
           
-          # Check if there are changes to commit
-          if ! git diff --quiet --cached; then
-            git commit -m "chore: force sync backend from $BRANCH"
-            git push origin $BRANCH
+          if git diff --cached --quiet; then
+            echo "✅ Backend is already up to date."
           else
-            echo "Backend is already up to date."
+            git commit -m "chore: force sync backend from $BRANCH"
+            git push origin "$BRANCH"
+            echo "✅ Successfully synced backend!"
           fi
