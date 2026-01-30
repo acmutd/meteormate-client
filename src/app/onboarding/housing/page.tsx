@@ -11,43 +11,119 @@ import {getAuth} from "firebase/auth";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
 import Image from "next/image";
 
+function buildSurveyPayload(raw: any) {
+  // 1) Start with backend-friendly defaults
+	const payload: any = {
+		interests: raw.interests ?? [],
+		dealbreakers: raw.dealbreakers ?? [],
+		on_campus_locations: raw.on_campus_locations ?? [],
+		answers: raw.answers ?? {},
+		smoke_vape: raw.smoke_vape ?? false,
+		drink: raw.drink ?? false,
+
+		// required by backend schema (NOT Optional there)
+		have_lease_length: raw.have_lease_length ?? "academic_year",
+	};
+
+  // 2) Copy over optional fields ONLY if they are not null/undefined
+	const optionalKeys = [
+		"housing_intent",
+		"budget_min",
+		"budget_max",
+		"move_in_date",
+		"wake_time",
+		"cleanliness",
+		"noise_tolerance",
+		"cooking_frequency",
+		"pet_preference",
+		"guests_frequency",
+		"roommate_closeness",
+		"honors",
+		"llc_interest",
+		"num_roommates",
+		"have_lease",
+	];
+
+	for (const k of optionalKeys) {
+		const v = raw[k];
+		if (v !== null && v !== undefined) payload[k] = v;
+	}
+
+  	return payload;
+}
+
 const sendOnboardingData = async () => {
-	try{
-		const data = loadOnboardingData();
-		//const body = JSON.stringify(data)
+	try {
+		const raw = loadOnboardingData();
+		const body = buildSurveyPayload(raw);
+
 		const auth = getAuth();
 		const user = auth.currentUser;
-		
-		if(!user) {
-			return { ok: false, error: "user not currently signed in."};
+
+		if (!user) {
+		return { ok: false, error: "user not currently signed in." };
 		}
 
 		const token = await user.getIdToken();
-		const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/survey`, {
-			method: "POST",
+		const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+		if (!base) {
+		return { ok: false, error: "NEXT_PUBLIC_API_BASE_URL is not set" };
+		}
+
+		// 1) Try POST first (create)
+		let response = await fetch(`${base}/survey`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify(body),
+		});
+
+		// 2) If survey already exists, fallback to PUT (update)
+		if (!response.ok) {
+		let errJson: any = null;
+		try {
+			errJson = await response.json();
+		} catch {}
+
+		const detail = errJson?.detail ? String(errJson.detail) : "";
+
+		if (response.status === 400 && detail.toLowerCase().includes("already exists")) {
+			response = await fetch(`${base}/survey`, {
+			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,
 			},
-			body: JSON.stringify(data),
-		});
+			body: JSON.stringify(body),
+			});
+		} else {
+			return {
+			ok: false,
+			error: `HTTP error ${response.status}${detail ? ` (${detail})` : ""}`,
+			};
+		}
+		}
 
 		if (!response.ok) {
-			let detail = "";
-			try {
-				const errJson = await response.json();
-				detail = errJson?.detail ? ` (${errJson.detail})` : "";
-			} catch {}
-			return { ok: false, error: `HTTP error ${response.status}${detail}` };
-		}
-		clearOnboardingData();
-			return { ok: true };
-		} catch (error) {
-			const msg = error instanceof Error ? error.message : "Unexpected error";
-			return { ok: false, error: msg };
+		let detail = "";
+		try {
+			const errJson = await response.json();
+			detail = errJson?.detail ? ` (${errJson.detail})` : "";
+		} catch {}
+		return { ok: false, error: `HTTP error ${response.status}${detail}` };
 		}
 
+		clearOnboardingData();
+		return { ok: true };
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : "Unexpected error";
+		return { ok: false, error: msg };
+	}
 };
+
 
 function OnCampusUI() {
 	const router = useRouter();
@@ -281,12 +357,13 @@ function OnCampusUI() {
                                 className="mt-7"
                                 logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot"/>}
                                 onClick={handleNextStep}
-								disabled = {
-									!selectedLocation ||
+								disabled={
 									selectedLocation.length === 0 ||
-									(showFreshmanSpecifics && (selectedLLCPreference === null || selectedHonorsStatus === null)) ||
+									selectedHonorsStatus === null ||
+									(showFreshmanSpecifics && selectedLLCPreference === null) ||
 									(showRoommateOptions && !selectedNumOfRoommates)
 								}
+
                             />
     		</div>
         </div>
@@ -322,16 +399,23 @@ function OffCampusUI() {
 
     const [hydrated, setHydrated] = useState(false);
 
-    useEffect(() => { // loading it once and the next use effect for the changes made and keeping track
-        const saved = loadOnboardingData();
-        setSelectedLeaseStatus(saved.have_lease ?? null);
-        setSelectedHaveLeaseLength(saved.have_lease_length ?? null);
-        setSelectedBudgetMin(saved.budget_min ?? null);
-        setSelectedBudgetMax(saved.budget_max ?? null);
+    useEffect(() => {
+		const saved = loadOnboardingData();
 
+		setSelectedLeaseStatus(saved.have_lease ?? null);
+		setSelectedHaveLeaseLength(saved.have_lease_length ?? null);
 
-        setHydrated(true);
-    }, []);
+		const min = saved.budget_min ?? 600;
+		const max = saved.budget_max ?? 1400;
+
+		setSelectedBudgetMin(min);
+		setSelectedBudgetMax(max);
+
+		updateOnboardingData({ budget_min: min, budget_max: max });
+
+		setHydrated(true);
+	}, []);
+
 
     useEffect(() => {
         if (!hydrated) return;
@@ -484,9 +568,9 @@ export default function HousingPage() {
     );
 
     useEffect(() => {
-        const saved = loadOnboardingData()
-        console.log(saved)
-    })
+	console.log(loadOnboardingData());
+	}, []);
+
 
     return (
         <div className="p-6">

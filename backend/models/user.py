@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import Column, Boolean, DateTime, Text, func, Enum
 from sqlalchemy.orm import relationship
 
-from database import ORMBase
+from backend.database import ORMBase
 
 
 class InactivityStage(str, enum.Enum):

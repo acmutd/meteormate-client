@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 
 from pydantic import BaseModel
 
-from models.survey import (
+from backend.models.survey import (
     HousingIntentEnum,
     WakeTimeEnum,
     CleanlinessEnum,
