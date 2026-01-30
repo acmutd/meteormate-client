@@ -25,10 +25,17 @@ jobs:
           if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
             BRANCH="${{ github.event.client_payload.branch }}"
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch }}"
           else
             BRANCH="main"
           fi
+          
+          # Fallback if BRANCH is still empty
+          if [ -z "$BRANCH" ]; then
+            echo "WARNING: Branch was empty, defaulting to main"
+            BRANCH="main"
+          fi
+          
           echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
           echo "Will sync branch: ${BRANCH}"
 
@@ -51,18 +58,17 @@ jobs:
         run: |
           set -e
           
+          echo "========================================"
           echo "Syncing backend folder for branch: $BRANCH"
+          echo "========================================"
           
           BACKEND_REPO="https://x-access-token:${GH_TOKEN}@github.com/acmutd/meteormate-backend.git"
           
           git remote remove backend 2>/dev/null || true
           git remote add backend "$BACKEND_REPO"
           
-          echo "Fetching backend/$BRANCH..."
-          if ! git fetch backend "$BRANCH"; then
-            echo "ERROR: Branch '$BRANCH' does not exist in backend repo!"
-            exit 1
-          fi
+          echo "Fetching backend $BRANCH..."
+          git fetch backend "$BRANCH"
           
           echo "Removing existing backend folder..."
           if [ -d "backend" ]; then
