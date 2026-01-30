@@ -28,8 +28,8 @@ jobs:
         run: |
           # 1. Define variables
           BACKEND_REPO="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/acmutd/meteormate-backend.git"
-          BRANCH=${GITHUB_REF#refs/heads/} # e.g., 'main' or 'dev'
-          
+          BRANCH="${{ github.event.client_payload.branch || github.ref_name }}"
+
           echo "Syncing backend folder for branch: $BRANCH"
 
           # 2. Add remote (idempotent)
