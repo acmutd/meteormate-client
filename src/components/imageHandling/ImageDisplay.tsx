@@ -1,17 +1,49 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
+import ImageCropper from "./ImageCropper";
+import ImageUploader from "./ImageUploader";
 
 interface ImageDisplayProps {
   imageUrl: string;
-  onClick?: () => void; // Todo: Replace image functionality
-  onDelete?: () => void; // Todo: Once API supports image deletion
+  onImageChange?: (newImageUrl: string) => void;
+  onDelete?: () => void; //Todo: Once backend supports delete endpoint
 }
 
 export default function ImageDisplay({
   imageUrl,
-  onClick,
-  onDelete,
+  onImageChange,
 }: ImageDisplayProps) {
+  const [showCropper, setShowCropper] = useState(false);
+  const [cropImage, setCropImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploaderRef = useRef<{
+    uploadImage: (base64: string) => Promise<void>;
+  }>(null);
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCropImage(reader.result as string);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropperDone = async (croppedDataUrl: string) => {
+    setShowCropper(false);
+    setCropImage(null);
+    if (uploaderRef.current) {
+      await uploaderRef.current.uploadImage(croppedDataUrl);
+    }
+  };
+
   return (
     <div className="relative group">
       <Image
@@ -19,17 +51,35 @@ export default function ImageDisplay({
         alt="Profile"
         width={1000}
         height={1000}
-        className="w-28 h-28 rounded-xl object-cover shadow-md bg-gray-300 cursor-pointer"
+        className="w-28 h-28 rounded-xl object-cover bg-gray-300 cursor-pointer"
         draggable="false"
-        onClick={onClick}
+        onClick={handleImageClick}
         title="Click to update this image"
       />
-      <button
-        onClick={onDelete}
-        className="absolute top-1 right-1 hidden group-hover:block bg-red-500 text-white rounded-full p-1"
-      >
-        X
-      </button>
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+
+      {showCropper && cropImage && (
+        <ImageCropper
+          image={cropImage}
+          onCropDone={handleCropperDone}
+          onCancel={() => {
+            setShowCropper(false);
+            setCropImage(null);
+          }}
+        />
+      )}
+      <ImageUploader
+        ref={uploaderRef}
+        onImageChange={(newUrl) => {
+          if (onImageChange) onImageChange(newUrl);
+        }}
+      />
     </div>
   );
 }
