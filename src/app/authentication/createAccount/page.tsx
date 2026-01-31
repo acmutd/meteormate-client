@@ -123,7 +123,7 @@ export default function CreateAccountPage() {
 					title: "Account created",
 					description: "We sent you a verification code. Check your email to continue.",
 				});
-				router.push("/authentication/verifyEmail");
+				router.push("./verifyEmail");
 			}
 		} catch (err: unknown) {
 			console.error("Signup error:", err);
