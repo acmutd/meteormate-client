@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import LogoBox from "../../../components/LogoBox";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
@@ -8,9 +8,13 @@ export default function VerifyEmailPage() {
 	const router = useRouter();
 	const [code, setCode] = useState(Array(6).fill(""));
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-	const [email] = useState<string | null>(null);
+	const [email, setEmail] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isVerifying, setIsVerifying] = useState(false);
+	
+	useEffect(() => {
+		setEmail(localStorage.getItem("verificationEmail"));
+	}, []);
 
 	const handleChange = (value: string, index: number) => {
 		if (/^\d$/.test(value)) {
@@ -65,7 +69,7 @@ export default function VerifyEmailPage() {
 				return;
 			}
 
-			const response = await fetch("/api/auth/verify-email", {
+			const response = await fetch(`api/auth/verify-email`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -100,7 +104,7 @@ export default function VerifyEmailPage() {
 		}
 
 		try {
-			const res = await fetch("/api/auth/send-verification-code", {
+			const res = await fetch(`api/auth/send-verification-code`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ email, purpose: "verify" }),

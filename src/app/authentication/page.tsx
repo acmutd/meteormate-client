@@ -13,6 +13,28 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { getAuthErrorMessage } from "@/utils/authErrors";
 import { callActivityPing } from "@/utils/api/auth";
 
+async function hasSurvey(idToken: string): Promise<boolean> {
+	const res = await fetch(
+		`api/survey/me`,
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${idToken}`,
+				"Content-Type": "application/json",
+			},
+		}
+	);
+
+	if (res.status === 404) return false; // no survey → go to survey
+	if (res.ok) return true;             // survey exists → dashboard
+
+	if (res.status === 401) {
+		throw new Error("AUTH_EXPIRED");
+	}
+
+	throw new Error(`UNEXPECTED_${res.status}`);
+}
+
 export default function LoginPage() {
 	const router = useRouter();
 	const { toast } = useToast();
@@ -83,19 +105,22 @@ export default function LoginPage() {
 		try {
 			if (!isSigningIn) {
 				setIsSigningIn(true);
-				await doSignInWithEmailAndPassword(email, password);
-				const pingResponse = await callActivityPing();
+				const userCredential = await doSignInWithEmailAndPassword(email, password);
+				const idToken = await userCredential.user.getIdToken(); // getting the firebase token here
+
+				const pingResponse = await callActivityPing(); 
 
 				if (!pingResponse.ok) {
 					console.log(`Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`)
 				}
+				const completed = await hasSurvey(idToken);
 
 				toast({
 					type: "success",
 					title: "Welcome back!",
 					description: "You’re now logged in.",
 				});
-				router.push("../dashboard"); // redirect after login CHANGE HERE ONCE THE HOME PAGE IS UP
+				router.push(completed ? "/dashboard" : "../onboarding/createProfile"); // hopefully this works
 			}
 		} catch (err: unknown) { //just in case there's a problem signing in 
 			console.error("Login error:", err);

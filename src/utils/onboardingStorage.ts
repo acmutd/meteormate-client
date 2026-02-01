@@ -51,19 +51,3 @@ export function clearOnboardingData() {
     if (typeof window === "undefined") return;
     localStorage.removeItem(KEY);
 }
-
-//later to send it to the backend:
-// import { loadOnboardingData, clearOnboardingData } from "@/utils/onboardingStorage";
-
-// const submitOnboarding = async () => {
-//   const data = loadOnboardingData();
-
-//   await fetch("/routes/onboarding/submit", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify(data),
-//   });
-
-//   // optional: clear after successful submit
-//   clearOnboardingData();
-// };

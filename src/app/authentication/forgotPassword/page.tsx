@@ -46,7 +46,7 @@ export default function VerifyEmailPage() {
     setIsSending(true);
 
     const response = await fetch(
-      "/api/auth/send-verification-code",
+      `api/auth/send-verification-code`,
       {
         method: "POST",
         headers: {
