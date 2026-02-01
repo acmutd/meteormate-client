@@ -5,11 +5,11 @@
     },
     {
       "src": "^/api/?$",
-      "dest": "/api/index.py?path=$1"
+      "dest": "/api/index.py"
     },
     {
       "src": "^/api/(.*)$",
-      "dest": "/api/index.py?path=$1"
+      "dest": "/api/index.py"
     }
   ]
 }
