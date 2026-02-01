@@ -72,7 +72,7 @@ const sendOnboardingData = async () => {
 		}
 
 		// 1) Try POST first (create)
-		let response = await fetch(`${base}/survey`, {
+		let response = await fetch(`api/survey`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -91,7 +91,7 @@ const sendOnboardingData = async () => {
 		const detail = errJson?.detail ? String(errJson.detail) : "";
 
 		if (response.status === 400 && detail.toLowerCase().includes("already exists")) {
-			response = await fetch(`${base}/survey`, {
+			response = await fetch(`api/survey`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",

@@ -3,7 +3,7 @@ import { parseApiError, Result, UserActivityPing, UserRegisterResponse } from ".
 
 export async function callRegisterRoute(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
+        const response = await fetch(`api/auth/register`, {
             'method': 'POST',
             'headers': {
                 'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export async function callActivityPing(): Promise<Result<UserActivityPing>> {
 
         const userToken = await user.getIdToken();
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URLL}/auth/activity-ping`, {
+        const response = await fetch(`api/auth/activity-ping`, {
             'method': 'POST',
             'headers': {
                 'Content-Type': 'application/json',

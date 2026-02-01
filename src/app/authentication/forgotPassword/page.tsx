@@ -46,7 +46,7 @@ export default function VerifyEmailPage() {
     setIsSending(true);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/send-verification-code`,
+      `api/auth/send-verification-code`,
       {
         method: "POST",
         headers: {

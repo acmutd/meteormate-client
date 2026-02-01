@@ -75,7 +75,7 @@ export default function VerifyPassword() {
 
       // 🔗 Hit your new backend endpoint
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify-reset-code"`,
+        `api/auth/verify-reset-code"`,
         {
           method: "POST",
           headers: {
