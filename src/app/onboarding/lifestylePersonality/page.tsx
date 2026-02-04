@@ -91,7 +91,7 @@ export default function LifestylePersonalityPage() {
     };
 
 	return (
-		<div>
+		<div className="flex flex-col min-h-screen items-center">
 			<ProgressHeader 
 				title="Lifestyle Personality"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"

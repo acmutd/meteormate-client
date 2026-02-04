@@ -80,7 +80,7 @@ export default function LifestyleHabitsPage() {
         router.push("/onboarding/interests");
     };
     return (
-        <div>
+        <div className="flex flex-col min-h-screen items-center">
             <ProgressHeader
                 title="Lifestyle Preferences"
                 subtitle="Help us find your ideal roommate by selecting your preferences!"

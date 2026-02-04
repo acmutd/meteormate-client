@@ -56,13 +56,13 @@ export default function InterestsPage() {
   };
 
 	return (
-		<div className="flex flex-col min-h-screen items-center justify-center">
+		<div className="flex flex-col min-h-screen items-center">
 			<ProgressHeader 
-        title="Select Your Interests"
-        subtitle="Pick a few interests to show who you are! You may pick up to 6."
-        currentStep={4}
-        progressImage="/peechi_progress_4.svg"
-      />
+                title="Select Your Interests"
+                subtitle="Pick a few interests to show who you are! You may pick up to 6."
+                currentStep={4}
+                progressImage="/peechi_progress_4.svg"
+            />
 			<div className="p-8">
 				<div className="max-w-4xl mx-auto">
 					<div className="flex flex-col gap-4">

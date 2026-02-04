@@ -484,7 +484,7 @@ export default function HousingPage() {
     })
 
     return (
-        <div className="p-6">
+        <div className="flex flex-col min-h-screen items-center">
             {living === "on_campus" ? (
                 <OnCampusUI/>
             ) : living === "off_campus" ? (
