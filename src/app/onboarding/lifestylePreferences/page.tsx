@@ -56,6 +56,7 @@ export default function LifestylePreferencesPage() {
 	const handleNextStep = () => {
 		router.push("/onboarding/lifestyleHabits");
 	};
+	
 	return (
 		<div>
 			<ProgressHeader 
@@ -140,7 +141,7 @@ export default function LifestylePreferencesPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<Image src="/peechi_duo.webp" alt="Peechi mascot"/>}
+						logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot"/>}
 						onClick={handleNextStep}
 						disabled = {!selectedCleanliness || !selectedNoiseTolerance || !selectedWakeupTime}
 					/>
