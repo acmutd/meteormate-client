@@ -1,10 +1,11 @@
 "use client";
 import Image from "next/image";
-import { Link } from "react-scroll";
+//import { Link } from "react-scroll";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import LoadingSpinner from "../LoadingSpinner";
+//import { useEffect, useRef, useState } from "react";
+//import LoadingSpinner from "../LoadingSpinner";
 import NotificationBell from "@/components/navigation/notificationBell";
+import ProfileAvatar from "@/components/navigation/ProfileAvatar";
 
 export default function Navbar() {
     const router = useRouter();
@@ -43,7 +44,7 @@ export default function Navbar() {
                 {/* Need to add the notification here and the profile here and add the condition on the notification */}
                 <div className="flex gap-6">
                     <NotificationBell />
-                    <p> profile</p>
+                    <ProfileAvatar />
                 </div>
                 
                 
