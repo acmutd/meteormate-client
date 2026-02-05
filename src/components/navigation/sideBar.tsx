@@ -59,7 +59,7 @@ export default function Sidebar() {
                 </div>
                 <button
                     onClick={() => {
-                        // still need to make the logout thing working - aastha notes
+                        // todo: still need to make the logout thing working - aastha notes
                         console.log("logout");
                     }}
                     className="w-full flex gap-2 px-4 py-2 rounded-md text-black hover:bg-gray-50 transition cursor-pointer"
