@@ -54,7 +54,7 @@ export default function Sidebar() {
             <div className="pt-4 border-t border-[#F1EADA] mb-2">
 
                 <div className="rounded-md border-none bg-[#FFE5C2] px-5 py-4 mb-4 grid grid-cols-1 justify-center">
-                    <p className="text-[75%] text-center mb-1 text-gray-600"> Want to learn move about the other ACM Products?</p>
+                    <p className="text-[75%] text-center mb-1 text-gray-600"> Want to learn more about the other ACM products?</p>
                     <button className="bg-linear-to-r from-orange-400 to-yellow-400 text-white px-10 py-2 rounded-md text-[65%] cursor-pointer"> Learn More </button>
                 </div>
                 <button
@@ -64,7 +64,7 @@ export default function Sidebar() {
                     }}
                     className="w-full flex gap-2 px-4 py-2 rounded-md text-black hover:bg-gray-50 transition cursor-pointer"
                     >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
                     </svg>
                         Logout

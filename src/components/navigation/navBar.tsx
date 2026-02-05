@@ -1,9 +1,6 @@
 "use client";
 import Image from "next/image";
-//import { Link } from "react-scroll";
 import { useRouter } from "next/navigation";
-//import { useEffect, useRef, useState } from "react";
-//import LoadingSpinner from "../LoadingSpinner";
 import NotificationBell from "@/components/navigation/notificationBell";
 import ProfileAvatar from "@/components/navigation/ProfileAvatar";
 
@@ -15,7 +12,7 @@ export default function Navbar() {
             {/* Main thing starts here I dont know if we even need the header maybe to make it static later ?!  */}
             <div className=" h-14 w-full flex items-center justify-between px-6 md:px-10 py-10"> {/* Here we can just add the mx-auto to take care of the spacing once the things like profile is added - aastha notes */}
                 
-                <div className="relative flex items-center gap-4 group cursor-pointer" onClick={() => router.push("/dashboard")}> {/* I dont know about the on click here right now we will work on it later*/}
+                <button className="relative flex items-center gap-4 group cursor-pointer" onClick={() => router.push("/dashboard")}> {/* I dont know about the on click here right now we will work on it later*/}
                     
                     <div className="relative">
                         <Image
@@ -39,7 +36,7 @@ export default function Navbar() {
                         </span>
                     </div>
 
-                </div>
+                </button>
 
                 {/* Need to add the notification here and the profile here and add the condition on the notification */}
                 <div className="flex gap-6">

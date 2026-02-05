@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function NotificationBell() {
     const router = useRouter();
     const [open, setOpen] = useState(false);
-    const [unread, setUnread] = useState(3); // to fetch from backend later - aastha notes
+    const [unread, setUnread] = useState(3); // todo: to fetch from backend later - aastha notes
     const ref = useRef<HTMLDivElement | null>(null);
 
   // close on outside click

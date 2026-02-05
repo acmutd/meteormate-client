@@ -1,5 +1,5 @@
 // the discover page - dashboard we are using to make sure that all the pages of the main app are here 
-export default function discover() {
+export default function messages() {
   return (
     <div>
       <h2 className="text-2xl font-semibold">Messages</h2>
