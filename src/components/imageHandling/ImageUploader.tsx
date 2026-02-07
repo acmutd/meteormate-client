@@ -15,7 +15,7 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
       async (base64: string) => {
         try {
           const token = await getCurrentUserIdToken();
-          const res = await fetch("/api/profiles/upload", {
+          const res = await fetch("/api/profiles/upload_picture", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
