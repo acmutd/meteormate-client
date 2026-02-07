@@ -6,12 +6,13 @@ import ImageUploader from "./ImageUploader";
 interface ImageDisplayProps {
   imageUrl: string;
   onImageChange?: (newImageUrl: string) => void;
-  onDelete?: () => void; //Todo: Once backend supports delete endpoint
+  onDelete?: () => void;
 }
 
 export default function ImageDisplay({
   imageUrl,
   onImageChange,
+  onDelete,
 }: ImageDisplayProps) {
   const [showCropper, setShowCropper] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
@@ -44,6 +45,15 @@ export default function ImageDisplay({
     }
   };
 
+  const handleDelete = async () => {
+    if (!onDelete) return;
+    try {
+      await onDelete();
+    } catch (err) {
+      console.error("Failed to delete image", err);
+    }
+  };
+
   return (
     <div className="relative group">
       <Image
@@ -56,6 +66,16 @@ export default function ImageDisplay({
         onClick={handleImageClick}
         title="Click to update this image"
       />
+      {onDelete && (
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700"
+          title="Delete image"
+        >
+          X
+        </button>
+      )}
       <input
         type="file"
         accept="image/*"

@@ -17,7 +17,7 @@ export default function Profile() {
     const fetchuser = async () => {
       try {
         const token = await getCurrentUserIdToken();
-        // console.log(token);
+        console.log(token);
         const data = await fetchCurrentUser(token);
         setUser(data);
       } catch (err) {

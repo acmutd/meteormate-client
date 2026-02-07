@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ImageDisplay from "./ImageDisplay";
+import { getCurrentUserIdToken } from "@/firebase/auth";
 
 const MAX_IMAGES = 5;
 
@@ -54,6 +55,26 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     }
   };
 
+  const handleImageDelete = async (index: number) => {
+    try {
+      const token = await getCurrentUserIdToken();
+      const res = await fetch(`/api/profiles/delete_picture/${index}`, {
+        method: "DELETE",
+        headers: {
+              Authorization: `Bearer ${token}`,
+        }
+      });
+      if (!res.ok) throw new Error("Failed to delete image");
+      setImages((prev) => {
+        const updated = [...prev];
+        updated.splice(index, 1);
+        return updated;
+      });
+    } catch (err) {
+      console.error("Failed to delete image", err);
+    }
+  };
+
   if (loading) return <div>Loading images...</div>;
 
   // Ensure we always have 5 slots
@@ -76,6 +97,7 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
             key={0}
             imageUrl={filledImages[0]}
             onImageChange={(url) => handleImageChange(url, 0)}
+            onDelete={images[0] !== DEFAULT_IMAGE && images.length > 0 ? () => handleImageDelete(0) : undefined}
           />
         </div>
         <div className="flex flex-col items-center">
@@ -88,6 +110,7 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
                 key={idx + 1}
                 imageUrl={img}
                 onImageChange={(url) => handleImageChange(url, idx + 1)}
+                onDelete={images[idx + 1] !== DEFAULT_IMAGE && images.length > idx + 1 ? () => handleImageDelete(idx + 1) : undefined}
               />
             ))}
           </div>
