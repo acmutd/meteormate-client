@@ -47,6 +47,7 @@ export default function Profile() {
           alt="Profile Picture"
           className="mt-4 w-24 h-24 rounded-full object-cover shadow-md bg-gray-300"
           draggable="false"
+          width={1000} height={1000}
         ></Image>
         <div className="grid grid-cols-2 gap-4 w-full p-4">
           <div className="text-md">

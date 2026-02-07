@@ -56,6 +56,7 @@ export default function LifestylePreferencesPage() {
 	const handleNextStep = () => {
 		router.push("/onboarding/lifestyleHabits");
 	};
+	
 	return (
 		<div className="flex flex-col min-h-screen items-center">
 			<ProgressHeader 
