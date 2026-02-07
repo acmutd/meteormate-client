@@ -8,7 +8,6 @@ import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage";
-import Image from "next/image";
 
 const INTEREST_ROWS = [
 	['Climbing', 'Anime', 'Running', 'Instruments', 'Reading', 'Gaming'],

@@ -7,7 +7,6 @@ import { DatePicker } from "@/components/DatePicker";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
 import { loadOnboardingData, updateOnboardingData } from "@/utils/onboardingStorage";
-import Image from "next/image";
 
 export default function LifestylePersonalityPage() {
 	const router = useRouter();

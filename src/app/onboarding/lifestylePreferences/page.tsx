@@ -9,7 +9,6 @@ import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
-import Image from "next/image";
 
 export default function LifestylePreferencesPage() {
 	const router = useRouter();
