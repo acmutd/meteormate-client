@@ -58,11 +58,12 @@ export default function LifestylePreferencesPage() {
 	};
 	
 	return (
-		<div>
+		<div className="flex flex-col min-h-screen items-center">
 			<ProgressHeader 
 				title="Lifestyle Preferences"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
 				currentStep={2}
+                progressImage="/peechi_progress_2.svg"
 			/>
 			<div className="py-8 px-15 w-full flex flex-col">
 				<h1 className="text-black text-xl font-bold">Wake-up Time</h1>
@@ -73,19 +74,19 @@ export default function LifestylePreferencesPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Early Bird"
-						imageSrc="/early_bird_card.webp"
+						imageSrc="/early_bird_card.svg"
 						isSelected={selectedWakeupTime === "early_bird"}
 						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "early_bird")}
 					/>
 					<LifestylePreferencesCard
 						title="Flexible"
-						imageSrc="/flexible_card.webp"
+						imageSrc="/flexible_card.svg"
 						isSelected={selectedWakeupTime === "flexible"}
 						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "flexible")}
 					/>
 					<LifestylePreferencesCard
 						title="Night Owl"
-						imageSrc="/night_owl_card.webp"
+						imageSrc="/night_owl_card.svg"
 						isSelected={selectedWakeupTime === "night_owl"}
 						onClick={() => handleToggle(selectedWakeupTime, setSelectedWakeupTime, "night_owl")}
 					/>
@@ -97,19 +98,19 @@ export default function LifestylePreferencesPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Relaxed"
-						imageSrc="/orderly_card.webp"
+						imageSrc="/cleanliness_relaxed_card.svg"
 						isSelected={selectedCleanliness === "relaxed"}
 						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "relaxed")}
 					/>
 					<LifestylePreferencesCard
 						title="Tidy"
-						imageSrc="/tidy_card.webp"
+						imageSrc="/cleanliness_tidy_card.svg"
 						isSelected={selectedCleanliness === "tidy"}
 						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "tidy")}
 					/>
 					<LifestylePreferencesCard
 						title="Neat Freak"
-						imageSrc="/neat_freak_card.webp"
+						imageSrc="/cleanliness_neat_freak_card.svg"
 						isSelected={selectedCleanliness === "neat_freak"}
 						onClick={() => handleToggle(selectedCleanliness, setSelectedCleanliness, "neat_freak")}
 					/>
@@ -121,19 +122,19 @@ export default function LifestylePreferencesPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Quiet"
-						imageSrc="/quiet_card.webp"
+						imageSrc="/quiet_card.svg"
 						isSelected={selectedNoiseTolerance === "quiet"}
 						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "quiet")}
 					/>
 					<LifestylePreferencesCard
 						title="Moderate"
-						imageSrc="/moderate_card.webp"
+						imageSrc="/moderate_card.svg"
 						isSelected={selectedNoiseTolerance === "moderate"}
 						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "moderate")}
 					/>
 					<LifestylePreferencesCard
 						title="Loud"
-						imageSrc="/social_card.webp"
+						imageSrc="/loud_card.svg"
 						isSelected={selectedNoiseTolerance === "loud"}
 						onClick={() => handleToggle(selectedNoiseTolerance, setSelectedNoiseTolerance, "loud")}
 					/>
@@ -141,7 +142,6 @@ export default function LifestylePreferencesPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot"/>}
 						onClick={handleNextStep}
 						disabled = {!selectedCleanliness || !selectedNoiseTolerance || !selectedWakeupTime}
 					/>

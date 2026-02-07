@@ -91,11 +91,12 @@ export default function LifestylePersonalityPage() {
     };
 
 	return (
-		<div>
+		<div className="flex flex-col min-h-screen items-center">
 			<ProgressHeader 
 				title="Lifestyle Personality"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
-				currentStep={4}
+				currentStep={5}
+                progressImage="/peechi_progress_5.svg"
 			/>
 			<div className="py-8 px-15 w-full flex flex-col">
 				<p className="text-black text-sm mt-1 mb-2">
@@ -105,19 +106,19 @@ export default function LifestylePersonalityPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Never"
-						imageSrc="/fire-sign-15238.webp" //need to change this
+						imageSrc="/cooking_never_card.svg"
 						isSelected={selectedCookingPreference === "never"}
 						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "never")}
 					/>
 					<LifestylePreferencesCard
 						title="Rarely"
-						imageSrc="/flambee.webp" // change this
+						imageSrc="/cooking_rarely_card.svg"
 						isSelected={selectedCookingPreference === "rarely"}
 						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "rarely")}
 					/>
 					<LifestylePreferencesCard
 						title="Often"
-						imageSrc="/cooking-pots.webp" // change this
+						imageSrc="/cooking_often_card.svg"
 						isSelected={selectedCookingPreference === "often"}
 						onClick={() => handleToggle(selectedCookingPreference, setselectedCookingPreference, "often")}
 					/>
@@ -129,19 +130,19 @@ export default function LifestylePersonalityPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer"> 
 					<LifestylePreferencesCard
 						title="I'm okay with pets"
-						imageSrc="/pawprint.webp"
+						imageSrc="/okay_with_pet_card.svg"
 						isSelected={selectedPetPreferences === "okay"}
 						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "okay")}
 					/>
 					<LifestylePreferencesCard
 						title="I'm not okay with pets"
-						imageSrc="/no-pets.webp"
+						imageSrc="/not_okay_with_pet_card.svg"
 						isSelected={selectedPetPreferences === "not_okay"}
 						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "not_okay")}
 					/>
 					<LifestylePreferencesCard
 						title="I have a pet"
-						imageSrc="/pet.webp"
+						imageSrc="/have_a_pet_card.svg"
 						isSelected={selectedPetPreferences === "have_a_pet"}
 						onClick={() => handleToggle(selectedPetPreferences, setselectedPetPreferences, "have_a_pet")}
 					/>
@@ -153,19 +154,19 @@ export default function LifestylePersonalityPage() {
 				<div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="Never"
-						imageSrc="/no-crowd.webp"
+						imageSrc="/guest_never_card.svg"
 						isSelected={selectedGuestsPreference === "never"}
 						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "never")}
 					/>
 					<LifestylePreferencesCard
 						title="Sometimes"
-						imageSrc="/group.webp"
+						imageSrc="/guest_sometimes_card.svg"
 						isSelected={selectedGuestsPreference === "sometimes"}
 						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "sometimes")}
 					/>
 					<LifestylePreferencesCard
 						title="Often"
-						imageSrc="/friends.webp"
+						imageSrc="/guest_often_card.svg"
 						isSelected={selectedGuestsPreference === "often"}
 						onClick={() => handleToggle(selectedGuestsPreference, setSelectedGuestsPreferences, "often")}
 					/>
@@ -191,7 +192,7 @@ export default function LifestylePersonalityPage() {
 				<div className="grid grid-cols-2 place-items-center gap-4 mb-4 cursor-pointer">
 					<LifestylePreferencesCard
 						title="On-Campus"
-						imageSrc="/school.webp"
+						imageSrc="/on_campus_card.svg"
 						isSelected={selectedLivingPreference === "on_campus"}
 						onClick={() => {
 							handleToggle(selectedLivingPreference, setselectedLivingPreference, "on_campus");
@@ -200,7 +201,7 @@ export default function LifestylePersonalityPage() {
 					/>
 					<LifestylePreferencesCard
 						title="Off-Campus"
-						imageSrc="/residential.webp"
+						imageSrc="/off_campus_card.svg"
 						isSelected={selectedLivingPreference === "off_campus"}
 						onClick={() => {
 							handleToggle(selectedLivingPreference, setselectedLivingPreference, "off_campus");
@@ -213,7 +214,6 @@ export default function LifestylePersonalityPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<Image src="/peechi_duo.webp"  width={1000} height={1000} alt="Peechi mascot"/>}
 						onClick={handleNextStep}
 						disabled={!selectedLivingPreference || !selectedMoveInDate || !selectedCookingPreference || !selectedGuestsPreference || !selectedPetPreferences}
 					/>

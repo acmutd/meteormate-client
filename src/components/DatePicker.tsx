@@ -9,6 +9,8 @@ interface DatePickerProps {
   maxDate?: string;
 }
 
+type ViewMode = 'days' | 'months';
+
 export const DatePicker: React.FC<DatePickerProps> = ({
   value,
   onChange,
@@ -17,6 +19,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   maxDate
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('days');
+  const [monthSelected, setMonthSelected] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date>(
     () => (value ? new Date(value) : new Date())
   );
@@ -27,12 +31,18 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     "July", "August", "September", "October", "November", "December"
   ];
 
+  const monthNamesShort = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
   const daysOfWeek = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setViewMode('days');
       }
     };
 
@@ -93,6 +103,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     if (!isDateDisabled(newDate)) {
       onChange(formatted);
       setIsOpen(false);
+      setViewMode('days');
     }
   };
 
@@ -104,9 +115,26 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
   };
 
+  const handlePrevYear = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear() - 1, currentMonth.getMonth()));
+    setMonthSelected(false);
+  };
+
+  const handleNextYear = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear() + 1, currentMonth.getMonth()));
+    setMonthSelected(false);
+  };
+
+  const handleMonthSelect = (monthIndex: number) => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), monthIndex));
+    setMonthSelected(true);
+    setViewMode('days');
+  };
+
   const handleClear = () => {
     onChange(null);
     setIsOpen(false);
+    setViewMode('days');
   };
 
   const formatDate = (date: string | null | undefined) => {
@@ -175,6 +203,33 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     return days;
   };
 
+  const renderMonthsView = () => {
+    const viewingMonth = currentMonth.getMonth();
+
+    return (
+      <div className="grid grid-cols-3 gap-2">
+        {monthNamesShort.map((month, index) => {
+          const isCurrentlyViewing = monthSelected && viewingMonth === index;
+          
+          return (
+            <button
+              key={month}
+              onClick={() => handleMonthSelect(index)}
+              className={`
+                py-3 text-sm rounded-lg transition-colors
+                ${isCurrentlyViewing ? 'bg-gradient-to-br from-[#FF9100] to-[#FFC94C] text-white font-semibold' : ''}
+                ${!isCurrentlyViewing ? 'hover:bg-gray-100' : ''}
+                cursor-pointer
+              `}
+            >
+              {month}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="relative w-full max-w-2xl" ref={containerRef}>
       <div className="relative">
@@ -206,43 +261,81 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       {isOpen && (
         <div className="absolute z-50 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-80">
           {/* Calendar Header */}
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={handlePrevMonth}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+          {viewMode === 'days' ? (
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={handlePrevMonth}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
 
-            <div className="text-center font-semibold text-gray-800">
-              {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+              <button
+                onClick={() => setViewMode('months')}
+                className="text-center font-semibold text-gray-800 hover:bg-gray-100 px-3 py-1 rounded-lg transition-colors"
+              >
+                {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+              </button>
+
+              <button
+                onClick={handleNextMonth}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
+          ) : (
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={handlePrevYear}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
 
-            <button
-              onClick={handleNextMonth}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+              <button
+                onClick={() => setViewMode('days')}
+                className="text-center font-semibold text-gray-800 hover:bg-gray-100 px-3 py-1 rounded-lg transition-colors"
+              >
+                {currentMonth.getFullYear()}
+              </button>
 
-          {/* Day Headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
-            {daysOfWeek.map(day => (
-              <div key={day} className="text-center text-xs font-medium text-gray-500">
-                {day}
+              <button
+                onClick={handleNextYear}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {viewMode === 'days' ? (
+            <>
+              {/* Day Headers */}
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {daysOfWeek.map(day => (
+                  <div key={day} className="text-center text-xs font-medium text-gray-500">
+                    {day}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-1">
-            {renderCalendarDays()}
-          </div>
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-1">
+                {renderCalendarDays()}
+              </div>
+            </>
+          ) : (
+            renderMonthsView()
+          )}
         </div>
       )}
     </div>

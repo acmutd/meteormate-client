@@ -80,11 +80,12 @@ export default function LifestyleHabitsPage() {
         router.push("/onboarding/interests");
     };
     return (
-        <div>
+        <div className="flex flex-col min-h-screen items-center">
             <ProgressHeader
                 title="Lifestyle Preferences"
                 subtitle="Help us find your ideal roommate by selecting your preferences!"
                 currentStep={3}
+                progressImage="/peechi_progress_3.svg"
             />
             <div className="py-8 px-15 w-full flex flex-col">
                 <h1 className="text-black text-xl font-bold">Closeness</h1>
@@ -95,19 +96,19 @@ export default function LifestyleHabitsPage() {
                 <div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
                     <LifestylePreferencesCard
                         title="Not Close"
-                        imageSrc="/roommate.webp"
+                        imageSrc="/not_close_card.svg"
                         isSelected={selectedCloseness === "not_close"}
                         onClick={() => handleToggle(selectedCloseness, setSelectedCloseness, "not_close")}
                     />
                     <LifestylePreferencesCard
                         title="Friends"
-                        imageSrc="/high-five.webp"
+                        imageSrc="/friends_card.svg"
                         isSelected={selectedCloseness === "friends"}
                         onClick={() => handleToggle(selectedCloseness, setSelectedCloseness, "friends")}
                     />
                     <LifestylePreferencesCard
                         title="Close Friends"
-                        imageSrc="/best-friends.webp"
+                        imageSrc="/close_friends_card.svg"
                         isSelected={selectedCloseness === "close_friends"}
                         onClick={() => handleToggle(selectedCloseness, setSelectedCloseness, "close_friends")}
                     />
@@ -119,14 +120,14 @@ export default function LifestyleHabitsPage() {
                 <div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
                     <LifestylePreferencesCard
                         title="Smoking/Vaping"
-                        imageSrc="/orderly_card.webp"
+                        imageSrc="/smoking_vaping_card.svg"
                         isSelected={selectedSmokeVape === true}
                         onClick={() => toggleNullableTrue(selectedSmokeVape, setSelectedSmokeVape)}
                     />
 
                     <LifestylePreferencesCard
                         title="Drinking"
-                        imageSrc="/tidy_card.webp"
+                        imageSrc="/drinking_card.svg"
                         isSelected={selectedDrink === true}
                         onClick={() => toggleNullableTrue(selectedDrink, setSelectedDrink)}
                     />
@@ -138,19 +139,19 @@ export default function LifestyleHabitsPage() {
                 <div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
                     <LifestylePreferencesCard
                         title="Smoking/Vaping"
-                        imageSrc="/quiet_card.webp"
+                        imageSrc="/smoking_vaping_card.svg"
                         isSelected={selectedDealbreakers.includes("smoke_vape")}
                         onClick={() => handleDealbreakerToggle("smoke_vape")}
                     />
                     <LifestylePreferencesCard
                         title="Drinking"
-                        imageSrc="/moderate_card.webp"
+                        imageSrc="/drinking_card.svg"
                         isSelected={selectedDealbreakers.includes("drink")}
                         onClick={() => handleDealbreakerToggle("drink")}
                     />
                     <LifestylePreferencesCard
                         title="Same Gender Roommates"
-                        imageSrc="/social_card.webp"
+                        imageSrc="/co-ed_roomates_card.svg"
                         isSelected={selectedDealbreakers.includes("same_gender")}
                         onClick={() => handleDealbreakerToggle("same_gender")}
                     />
@@ -158,7 +159,6 @@ export default function LifestyleHabitsPage() {
                 <div className="flex justify-center">
                     <NextStepButton
                         className="mt-7"
-                        logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot"/>}
                         onClick={handleNextStep}
                         disabled={!selectedCloseness}
                     />
