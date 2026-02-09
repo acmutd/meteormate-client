@@ -3,14 +3,12 @@ import React from "react";
 // Define the props for our button component
 interface NextStepButtonProps {
 	onClick?: () => void;
-	logo?: React.ReactNode;
 	className?: string;
 	disabled?: boolean;
 }
 
 const NextStepButton: React.FC<NextStepButtonProps> = ({
 	onClick,
-	logo,
 	className,
 	disabled,
 }) => {
@@ -40,14 +38,6 @@ const NextStepButton: React.FC<NextStepButtonProps> = ({
 			<span className="ml-4 flex items-center justify-center relative z-20 left-30">
 				&gt;
 			</span>
-
-			{logo && (
-				<span
-					className={`absolute overflow-visible h-15 w-15 right-10 -top-3 z-30 transform -translate-x-1/2 flex items-center justify-center`}
-				>
-					{logo}
-				</span>
-			)}
 		</button>
 	);
 };
