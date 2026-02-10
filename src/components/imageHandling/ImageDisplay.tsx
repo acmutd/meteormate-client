@@ -2,18 +2,21 @@ import React, { useRef, useState } from "react";
 import Image from "next/image";
 import ImageCropper from "./ImageCropper";
 import ImageUploader from "./ImageUploader";
+import ImageDelete from "./ImageDelete";
 
 interface ImageDisplayProps {
   imageUrl: string;
   onImageChange?: (newImageUrl: string) => void;
-  onDelete?: () => void;
+  deleteIndex?: number;
+  onDeleted?: () => void;
   variant?: "image" | "placeholder";
 }
 
 export default function ImageDisplay({
   imageUrl,
   onImageChange,
-  onDelete,
+  deleteIndex,
+  onDeleted,
   variant = "image",
 }: ImageDisplayProps) {
   const [showCropper, setShowCropper] = useState(false);
@@ -44,15 +47,6 @@ export default function ImageDisplay({
     setCropImage(null);
     if (uploaderRef.current) {
       await uploaderRef.current.uploadImage(croppedDataUrl);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!onDelete) return;
-    try {
-      await onDelete();
-    } catch (err) {
-      console.error("Failed to delete image", err);
     }
   };
 
@@ -88,15 +82,8 @@ export default function ImageDisplay({
             onClick={handleImageClick}
             title="Click to update this image"
           />
-          {onDelete && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700"
-              title="Delete image"
-            >
-              x
-            </button>
+          {typeof deleteIndex === "number" && (
+            <ImageDelete index={deleteIndex} onDeleted={onDeleted} />
           )}
         </>
       )}

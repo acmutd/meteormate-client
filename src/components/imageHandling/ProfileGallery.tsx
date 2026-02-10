@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ImageDisplay from "./ImageDisplay";
-import { getCurrentUserIdToken } from "@/firebase/auth";
 
 const MAX_IMAGES = 5;
 
@@ -54,24 +53,12 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     }
   };
 
-  const handleImageDelete = async (index: number) => {
-    try {
-      const token = await getCurrentUserIdToken();
-      const res = await fetch(`/api/profiles/delete_picture/${index}`, {
-        method: "DELETE",
-        headers: {
-              Authorization: `Bearer ${token}`,
-        }
-      });
-      if (!res.ok) throw new Error("Failed to delete image");
-      setImages((prev) => {
-        const updated = [...prev];
-        updated.splice(index, 1);
-        return updated;
-      });
-    } catch (err) {
-      console.error("Failed to delete image", err);
-    }
+  const handleImageRemoved = (index: number) => {
+    setImages((prev) => {
+      const updated = [...prev];
+      updated.splice(index, 1);
+      return updated;
+    });
   };
 
   if (loading) return <div>Loading images...</div>;
@@ -92,7 +79,8 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
               key={0}
               imageUrl={profileImage}
               onImageChange={(url) => handleImageChange(url, 0)}
-              onDelete={images.length > 0 ? () => handleImageDelete(0) : undefined}
+              deleteIndex={images.length > 0 ? 0 : undefined}
+              onDeleted={() => handleImageRemoved(0)}
             />
           ) : (
             <ImageDisplay
@@ -113,7 +101,8 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
                 key={idx + 1}
                 imageUrl={img}
                 onImageChange={(url) => handleImageChange(url, idx + 1)}
-                onDelete={images.length > idx + 1 ? () => handleImageDelete(idx + 1) : undefined}
+                deleteIndex={images.length > idx + 1 ? idx + 1 : undefined}
+                onDeleted={() => handleImageRemoved(idx + 1)}
               />
             ))}
             {featuredImages.length < MAX_IMAGES - 1 && (
