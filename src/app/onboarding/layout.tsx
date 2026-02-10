@@ -1,15 +1,39 @@
 "use client"
 
-import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { getCurrentUserIdToken } from "@/firebase/auth";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function CreateProfilePageLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
+	const [loading, setLoading] = useState(true);
 	const router = useRouter();
+
+	useEffect(() => {
+		const checkAuth = async () => {
+			try {
+				await getCurrentUserIdToken();
+				setLoading(false);
+			} catch (err) {
+				console.error("Onboarding auth error:", err);
+				router.push("/authentication?toast=not-signed-in");
+			}
+		};
+		checkAuth();
+	}, [router]);
+
+	if (loading) {
+		return (
+			<div className="min-h-screen flex items-center justify-center bg-black">
+				<LoadingSpinner size="lg" />
+			</div>
+		);
+	}
 
 	return (
 		<div
