@@ -11,7 +11,6 @@ interface ProfileGalleryProps {
 export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const DEFAULT_IMAGE = "/peechi_duo.webp";
 
   useEffect(() => {
     async function fetchProfileImages() {
@@ -27,7 +26,7 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
           !Array.isArray(data.profile_picture_url) ||
           data.profile_picture_url.length === 0
         ) {
-          setImages([DEFAULT_IMAGE]);
+          setImages([]);
         } else {
           setImages(data.profile_picture_url);
         }
@@ -77,14 +76,9 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
 
   if (loading) return <div>Loading images...</div>;
 
-  // Ensure we always have 5 slots
-  const filledImages =
-    images.length < MAX_IMAGES
-      ? [
-          ...images,
-          ...Array(MAX_IMAGES - images.length).fill(DEFAULT_IMAGE),
-        ].slice(0, MAX_IMAGES)
-      : images.slice(0, MAX_IMAGES);
+  const profileImage = images[0];
+  const featuredImages = images.slice(1, MAX_IMAGES);
+  const nextFeaturedIndex = 1 + featuredImages.length;
 
   return (
     <div className="flex flex-col gap-6 mt-4">
@@ -93,26 +87,43 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
           <span className="mb-2 font-semibold text-sm self-start">
             Your Profile Picture
           </span>
-          <ImageDisplay
-            key={0}
-            imageUrl={filledImages[0]}
-            onImageChange={(url) => handleImageChange(url, 0)}
-            onDelete={images[0] !== DEFAULT_IMAGE && images.length > 0 ? () => handleImageDelete(0) : undefined}
-          />
+          {profileImage ? (
+            <ImageDisplay
+              key={0}
+              imageUrl={profileImage}
+              onImageChange={(url) => handleImageChange(url, 0)}
+              onDelete={images.length > 0 ? () => handleImageDelete(0) : undefined}
+            />
+          ) : (
+            <ImageDisplay
+              key={0}
+              imageUrl=""
+              variant="placeholder"
+              onImageChange={(url) => handleImageChange(url, 0)}
+            />
+          )}
         </div>
         <div className="flex flex-col items-center">
           <span className="mb-2 font-semibold text-sm self-start">
             Featured Pictures
           </span>
           <div className="flex flex-row gap-4">
-            {filledImages.slice(1).map((img, idx) => (
+            {featuredImages.map((img, idx) => (
               <ImageDisplay
                 key={idx + 1}
                 imageUrl={img}
                 onImageChange={(url) => handleImageChange(url, idx + 1)}
-                onDelete={images[idx + 1] !== DEFAULT_IMAGE && images.length > idx + 1 ? () => handleImageDelete(idx + 1) : undefined}
+                onDelete={images.length > idx + 1 ? () => handleImageDelete(idx + 1) : undefined}
               />
             ))}
+            {featuredImages.length < MAX_IMAGES - 1 && (
+              <ImageDisplay
+                key={nextFeaturedIndex}
+                imageUrl=""
+                variant="placeholder"
+                onImageChange={(url) => handleImageChange(url, nextFeaturedIndex)}
+              />
+            )}
           </div>
         </div>
       </div>

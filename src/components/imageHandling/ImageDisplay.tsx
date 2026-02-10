@@ -7,12 +7,14 @@ interface ImageDisplayProps {
   imageUrl: string;
   onImageChange?: (newImageUrl: string) => void;
   onDelete?: () => void;
+  variant?: "image" | "placeholder";
 }
 
 export default function ImageDisplay({
   imageUrl,
   onImageChange,
   onDelete,
+  variant = "image",
 }: ImageDisplayProps) {
   const [showCropper, setShowCropper] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
@@ -56,25 +58,47 @@ export default function ImageDisplay({
 
   return (
     <div className="relative group">
-      <Image
-        src={imageUrl}
-        alt="Profile"
-        width={1000}
-        height={1000}
-        className="w-28 h-28 rounded-xl object-cover bg-gray-300 cursor-pointer"
-        draggable="false"
-        onClick={handleImageClick}
-        title="Click to update this image"
-      />
-      {onDelete && (
-        <button
-          type="button"
-          onClick={handleDelete}
-          className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700"
-          title="Delete image"
+      {/* Credit to Nathan Sujatno for creating the "Upload your photo" place holder */}
+      {variant === "placeholder" ? (
+        <div
+          onClick={handleImageClick}
+          className="bg-[#F6F3ED] w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
+          title="Upload photo"
         >
-          X
-        </button>
+          <Image
+            src="/upload_photo_picture.svg"
+            alt="Upload Photo"
+            width={128}
+            height={128}
+            className="size-12 mb-3"
+          />
+          <span className="text-black text-[10px] text-center leading-tight">
+            Upload your<br />photo
+          </span>
+        </div>
+      ) : (
+        <>
+          <Image
+            src={imageUrl}
+            alt="Profile"
+            width={128}
+            height={128}
+            className="w-32 h-32 rounded-xl object-cover bg-gray-300 cursor-pointer"
+            draggable="false"
+            onClick={handleImageClick}
+            title="Click to update this image"
+          />
+          {onDelete && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700"
+              title="Delete image"
+            >
+              x
+            </button>
+          )}
+        </>
       )}
       <input
         type="file"
