@@ -42,15 +42,19 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   }, [images]);
 
   const handleImageChange = (newImageUrl: string, index?: number) => {
-    if (typeof index === "number") {
-      setImages((prev) => {
-        const updated = [...prev];
-        updated[index] = newImageUrl;
-        return updated;
-      });
-    } else {
-      setImages((prev) => [...prev, newImageUrl]);
-    }
+    setImages((prev) => {
+      if (typeof index !== "number") {
+        return [...prev, newImageUrl];
+      }
+
+      if (index > prev.length) {
+        return [...prev, newImageUrl];
+      }
+
+      const updated = [...prev];
+      updated[index] = newImageUrl;
+      return updated;
+    });
   };
 
   const handleImageRemoved = (index: number) => {
