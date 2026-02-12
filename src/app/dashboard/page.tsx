@@ -5,9 +5,9 @@ export default function Discover() {
   return (
     <div className="flex justify-center py-8">
       <ProfileCard
-        name="Christopher Tran"
-        subtitle="Design Major - Junior"
-        images={["/demo/profile1.jpg", "/demo/profile2.jpg", "/demo/profile3.jpg"]}
+        name="Aastha Sheth"
+        subtitle="Comp sci. major - senior"
+        images={["/p2.png", "/p1.jpg", "/p3.jpg"]}
         tags={[
           { label: "Does not have a lease", tone: "orange"},
           { label: "Year long lease", tone: "orange"},
