@@ -55,7 +55,7 @@ export default function ImageDisplay({
     <div className="relative group">
       {/* Credit to Nathan Sujatno for creating the "Upload your photo" place holder */}
       {variant === "placeholder" ? (
-        <div
+        <button
           onClick={handleImageClick}
           className="bg-[#F6F3ED] w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
           title="Upload photo"
@@ -70,7 +70,7 @@ export default function ImageDisplay({
           <span className="text-black text-[10px] text-center leading-tight">
             Upload your<br />photo
           </span>
-        </div>
+        </button>
       ) : (
         <>
           <Image
