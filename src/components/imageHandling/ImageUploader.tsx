@@ -23,7 +23,9 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
             },
             body: JSON.stringify({ base64 }),
           });
-          if (!res.ok) throw new Error("Failed to upload image");
+          if (!res.ok) {
+            throw new Error(`Failed to upload image, status ${res.status}`);
+          }
           const data = await res.json();
           if (
             data?.profile_picture_url &&
@@ -34,8 +36,9 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
               data.profile_picture_url[data.profile_picture_url.length - 1],
             );
           }
-        } catch {
-          throw new Error("Failed to upload image");
+        } catch (e) {
+          console.error(`Failed to upload image, error:`, e);
+          throw new Error(`Failed to upload image, error: ${e instanceof Error ? e.message : e}`);
         }
       },
       [onImageChange],
