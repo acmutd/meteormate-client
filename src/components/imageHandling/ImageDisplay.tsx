@@ -39,6 +39,7 @@ export default function ImageDisplay({
         setShowCropper(true);
       };
       reader.readAsDataURL(file);
+      e.currentTarget.value = "";
     }
   };
 
