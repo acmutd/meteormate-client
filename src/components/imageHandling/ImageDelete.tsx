@@ -33,8 +33,9 @@ export default function ImageDelete({ index, onDeleted }: ImageDeleteProps) {
     <button
       type="button"
       onClick={handleDelete}
+      disabled={isDeleting}
       className={
-        "absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700"
+        "absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
       }
       title={"Delete image"}
     >
