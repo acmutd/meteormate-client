@@ -21,6 +21,7 @@ export default function ImageDisplay({
 }: ImageDisplayProps) {
   const [showCropper, setShowCropper] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploaderRef = useRef<{
     uploadImage: (base64: string) => Promise<void>;
@@ -46,8 +47,13 @@ export default function ImageDisplay({
   const handleCropperDone = async (croppedDataUrl: string) => {
     setShowCropper(false);
     setCropImage(null);
-    if (uploaderRef.current) {
-      await uploaderRef.current.uploadImage(croppedDataUrl);
+    setUploadError(null);
+    try {
+      if (uploaderRef.current) {
+        await uploaderRef.current.uploadImage(croppedDataUrl);
+      }
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "Upload failed. Please try again.");
     }
   };
 
@@ -105,6 +111,11 @@ export default function ImageDisplay({
             setCropImage(null);
           }}
         />
+      )}
+      {uploadError && (
+        <p className="mt-2 text-xs text-red-600">
+          {uploadError}
+        </p>
       )}
       <ImageUploader
         ref={uploaderRef}

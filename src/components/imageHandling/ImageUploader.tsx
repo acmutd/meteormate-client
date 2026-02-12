@@ -38,7 +38,7 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
           }
         } catch (e) {
           console.error(`Failed to upload image, error:`, e);
-          throw new Error(`Failed to upload image, error: ${e instanceof Error ? e.message : e}`);
+          throw new Error(`${e instanceof Error ? e.message : e}`);
         }
       },
       [onImageChange],
