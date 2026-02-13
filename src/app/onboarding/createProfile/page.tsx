@@ -4,48 +4,52 @@ import Image from "next/image";
 import NextStepButton from "../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../components/ProgressHeader";
-import { useRef, useState } from "react"; // mostly only for the profile picture
+import { useRef, useState, useEffect } from "react"; // mostly only for the profile picture
+import { DatePicker } from "../../../components/DatePicker";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function CreateProfilePage() {
 	const router = useRouter();
-	const [age, setAge] = React.useState<number | "">("");
-	const [firstName, setFirstName] = React.useState("");
-	const [lastName, setLastName] = React.useState("");
-	const [major, setMajor] = React.useState("");
-	const [year, setYear] = React.useState("");
-	const [gender, setGender] = React.useState("");
+	const [name, setName] = useState("");
+	const [major, setMajor] = useState("");
+	const [year, setYear] = useState("");
+	const [gender, setGender] = useState("");
+	const [birthday, setBirthday] = useState<string | null>(null);
+	const [bio, setBio] = useState("");
+	const [email, setEmail] = useState("");
+
+	// get user email from firebase auth 
+	useEffect(() => {
+		const auth = getAuth();
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user && user.email) {
+				setEmail(user.email);
+			}
+		});
+		return () => unsubscribe();
+	}, []);
 
 	//for the profile picture
 	const fileInputRef = useRef<HTMLInputElement>(null);
-  	const [preview, setPreview] = useState<string | null>(null);
+	const [preview, setPreview] = useState<string | null>(null);
+
+	// Bio character limit
+	const BIO_CHAR_LIMIT = 250;
 
 	//to make sure before moving ahead that their whole thing is filled or not
 	const isFormValid =
-		firstName.trim() !== "" &&
-		lastName.trim() !== "" &&
+		name.trim() !== "" &&
 		major !== "" &&
 		year !== "" &&
 		gender !== "" &&
-		age !== "" &&
-		Number(age) > 0;
-
-
-	// const PeechiDuo = require("../../../public/peechi_duo.webp");
+		birthday !== null;
 
 	const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setGender(e.target.value);
 	};
 
-	const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setAge(Number(e.target.value));
-	};
-
-	const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setFirstName(e.target.value);
-	};
-
-	const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setLastName(e.target.value);
+	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setName(e.target.value);
 	};
 
 	const handleMajorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -56,29 +60,38 @@ export default function CreateProfilePage() {
 		setYear(e.target.value);
 	};
 
+	const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		if (e.target.value.length <= BIO_CHAR_LIMIT) {
+			setBio(e.target.value);
+		}
+	};
+
 	const handleNextStep = () => {
 		// Logic to handle the next step action
 		if (!isFormValid) {
 			alert("Please fill out all required fields.");
 			return;
-  		}
-		console.log({ age, firstName, lastName, major, year, gender });
+		}
+		console.log({ name, major, year, gender, birthday, bio });
 		router.push("/onboarding/lifestylePreferences");
 	};
 
 
 	const handleImageClick = () => {
-    	fileInputRef.current?.click();
-  	};
+		fileInputRef.current?.click();
+	};
 
-  	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    	const file = e.target.files?.[0];
-    	if (!file) return;
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
 
 		// to preview the image in the icon 
 		const imageUrl = URL.createObjectURL(file);
 		setPreview(imageUrl);
 	};
+
+	const inputStyle = "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white";
+	const selectStyle = "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white appearance-none cursor-pointer";
 
 	return (
 		<div className="flex flex-col items-center min-h-screen">
@@ -86,24 +99,37 @@ export default function CreateProfilePage() {
 				title="Create Your Profile"
 				subtitle="Tell us about yourself to find your perfect roommate match."
 				currentStep={1}
+				progressImage="/peechi_progress_1.svg"
 			/>
-			<div className="bg-[#F1EBE2] rounded-lg shadow-xl py-8 px-15 mt-4 w-full flex flex-col">
-				{/* profile picture */}
-				<div className="flex justify-center mb-6">
-					<div className="flex flex-col items-center gap-3">
-
+			<div className="bg-white rounded-lg shadow-2xl py-8 px-15 mt-4 w-full flex flex-col">
+				{/* Profile Picture Section */}
+				<div className="mb-6">
+					<h1 className="text-black font-medium text-sm mb-3">Your Profile Picture</h1>
 					<div
 						onClick={handleImageClick}
-						className="w-32 h-32 rounded-full border-2 border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center hover:opacity-80"
+						className="bg-[#F6F3ED] w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
 					>
 						{preview ? (
-						<Image
-							src={preview}
-							alt="Profile"
-							className="w-full h-full object-cover"
-						/>
+							<Image
+								src={preview}
+								alt="Profile"
+								width={128}
+								height={128}
+								className="w-full h-full object-cover"
+							/>
 						) : (
-						<span className="text-gray-400 text-sm">Click to upload</span>
+							<>
+								<Image
+									src="/upload_photo_picture.svg"
+									alt="Upload Photo"
+									width={128}
+									height={128}
+									className="size-12 mb-3"
+								/>
+								<span className="text-black text-[10px] text-center leading-tight">
+									Upload your<br />photo
+								</span>
+							</>
 						)}
 					</div>
 
@@ -115,177 +141,218 @@ export default function CreateProfilePage() {
 						onChange={handleFileChange}
 						className="hidden"
 					/>
-					</div>
-
 				</div>
 
-				<div className="grid grid-cols-2 gap-15">
-					{/* first name */}
+				<div className="grid grid-cols-2 gap-6">
+					{/* Name */}
 					<div>
-						<h1 className="text-black font-bold text-xs mb-2">First Name</h1>
-						<div className="bg-white rounded-md p-2">
-							<input
-								type="text"
-								placeholder="First Name"
-								className="focus:outline-none w-full"
-								onChange={handleFirstNameChange}
-							/>
-						</div>
+						<h1 className="text-black font-medium text-sm mb-2">Name</h1>
+						<input
+							type="text"
+							placeholder="Jane Kelper"
+							className={inputStyle}
+							value={name}
+							onChange={handleNameChange}
+						/>
 					</div>
-					{/* last name */}
+
+					{/* UTD Email */}
 					<div>
-						<h1 className="text-black font-bold text-xs mb-2">Last Name</h1>
-						<div className="bg-white rounded-md p-2">
+						<h1 className="text-black font-medium text-sm mb-2">UTD Email</h1>
+						<div className="relative">
 							<input
 								type="text"
-								placeholder="Last Name"
-								className="focus:outline-none w-full"
-								onChange={handleLastNameChange}
+								value={email}
+								placeholder="Loading..."
+								className={`${inputStyle} bg-gray-50 text-gray-500 pr-10`}
+								disabled
+								readOnly
 							/>
+							<svg
+								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+								/>
+							</svg>
 						</div>
 					</div>
 					{/* major */}
 					<div>
-						<h1 className="text-black font-bold text-xs mb-2">Major</h1>
-						<select
-							name="major"
-							className="bg-white rounded-md p-2 w-full focus:outline-none"
-							defaultValue=""
-							onChange={handleMajorChange}
-						>
-							<option value="" disabled>
-								Select an option...
-							</option>
+						<h1 className="text-black font-medium text-sm mb-2">Major</h1>
+						<div className="relative">
+							<select
+								name="major"
+								className={selectStyle}
+								value={major}
+								onChange={handleMajorChange}
+							>
+								<option value="" disabled>
+									Select an option...
+								</option>
 
-							<option value="biomedical-engineering">Biomedical Engineering</option>
-							<option value="computer-engineering">Computer Engineering</option>
-							<option value="computer-science">Computer Science</option>
-							<option value="data-science">Data Science</option>
-							<option value="electrical-engineering">Electrical Engineering</option>
-							<option value="mechanical-engineering">Mechanical Engineering</option>
-							<option value="software-engineering">Software Engineering</option>
+								<option value="biomedical-engineering">Biomedical Engineering</option>
+								<option value="computer-engineering">Computer Engineering</option>
+								<option value="computer-science">Computer Science</option>
+								<option value="data-science">Data Science</option>
+								<option value="electrical-engineering">Electrical Engineering</option>
+								<option value="mechanical-engineering">Mechanical Engineering</option>
+								<option value="software-engineering">Software Engineering</option>
 
-							<option value="accounting">Accounting</option>
-							<option value="business-administration">Business Administration</option>
-							<option value="business-analytics">Business Analytics</option>
-							<option value="finance">Finance</option>
-							<option value="global-business">Global Business</option>
-							<option value="healthcare-management">Healthcare Management</option>
-							<option value="human-resource-management">
-								Human Resource Management
-							</option>
-							<option value="information-technology-systems">
-								Information Technology and Systems
-							</option>
-							<option value="marketing">Marketing</option>
-							<option value="supply-chain-management">Supply Chain Management</option>
+								<option value="accounting">Accounting</option>
+								<option value="business-administration">Business Administration</option>
+								<option value="business-analytics">Business Analytics</option>
+								<option value="finance">Finance</option>
+								<option value="global-business">Global Business</option>
+								<option value="healthcare-management">Healthcare Management</option>
+							    <option value="human-resource-management">Human Resource Management</option>
+							    <option value="information-technology-systems">Information Technology and Systems</option>
+								<option value="marketing">Marketing</option>
+								<option value="supply-chain-management">Supply Chain Management</option>
 
-							<option value="animation-games">Animation and Games</option>
-							<option value="arts-technology-emerging-communication">
-								Arts, Technology, and Emerging Communication (ATEC)
-							</option>
-							<option value="art-history">Art History</option>
-							<option value="history">History</option>
-							<option value="interdisciplinary-studies">
-								Interdisciplinary Studies
-							</option>
-							<option value="literature">Literature</option>
-							<option value="philosophy">Philosophy</option>
-							<option value="visual-performing-arts">Visual and Performing Arts</option>
+								<option value="animation-games">Animation and Games</option>
+							    <option value="arts-technology-emerging-communication">Arts, Technology, and Emerging Communication (ATEC)</option>
+								<option value="art-history">Art History</option>
+								<option value="history">History</option>
+							    <option value="interdisciplinary-studies">Interdisciplinary Studies</option>
+								<option value="literature">Literature</option>
+								<option value="philosophy">Philosophy</option>
+								<option value="visual-performing-arts">Visual and Performing Arts</option>
 
-							<option value="child-learning-development">
-								Child Learning and Development
-							</option>
-							<option value="cognitive-science">Cognitive Science</option>
-							<option value="neuroscience">Neuroscience</option>
-							<option value="psychology">Psychology</option>
-							<option value="speech-language-hearing">
-								Speech, Language, and Hearing Sciences
-							</option>
+							    <option value="child-learning-development">Child Learning and Development</option>
+								<option value="cognitive-science">Cognitive Science</option>
+								<option value="neuroscience">Neuroscience</option>
+								<option value="psychology">Psychology</option>
+							    <option value="speech-language-hearing">Speech, Language, and Hearing Sciences</option>
 
-							<option value="criminology-criminal-justice">
-								Criminology and Criminal Justice
-							</option>
-							<option value="economics">Economics</option>
-							<option value="geospatial-information-sciences">
-								Geospatial Information Sciences
-							</option>
-							<option value="international-political-economy">
-								International Political Economy
-							</option>
-							<option value="political-science">Political Science</option>
-							<option value="public-affairs">Public Affairs</option>
-							<option value="public-policy">Public Policy</option>
-							<option value="sociology">Sociology</option>
+							    <option value="criminology-criminal-justice">Criminology and Criminal Justice</option>
+								<option value="economics">Economics</option>
+							    <option value="geospatial-information-sciences">Geospatial Information Sciences</option>
+							    <option value="international-political-economy">International Political Economy</option>
+								<option value="political-science">Political Science</option>
+								<option value="public-affairs">Public Affairs</option>
+								<option value="public-policy">Public Policy</option>
+								<option value="sociology">Sociology</option>
 
-							<option value="actuarial-science">Actuarial Science</option>
-							<option value="biochemistry">Biochemistry</option>
-							<option value="biology">Biology</option>
-							<option value="chemistry">Chemistry</option>
-							<option value="geosciences">Geosciences</option>
-							<option value="mathematics">Mathematics</option>
-							<option value="molecular-biology">Molecular Biology</option>
-							<option value="physics">Physics</option>
-						</select>
+								<option value="actuarial-science">Actuarial Science</option>
+								<option value="biochemistry">Biochemistry</option>
+								<option value="biology">Biology</option>
+								<option value="chemistry">Chemistry</option>
+								<option value="geosciences">Geosciences</option>
+								<option value="mathematics">Mathematics</option>
+								<option value="molecular-biology">Molecular Biology</option>
+								<option value="physics">Physics</option>
+							</select>
+							<svg
+								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+							</svg>
+						</div>
+					</div>
+
+					{/* Gender */}
+					<div>
+						<h1 className="text-black font-medium text-sm mb-2">Gender</h1>
+						<div className="relative">
+							<select
+								name="gender"
+								className={selectStyle}
+								value={gender}
+								onChange={handleGenderChange}
+							>
+								<option value="" disabled>
+									Select an option...
+								</option>
+								<option value="Male">Male</option>
+								<option value="Female">Female</option>
+								<option value="Non-binary">Non-binary</option>
+								<option value="Other">Other</option>
+							</select>
+							<svg
+								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+							</svg>
+						</div>
 					</div>
 					{/* year */}
 					<div>
-						<h1 className="text-black font-bold text-xs mb-2">Year</h1>
-						<select
-							name="year"
-							className="bg-white rounded-md p-2 w-full focus:outline-none"
-							defaultValue=""
-							onChange={handleYearChange}
-						>
-							<option value="" disabled>
-								Select an option...
-							</option>
-							<option value="2030">Class of 2030</option>
-							<option value="2029">Class of 2029</option>
-							<option value="2028">Class of 2028</option>
-							<option value="2027">Class of 2027</option>
-							<option value="2026">Class of 2026</option>
-						</select>
+						<h1 className="text-black font-medium text-sm mb-2">Classification</h1>
+						<div className="relative">
+							<select
+								name="classification"
+								className={selectStyle}
+								value={year}
+								onChange={handleYearChange}
+							>
+								<option value="" disabled>
+									Select an option...
+								</option>
+								<option value="2030">Class of 2030</option>
+								<option value="2029">Class of 2029</option>
+								<option value="2028">Class of 2028</option>
+								<option value="2027">Class of 2027</option>
+								<option value="2026">Class of 2026</option>
+							</select>
+							<svg
+								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+							</svg>
+						</div>
 					</div>
 					{/* age */}
 					<div>
-						<h1 className="text-black font-bold text-xs mb-2">Age</h1>
-						<div className="bg-white rounded-md p-2">
-							<input
-								type="text"
-								placeholder="Age"
-								className="focus:outline-none w-full"
-								onChange={handleAgeChange}
+						<h1 className="text-black font-medium text-sm mb-2">Birthday</h1>
+						<div className="[&_input]:border-[#FF9100] [&_input]:focus:ring-[#FF9100]">
+							<DatePicker
+								value={birthday}
+								onChange={setBirthday}
+								placeholder="Select your birthday"
 							/>
 						</div>
 					</div>
-					{/* Gender */}
-					<div>
-						<h1 className="text-black font-bold text-xs mb-2">Gender</h1>
-						<select
-							name="gender"
-							className="bg-white rounded-md p-2 w-full focus:outline-none"
-							defaultValue=""
-							onChange={handleGenderChange}
-						>
-							<option value="" disabled>
-								Select an option...
-							</option>
-							<option value="Male">Male</option>
-							<option value="Female">Female</option>
-							<option value="Non-binary">Non-binary</option>
-							<option value="Other">Other</option>
-						</select>
-					</div>
-					{/* next step button */}
-					{/* <h1 className="text-white text-xs">Gender</h1> */}
 				</div>
+
+				{/* Bio */}
+				<div className="mt-6">
+					<h1 className="text-black font-medium text-sm mb-2">Bio</h1>
+					<div className="relative">
+						<textarea
+							placeholder="Write your Bio here e.g your hobbies, interests ETC"
+							className={`${inputStyle} resize-none h-32`}
+							value={bio}
+							onChange={handleBioChange}
+							maxLength={BIO_CHAR_LIMIT}
+						/>
+						<div className="absolute bottom-2 right-3 text-xs text-gray-400">
+							{bio.length}/{BIO_CHAR_LIMIT}
+						</div>
+					</div>
+				</div>
+
+				{/* Next Step Button */}
 				<div className="flex justify-center">
 					<NextStepButton
-					className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
-					logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot" />}
-					onClick={handleNextStep}
-					disabled={!isFormValid}
+						className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+						onClick={handleNextStep}
+						disabled={!isFormValid}
 					/>
 				</div>
 			</div>

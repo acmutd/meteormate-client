@@ -8,7 +8,6 @@ import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage";
-import Image from "next/image";
 
 const INTEREST_ROWS = [
 	['Climbing', 'Anime', 'Running', 'Instruments', 'Reading', 'Gaming'],
@@ -56,12 +55,13 @@ export default function InterestsPage() {
   };
 
 	return (
-		<div className="flex flex-col min-h-screen items-center justify-center">
+		<div className="flex flex-col min-h-screen items-center">
 			<ProgressHeader 
-        title="Select Your Interests"
-        subtitle="Pick a few interests to show who you are! You may pick up to 6."
-        currentStep={3}
-      />
+                title="Select Your Interests"
+                subtitle="Pick a few interests to show who you are! You may pick up to 6."
+                currentStep={4}
+                progressImage="/peechi_progress_4.svg"
+            />
 			<div className="p-8">
 				<div className="max-w-4xl mx-auto">
 					<div className="flex flex-col gap-4">
@@ -88,7 +88,6 @@ export default function InterestsPage() {
 			</div>
 			<NextStepButton
 				className="mt-3 mb-4"
-				logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot" />}
 				onClick={handleNextStep}
 			/>
 		</div>
