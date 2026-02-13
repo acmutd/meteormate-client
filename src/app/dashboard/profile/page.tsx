@@ -42,7 +42,8 @@ export default function Profile() {
     <div
       className="flex flex-col justify-center items-center relative"
       style={{
-        backgroundImage: "url('/stars_orange.svg')"
+        backgroundImage: "url('/stars_orange.svg')",
+        backgroundSize: "cover",
       }}
     >
       <div className="w-[80%] min-h-180 flex flex-col items-center bg-[#FFFFFF] rounded-2xl shadow-lg ">
