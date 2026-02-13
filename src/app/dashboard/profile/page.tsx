@@ -45,7 +45,7 @@ export default function Profile() {
         backgroundImage: "url('/stars_orange.svg')"
       }}
     >
-      <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#FFFFFF] rounded-2xl shadow-lg ">
+      <div className="w-[80%] min-h-180 flex flex-col items-center bg-[#FFFFFF] rounded-2xl shadow-lg ">
         <div className="mt-2">
           <ProfileGallery userId={userData.id} />
         </div>
