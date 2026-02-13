@@ -88,7 +88,6 @@ export default function InterestsPage() {
 			</div>
 			<NextStepButton
 				className="mt-3 mb-4"
-				logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot" />}
 				onClick={handleNextStep}
 			/>
 		</div>

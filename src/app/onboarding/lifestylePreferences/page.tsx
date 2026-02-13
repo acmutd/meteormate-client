@@ -141,7 +141,6 @@ export default function LifestylePreferencesPage() {
 				<div className="flex justify-center">
 					<NextStepButton
 						className="mt-7"
-						logo={<Image src="/peechi_duo.webp" width={1000} height={1000} alt="Peechi mascot"/>}
 						onClick={handleNextStep}
 						disabled = {!selectedCleanliness || !selectedNoiseTolerance || !selectedWakeupTime}
 					/>
