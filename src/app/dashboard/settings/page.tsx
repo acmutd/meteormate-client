@@ -35,6 +35,9 @@ export default function Profile() {
   if (!user) return <div>No user data found</div>;
   const userData = user;
 
+  const inputStyle =
+    "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white";
+
   return (
     <div className="flex flex-col justify-center items-center relative">
       <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
@@ -44,7 +47,7 @@ export default function Profile() {
         <div className="grid grid-cols-2 gap-4 w-full p-4">
           <div className="text-md">
             Name
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.first_name
                   ? userData.profile?.first_name
@@ -58,7 +61,7 @@ export default function Profile() {
 
           <div className="text-md">
             Account created
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.created_at
                   ? new Date(userData.created_at).toLocaleDateString()
@@ -69,7 +72,7 @@ export default function Profile() {
 
           <div className="text-md">
             Gender
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.gender
                   ? userData.profile.gender
@@ -80,7 +83,7 @@ export default function Profile() {
 
           <div className="text-md">
             Major
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.major
                   ? userData.profile.major
@@ -91,7 +94,7 @@ export default function Profile() {
 
           <div className="text-md col-span-2">
             Bio
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.bio
                   ? userData.profile.bio
@@ -102,7 +105,7 @@ export default function Profile() {
 
           <div className="text-md">
             Age
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.age
                   ? userData.profile.age
@@ -113,7 +116,7 @@ export default function Profile() {
 
           <div className="text-md">
             Classification
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.classification
                   ? userData.profile.classification
@@ -124,7 +127,7 @@ export default function Profile() {
 
           <div className="text-md">
             UTD Email
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.email ? userData.email : "(Email Not Provided)"}
               </p>
@@ -133,7 +136,7 @@ export default function Profile() {
 
           <div className="text-md">
             UTD ID
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2 ">
                 {userData.utd_id ? userData.utd_id : "(UTD ID Not Provided)"}
               </p>
@@ -142,7 +145,7 @@ export default function Profile() {
 
           <div className="text-md">
             Created Profile?
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile_created
                   ? "Yes"
@@ -155,7 +158,7 @@ export default function Profile() {
 
           <div className="text-md">
             Completed Survey?
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black">
+            <div className={inputStyle}>
               <p className="ml-2">
                 {userData.survey_done
                   ? "Yes"
@@ -166,9 +169,11 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="text-md">
+          {/* <div className="text-md">
             ID
-            <div className="bg-white rounded shadow h-8 w-full overflow-hidden flex items-center text-center text-black justify-between">
+            <div
+              className={`${inputStyle} overflow-hidden flex items-center text-center text-black justify-between`}
+            >
               <p className={`ml-2 ${showId ? "" : "blur"}`}>
                 {userData.id ? userData.id : "(Unknown)"}
               </p>
@@ -179,11 +184,9 @@ export default function Profile() {
                 {showId ? "Hide" : "Show"}
               </button>
             </div>
-          </div>
+          </div> */}
+
         </div>
-        {/* Debug: To see fetch response */}
-        {/* <div>User data:</div> */}
-        {/* <pre>{JSON.stringify(user, null, 2)}</pre> */}
       </div>
     </div>
   );
