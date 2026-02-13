@@ -36,7 +36,7 @@ export default function Profile() {
   const userData = user;
 
   return (
-    <div className="min-h-screen w-screen flex flex-col justify-center items-center relative">
+    <div className="flex flex-col justify-center items-center relative">
       <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
         <div className="mt-2">
           <ProfileGallery userId={userData.id} />
