@@ -85,7 +85,7 @@ export default function StackedCarousel({
                     animTranslateX = -600;
                     animOpacity = 0;
                     } else {
-                    animTranslateX = (offset - 1) * 48;
+                    animTranslateX = (offset - 1) * 125;
                     animOpacity =
                         offset - 1 === 0
                         ? 1

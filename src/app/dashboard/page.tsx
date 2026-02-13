@@ -7,7 +7,7 @@ export default function Discover() {
       <ProfileCard
         name="Aastha Sheth"
         subtitle="Comp sci. major - senior"
-        images={["/p2.png", "/p1.jpg", "/p3.jpg"]}
+        images={["/p2.png", "/p1.jpg", "/p3.jpg","/p2.png"]}
         tags={[
           { label: "Does not have a lease", tone: "orange"},
           { label: "Year long lease", tone: "orange"},
