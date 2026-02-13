@@ -350,9 +350,9 @@ export default function CreateProfilePage() {
 				{/* Next Step Button */}
 				<div className="flex justify-center">
 					<NextStepButton
-					className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
-					onClick={handleNextStep}
-					disabled={!isFormValid}
+						className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+						onClick={handleNextStep}
+						disabled={!isFormValid}
 					/>
 				</div>
 			</div>
