@@ -10,7 +10,7 @@ export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showId, setShowId] = useState(false);
+  // const [showId, setShowId] = useState(false); 
   const router = useRouter();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col justify-center items-center relative">
-      <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
+      <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#FFFFFF] rounded-2xl shadow-lg ">
         <div className="mt-2">
           <ProfileGallery userId={userData.id} />
         </div>
