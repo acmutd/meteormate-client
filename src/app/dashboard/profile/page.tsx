@@ -39,7 +39,12 @@ export default function Profile() {
     "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white";
 
   return (
-    <div className="flex flex-col justify-center items-center relative">
+    <div
+      className="flex flex-col justify-center items-center relative"
+      style={{
+        backgroundImage: "url('/stars_orange.svg')"
+      }}
+    >
       <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#FFFFFF] rounded-2xl shadow-lg ">
         <div className="mt-2">
           <ProfileGallery userId={userData.id} />
