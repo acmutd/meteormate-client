@@ -27,9 +27,8 @@ const LifestylePreferencesCard = ({
 			<div className="rounded-full bg-linear-to-r from-[#FF9100] to-[#FFC94C] p-1">
 			<Image
 				src={imageSrc}
-				className="h-12 w-12 object-contain p-2"
-                width={1000}
-                height={1000}
+				width={1000} height={1000}
+				className="h-12 w-12 object-cover p-2"
 			 alt={""}/>
 			</div>
 			<p className="text-lg text-gray-800 text-center">{title}</p>

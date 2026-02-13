@@ -4,7 +4,7 @@ import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/api/auth";
 import { UserProfile } from "@/types/userProfile";
-import Image from "next/image";
+import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -38,17 +38,9 @@ export default function Profile() {
   return (
     <div className="min-h-screen w-screen flex flex-col justify-center items-center relative">
       <div className="w-[60%] min-h-180 flex flex-col items-center bg-[#EEE5D8] rounded-2xl shadow-md shadow-gray-700">
-        <Image
-          src={
-            userData.profile?.profile_picture_url
-              ? userData.profile?.profile_picture_url
-              : "/peechi_duo.webp"
-          }
-          alt="Profile Picture"
-          className="mt-4 w-24 h-24 rounded-full object-cover shadow-md bg-gray-300"
-          draggable="false"
-          width={1000} height={1000}
-        ></Image>
+        <div className="mt-2">
+          <ProfileGallery userId={userData.id} />
+        </div>
         <div className="grid grid-cols-2 gap-4 w-full p-4">
           <div className="text-md">
             Name
@@ -155,8 +147,8 @@ export default function Profile() {
                 {userData.profile_created
                   ? "Yes"
                   : !userData.profile_created
-                  ? "No"
-                  : "(Unknown)"}
+                    ? "No"
+                    : "(Unknown)"}
               </p>
             </div>
           </div>
@@ -168,8 +160,8 @@ export default function Profile() {
                 {userData.survey_done
                   ? "Yes"
                   : !userData.survey_done
-                  ? "No"
-                  : "(Unknown)"}
+                    ? "No"
+                    : "(Unknown)"}
               </p>
             </div>
           </div>
