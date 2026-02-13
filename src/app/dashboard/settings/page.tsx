@@ -10,7 +10,7 @@ export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [showId, setShowId] = useState(false); 
+  // const [showId, setShowId] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -60,6 +60,15 @@ export default function Profile() {
           </div>
 
           <div className="text-md">
+            UTD Email
+            <div className={inputStyle}>
+              <p className="ml-2">
+                {userData.email ? userData.email : "(Email Not Provided)"}
+              </p>
+            </div>
+          </div>
+
+          {/* <div className="text-md">
             Account created
             <div className={inputStyle}>
               <p className="ml-2">
@@ -68,18 +77,7 @@ export default function Profile() {
                   : "(Unknown)"}
               </p>
             </div>
-          </div>
-
-          <div className="text-md">
-            Gender
-            <div className={inputStyle}>
-              <p className="ml-2">
-                {userData.profile?.gender
-                  ? userData.profile.gender
-                  : "(Not Provided)"}
-              </p>
-            </div>
-          </div>
+          </div> */}
 
           <div className="text-md">
             Major
@@ -92,23 +90,12 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="text-md col-span-2">
-            Bio
-            <div className={inputStyle}>
-              <p className="ml-2">
-                {userData.profile?.bio
-                  ? userData.profile.bio
-                  : "(Not Provided)"}
-              </p>
-            </div>
-          </div>
-
           <div className="text-md">
-            Age
+            Gender
             <div className={inputStyle}>
               <p className="ml-2">
-                {userData.profile?.age
-                  ? userData.profile.age
+                {userData.profile?.gender
+                  ? userData.profile.gender
                   : "(Not Provided)"}
               </p>
             </div>
@@ -126,15 +113,28 @@ export default function Profile() {
           </div>
 
           <div className="text-md">
-            UTD Email
+            Age
             <div className={inputStyle}>
               <p className="ml-2">
-                {userData.email ? userData.email : "(Email Not Provided)"}
+                {userData.profile?.age
+                  ? userData.profile.age
+                  : "(Not Provided)"}
               </p>
             </div>
           </div>
 
-          <div className="text-md">
+          <div className="text-md col-span-2">
+            Bio
+            <div className={`${inputStyle} py-20`}>
+              <p className="ml-2">
+                {userData.profile?.bio
+                  ? userData.profile.bio
+                  : "(Not Provided)"}
+              </p>
+            </div>
+          </div>
+
+          {/* <div className="text-md">
             UTD ID
             <div className={inputStyle}>
               <p className="ml-2 ">
@@ -167,7 +167,7 @@ export default function Profile() {
                     : "(Unknown)"}
               </p>
             </div>
-          </div>
+          </div> */}
 
           {/* <div className="text-md">
             ID
@@ -185,7 +185,6 @@ export default function Profile() {
               </button>
             </div>
           </div> */}
-
         </div>
       </div>
     </div>
