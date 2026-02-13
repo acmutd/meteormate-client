@@ -46,13 +46,13 @@ export default function Profile() {
         backgroundSize: "cover",
       }}
     >
-      <div className="w-[80%] min-h-180 flex flex-col items-center bg-[#FFFFFF] rounded-2xl shadow-lg ">
-        <div className="mt-2">
+      <div className="w-[80%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-lg ">
+        <div className="mt-4 ml-6">
           <ProfileGallery userId={userData.id} />
         </div>
         <div className="grid grid-cols-2 gap-4 w-full p-4">
           <div className="text-md">
-            Name
+            <p className="mb-2">Name</p>
             <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.first_name
@@ -66,7 +66,7 @@ export default function Profile() {
           </div>
 
           <div className="text-md">
-            UTD Email
+            <p className="mb-2">UTD Email</p>
             <div className={inputStyle}>
               <p className="ml-2">
                 {userData.email ? userData.email : "(Email Not Provided)"}
@@ -86,7 +86,7 @@ export default function Profile() {
           </div> */}
 
           <div className="text-md">
-            Major
+            <p className="mb-2">Major</p>
             <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.major
@@ -97,7 +97,7 @@ export default function Profile() {
           </div>
 
           <div className="text-md">
-            Gender
+            <p className="mb-2">Gender</p>
             <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.gender
@@ -108,7 +108,7 @@ export default function Profile() {
           </div>
 
           <div className="text-md">
-            Classification
+            <p className="mb-2">Classification</p>
             <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.classification
@@ -119,7 +119,7 @@ export default function Profile() {
           </div>
 
           <div className="text-md">
-            Age
+            <p className="mb-2">Age</p>
             <div className={inputStyle}>
               <p className="ml-2">
                 {userData.profile?.age
@@ -130,9 +130,9 @@ export default function Profile() {
           </div>
 
           <div className="text-md col-span-2">
-            Bio
-            <div className={`${inputStyle} py-20`}>
-              <p className="ml-2">
+            <p className="mb-2">Bio</p>
+            <div className={inputStyle}>
+              <p className="ml-2 pt-3 pb-30 m-0">
                 {userData.profile?.bio
                   ? userData.profile.bio
                   : "(Not Provided)"}

@@ -72,8 +72,8 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   const nextFeaturedIndex = 1 + featuredImages.length;
 
   return (
-    <div className="flex flex-col gap-6 mt-4">
-      <div className="flex flex-row items-end gap-90">
+    <div>
+      <div className="flex gap-100">
         <div className="flex flex-col items-center">
           <span className="mb-2 font-semibold text-sm self-start">
             Your Profile Picture
