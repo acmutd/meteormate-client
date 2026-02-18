@@ -74,17 +74,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* <div className="text-md">
-            Account created
-            <div className={inputStyle}>
-              <p className="ml-2">
-                {userData.created_at
-                  ? new Date(userData.created_at).toLocaleDateString()
-                  : "(Unknown)"}
-              </p>
-            </div>
-          </div> */}
-
           <div className="text-md">
             <p className="mb-2">Major</p>
             <div className={inputStyle}>
@@ -140,15 +129,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* <div className="text-md">
-            UTD ID
-            <div className={inputStyle}>
-              <p className="ml-2 ">
-                {userData.utd_id ? userData.utd_id : "(UTD ID Not Provided)"}
-              </p>
-            </div>
-          </div>
-
           <div className="text-md">
             Created Profile?
             <div className={inputStyle}>
@@ -173,7 +153,7 @@ export default function Profile() {
                     : "(Unknown)"}
               </p>
             </div>
-          </div> */}
+          </div> 
 
           {/* <div className="text-md">
             ID
