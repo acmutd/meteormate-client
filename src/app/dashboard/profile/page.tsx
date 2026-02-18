@@ -129,6 +129,7 @@ export default function Profile() {
             </div>
           </div>
 
+          {/*
           <div className="text-md">
             Created Profile?
             <div className={inputStyle}>
@@ -154,8 +155,8 @@ export default function Profile() {
               </p>
             </div>
           </div> 
-
-          {/* <div className="text-md">
+          
+          <div className="text-md">
             ID
             <div
               className={`${inputStyle} overflow-hidden flex items-center text-center text-black justify-between`}
