@@ -1,7 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Link from "next"
+import { useMemo, useState, useEffect } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
+import { loadNotifications, type LikeNotification } from "@/lib/notifications";
+
+
 
 type Tag = {
     label: string;
@@ -55,8 +59,32 @@ function Dot({ active }: { active: boolean }) {
     const prev = () => canPrev && setIdx((v) => v - 1);
     const next = () => canNext && setIdx((v) => v + 1);
 
+    const [notifications, setNotifications] = useState<LikeNotification[]>([]);
+    const [loadingNotifications, setLoadingNotifications] = useState(true);
+    useEffect(() => {
+        let mounted = true;
+
+        try {
+            setLoadingNotifications(true);
+            const data = loadNotifications(); // reads local storage cache you already use
+            if (mounted) setNotifications(data);
+        } finally {
+            if (mounted) setLoadingNotifications(false);
+        }
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    const top3 = useMemo(() => {
+    return [...notifications]
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 3);
+    }, [notifications]);
+
     return (
-        <div className="flex w-[80%] justify-between">
+        <div className="flex w-[85%] justify-between">
             <div className="flex flex-col">        
                 <div className="w-full max-w-2xl rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6">
                     
@@ -124,10 +152,78 @@ function Dot({ active }: { active: boolean }) {
                     </button>
                     </div> 
                 </div>
-                <div className="rounded-[28px] h-[30%] w-[20%] border border-[#F1EADA] bg-white shadow-sm p-6">
-                        Hello
+                
+                <div className="flex-col h-full">
+                    <div className="rounded-2xl h-[35%] border border-[#F1EADA] bg-white shadow-sm p-6 flex-col mb-6">
+                        <div className="flex items-center justify-start gap-2 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+                            </svg>
+                            <p className="text-sm font-semibold text-gray-900">
+                                Filters
+                            </p>
+                        </div>
+                        <p className="mb-2">Dealbreakers - Location</p>
+                        <div className="flex justify-between mb-2">
+                            <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">On Campus</button>
+                            <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">Off Campus</button>
+                        </div>
+                        <p className="mb-2">Dealbreakers - Pets</p>
+                        <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">No Pets</button>
+                            
+                        
+                    </div>
+                    {/* Here's the filter's and recent activity */}
+                    <div className="rounded-2xl h-[30%] border border-[#F1EADA] bg-white shadow-sm p-6 flex-col">
+                        <div className="flex items-center justify-start gap-2 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            <p className="text-sm font-semibold text-gray-900">
+                                Recent activity
+                            </p>
+                        </div>
+                        
+
+                        {loadingNotifications && (
+                            <p className="text-sm text-gray-500">
+                                Loading…
+                            </p>
+                        )}
+
+                        {!loadingNotifications && top3.length === 0 && (
+                            <p className="text-sm text-gray-500">
+                                No notifications yet.
+                            </p>
+                        )}
+
+                        {!loadingNotifications && top3.length > 0 && (
+                            <div className="space-y-3">
+                                {top3.map((n) => (
+                                    <div
+                                        key={n.id}
+                                        className={[
+                                            "flex items-centerpx-4",
+                                            n.isRead ? "bg-white" : "bg-[#FFF7ED]",
+                                        ].join(" ")}
+                                    >
+
+                                        <p className="text-sm text-gray-900 truncate">
+                                            <span className="font-semibold">
+                                                {n.liker.name}
+                                            </span>{" "}
+                                            liked your profile
+                                            {!n.isRead && (
+                                                <span className="ml-2 inline-block h-2 w-2 rounded-full bg-orange-400 align-middle" />
+                                            )}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>   
                 </div>
-            
         </div>
     );
 }
