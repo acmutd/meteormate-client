@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ImageDisplay from "./ImageDisplay";
 
-const MAX_IMAGES = 5;
+// const MAX_IMAGES = 5;
 
 interface ProfileGalleryProps {
   userId: string;
@@ -68,12 +68,12 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   if (loading) return <div>Loading images...</div>;
 
   const profileImage = images[0];
-  const featuredImages = images.slice(1, MAX_IMAGES);
-  const nextFeaturedIndex = 1 + featuredImages.length;
+  // const featuredImages = images.slice(1, MAX_IMAGES);
+  // const nextFeaturedIndex = 1 + featuredImages.length;
 
   return (
-    <div className="flex flex-col gap-6 mt-4">
-      <div className="flex flex-row items-end gap-90">
+    <div>
+      <div className="flex gap-100">
         <div className="flex flex-col items-center">
           <span className="mb-2 font-semibold text-sm self-start">
             Your Profile Picture
@@ -95,7 +95,8 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
             />
           )}
         </div>
-        <div className="flex flex-col items-center">
+        {/* Removing featured images to match figma design, but the code is still here */}
+        {/* <div className="flex flex-col items-center">
           <span className="mb-2 font-semibold text-sm self-start">
             Featured Pictures
           </span>
@@ -118,7 +119,7 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
               />
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
