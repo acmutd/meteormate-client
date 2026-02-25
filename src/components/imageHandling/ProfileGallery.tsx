@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ImageDisplay from "./ImageDisplay";
+import LoadingSpinner from "../LoadingSpinner";
 
 // const MAX_IMAGES = 5;
 
@@ -65,8 +66,6 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     });
   };
 
-  if (loading) return <div>Loading images...</div>;
-
   const profileImage = images[0];
   // const featuredImages = images.slice(1, MAX_IMAGES);
   // const nextFeaturedIndex = 1 + featuredImages.length;
@@ -78,7 +77,7 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
           <span className="mb-2 font-semibold text-sm self-start">
             Your Profile Picture
           </span>
-          {profileImage ? (
+          {profileImage && !loading ? (
             <ImageDisplay
               key={0}
               imageUrl={profileImage}
@@ -86,13 +85,17 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
               deleteIndex={images.length > 0 ? 0 : undefined}
               onDeleted={() => handleImageRemoved(0)}
             />
-          ) : (
+          ) : !loading ? (
             <ImageDisplay
               key={0}
               imageUrl=""
               variant="placeholder"
               onImageChange={(url) => handleImageChange(url, 0)}
             />
+          ) : (
+            <span className="w-32 h-32 rounded-xl object-cover bg-gray-300 cursor-pointer flex items-center justify-center">
+              <LoadingSpinner />
+            </span>
           )}
         </div>
         {/* Removing featured images to match figma design, but the code is still here */}
