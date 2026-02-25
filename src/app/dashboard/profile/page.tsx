@@ -46,7 +46,7 @@ export default function Profile() {
         backgroundSize: "cover",
       }}
     >
-      <div className="w-[82%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-lg ">
+      <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl ">
         <div className="mt-4 ml-6">
           <ProfileGallery userId={userData.id} />
         </div>
