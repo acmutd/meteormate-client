@@ -10,7 +10,6 @@ export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [showId, setShowId] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -151,8 +150,8 @@ export default function Profile() {
 
           <div className="text-md col-span-2">
             <p className="mb-2">Bio</p>
-            <div className={inputStyle}>
-              <p className="pb-30">
+            <div className={`${inputStyle} h-28`}>
+              <p>
                 {userData.profile?.bio
                   ? userData.profile.bio
                   : "(Not Provided)"}
@@ -160,49 +159,20 @@ export default function Profile() {
             </div>
           </div>
 
-          {/*
-          <div className="text-md">
-            Created Profile?
-            <div className={inputStyle}>
-              <p className="ml-2">
-                {userData.profile_created
-                  ? "Yes"
-                  : !userData.profile_created
-                    ? "No"
-                    : "(Unknown)"}
-              </p>
-            </div>
-          </div>
-
-          <div className="text-md">
-            Completed Survey?
-            <div className={inputStyle}>
-              <p className="ml-2">
-                {userData.survey_done
-                  ? "Yes"
-                  : !userData.survey_done
-                    ? "No"
-                    : "(Unknown)"}
-              </p>
-            </div>
-          </div> 
-          
-          <div className="text-md">
-            ID
-            <div
-              className={`${inputStyle} overflow-hidden flex items-center text-center text-black justify-between`}
-            >
-              <p className={`ml-2 ${showId ? "" : "blur"}`}>
-                {userData.id ? userData.id : "(Unknown)"}
-              </p>
-              <button
-                className="underline text-xs mr-2"
-                onClick={() => setShowId(!showId)}
-              >
-                {showId ? "Hide" : "Show"}
-              </button>
-            </div>
-          </div> */}
+        </div>
+        <div className="flex justify-center gap-6 mr-[1%]">
+          <button
+            type="button"
+            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+          >
+            Update Profile
+          </button>
+          <button
+            type="button"
+            className="px-6 py-2 rounded-lg bg-[#FBD7A8] text-black font-medium shadow"
+          >
+            View Profile
+          </button>
         </div>
       </div>
     </div>
