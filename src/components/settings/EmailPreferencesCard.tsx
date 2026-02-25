@@ -28,6 +28,7 @@ export default function EmailPreferencesCard() {
               <p className="text-gray-500 text-sm">Receive promotional content</p>
             </div>
             <button
+              type="button"
               onClick={() => setMarketing(!marketing)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 marketing ? "bg-[#FF9100]" : "bg-gray-200"
@@ -47,6 +48,7 @@ export default function EmailPreferencesCard() {
               <p className="text-gray-500 text-sm">Receive updates on matches</p>
             </div>
             <button
+              type="button"
               onClick={() => setMatches(!matches)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 matches ? "bg-[#FF9100]" : "bg-gray-200"
@@ -64,6 +66,7 @@ export default function EmailPreferencesCard() {
 
         <div className="flex justify-end">
           <button
+            type="button"
             className={`relative flex items-center justify-center py-1 px-4 rounded-md text-white font-semibold text-md transition-all duration-200 ease-in-out ${
               marketing === initialMarketing && matches === initialMatches
                 ? "bg-gray-300 cursor-not-allowed"

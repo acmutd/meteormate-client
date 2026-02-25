@@ -4,12 +4,14 @@ import { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import { WarningIcon } from "@/components/icons/settings-icons";
 
+const DELETE_ACCOUNT_CONFIRMATION_TEXT = "MeteorMate";
+
 export default function DangerZoneCard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
 
   const handleDeleteAccount = () => {
-    if (deleteConfirmationText === "MeteorMate") {
+    if (deleteConfirmationText === DELETE_ACCOUNT_CONFIRMATION_TEXT) {
       // TODO: Backend call to delete account
       console.log("Deleting account...");
       setShowDeleteModal(false);
@@ -37,6 +39,7 @@ export default function DangerZoneCard() {
                 Deleting your account is permanent and cannot be undone.
               </p>
               <button
+                type="button"
                 onClick={() => setShowDeleteModal(true)}
                 className="mt-4 bg-[#FFE4E6] text-[#9F1239] hover:bg-[#FECDD3] border border-[#FCA5A5] px-4 py-2 rounded-lg font-medium text-sm transition-colors"
                 >
@@ -59,7 +62,7 @@ export default function DangerZoneCard() {
 
         <div className="mb-4">
           <label htmlFor="confirm" className="block text-sm font-medium text-gray-700 mb-2">
-            Type <span className="font-bold text-black">MeteorMate</span> to confirm
+            Type <span className="font-bold text-black">{DELETE_ACCOUNT_CONFIRMATION_TEXT}</span> to confirm
           </label>
           <input
             type="text"
@@ -67,22 +70,24 @@ export default function DangerZoneCard() {
             value={deleteConfirmationText}
             onChange={(e) => setDeleteConfirmationText(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            placeholder="MeteorMate"
+            placeholder={DELETE_ACCOUNT_CONFIRMATION_TEXT}
           />
         </div>
 
         <div className="flex justify-end gap-3">
           <button
+            type="button"
             onClick={() => setShowDeleteModal(false)}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleDeleteAccount}
-            disabled={deleteConfirmationText !== "MeteorMate"}
+            disabled={deleteConfirmationText !== DELETE_ACCOUNT_CONFIRMATION_TEXT}
             className={`px-4 py-2 text-sm font-medium text-white rounded-lg ${
-              deleteConfirmationText === "MeteorMate"
+              deleteConfirmationText === DELETE_ACCOUNT_CONFIRMATION_TEXT
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-red-300 cursor-not-allowed"
             }`}
