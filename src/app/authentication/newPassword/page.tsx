@@ -8,6 +8,11 @@ import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {Check, X} from "lucide-react";
 
+function extractErrorMessage(error: unknown, fallback: string): string {
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+}
+
 export default function NewPasswordPage() {
     const router = useRouter();
     const {toast} = useToast();
@@ -96,7 +101,7 @@ export default function NewPasswordPage() {
             });
 
             if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
+                const data = (await response.json().catch(() => ({}))) as { detail?: string };
                 throw new Error(data.detail || "Failed to reset password.");
             }
 
@@ -112,13 +117,7 @@ export default function NewPasswordPage() {
             router.push("../authentication");
         } catch (err: unknown) {
             console.error("Reset password error:", err);
-            const errorMessage =
-                err &&
-                typeof err === "object" &&
-                "message" in err &&
-                typeof (err as any).message === "string"
-                    ? (err as any).message
-                    : "Something went wrong.";
+            const errorMessage = extractErrorMessage(err, "Something went wrong.");
             setErrorMsg(errorMessage);
             toast({
                 type: "error",

@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MeteorMate Client
 
-## Getting Started
+MeteorMate is a roommate-matching platform for UT Dallas students.
+This repository contains:
+- a Next.js frontend (`src/`)
+- a FastAPI backend (`backend/`)
+- a serverless API entrypoint for deployment (`api/index.py`)
 
-First, run the development server:
+## Tech Stack
+
+- Frontend: Next.js (App Router), React, TypeScript, Tailwind CSS, Firebase Auth
+- Backend: FastAPI, SQLAlchemy, PostgreSQL, Firebase Admin SDK
+- Deployment: Vercel routing for `/api/*`
+
+## Prerequisites
+
+- Node.js 20+
+- npm 10+
+- Python 3.11+
+- PostgreSQL
+
+## Frontend Setup
+
+1. Install dependencies:
+
+```bash
+npm ci
+```
+
+2. Create `.env.local` in the project root with at least:
+
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=...
+```
+
+3. Start the frontend:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Backend Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create and activate a Python virtual environment.
 
-## Learn More
+2. Install backend dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pip install -r requirements.txt
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Create backend environment variables (for example in `backend/.env`) and set:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+DATABASE_URL=postgresql://user:password@localhost/meteormate
+FIREBASE_CREDENTIALS={"type":"service_account",...}
+FIREBASE_STORAGE_BUCKET=...
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+DEBUG=true
+CRON_SECRET=...
+ADMIN_BEARER=...
+ADMIN_UID=...
+```
 
-## Deploy on Vercel
+4. Start the backend locally:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+cd backend
+python main.py
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Backend runs at `http://127.0.0.1:8000`.
+
+## Local Integration
+
+In development, `next.config.ts` rewrites `/api/:path*` to the local FastAPI server (`http://127.0.0.1:8000/api/:path*`).
+
+## Useful Commands
+
+```bash
+npm run dev           # run frontend
+npm run build         # build frontend
+npm run start         # run frontend in production mode
+npx eslint src --ext .js,.ts,.tsx
+npx tsc --noEmit
+```
+
+## Deployment Notes
+
+- `vercel.json` routes `/api/*` to `api/index.py`.
+- `api/index.py` imports and serves `backend.app`.
+- Ensure production environment variables are configured for both frontend and backend settings.

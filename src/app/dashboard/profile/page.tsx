@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/api/auth";
 import { UserProfile } from "@/types/userProfile";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -13,26 +14,82 @@ export default function Profile() {
   // const [showId, setShowId] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchuser = async () => {
-      try {
-        const token = await getCurrentUserIdToken();
-        const data = await fetchCurrentUser(token);
-        setUser(data);
-      } catch (err) {
-        console.error("Profile fetch error:", err);
-        setError("Failed to load profile");
+  const fetchUser = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = await getCurrentUserIdToken();
+      const data = await fetchCurrentUser(token);
+      setUser(data);
+    } catch (err) {
+      console.error("Profile fetch error:", err);
+      setError("Failed to load profile.");
+      if (err instanceof Error && err.message.includes("401")) {
         router.push("/authentication?toast=not-signed-in");
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchuser();
+    } finally {
+      setLoading(false);
+    }
   }, [router]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!user) return <div>No user data found</div>;
+  useEffect(() => {
+    void fetchUser();
+  }, [fetchUser]);
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-[#F1EADA] bg-white p-8 flex items-center gap-3">
+        <LoadingSpinner size="sm" />
+        <p className="text-gray-700">Loading your profile...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+        <h2 className="text-xl font-semibold text-red-900">Could not load profile</h2>
+        <p className="mt-2 text-sm text-red-700">{error}</p>
+        <button
+          type="button"
+          onClick={() => void fetchUser()}
+          className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="rounded-2xl border border-[#F1EADA] bg-white p-6">
+        <h2 className="text-xl font-semibold text-gray-900">No profile data found</h2>
+        <p className="mt-2 text-sm text-gray-600">
+          Try refreshing this page or signing in again.
+        </p>
+      </div>
+    );
+  }
+
+  if (!user.profile) {
+    return (
+      <div className="rounded-2xl border border-[#F1EADA] bg-white p-6">
+        <h2 className="text-xl font-semibold text-gray-900">Finish setting up your profile</h2>
+        <p className="mt-2 text-sm text-gray-600">
+          Your account exists, but profile details are missing.
+        </p>
+        <button
+          type="button"
+          onClick={() => router.push("/onboarding/createProfile")}
+          className="mt-4 rounded-lg bg-[#FF9100] px-4 py-2 text-sm font-medium text-white hover:bg-[#E68300]"
+        >
+          Go to onboarding
+        </button>
+      </div>
+    );
+  }
+
   const userData = user;
 
   const inputStyle =

@@ -2,7 +2,7 @@
 # ACM MeteorMate | All Rights Reserved
 
 import json
-from decouple import config
+from decouple import Csv, config
 from typing import List
 
 
@@ -14,7 +14,11 @@ class Settings:
     )
     FIREBASE_STORAGE_BUCKET: str = config("FIREBASE_STORAGE_BUCKET", default="")
 
-    ALLOWED_ORIGINS: List[str] = ["*"]  # todo - change this to meteormate.com when site is live
+    ALLOWED_ORIGINS: List[str] = config(
+        "ALLOWED_ORIGINS",
+        default="http://localhost:3000,http://127.0.0.1:3000",
+        cast=Csv(),
+    )
     DEBUG: bool = config("DEBUG", default=False, cast=bool)
 
     # ai service config

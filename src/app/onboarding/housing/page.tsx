@@ -9,13 +9,18 @@ import {useSearchParams, useRouter} from "next/navigation";
 import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
 import {getAuth} from "firebase/auth";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
+import type { OnboardingData } from "@/utils/onboardingStorage";
 
-function buildSurveyPayload(raw: any) {
+type SurveyPayloadInput = OnboardingData & {
+	answers?: Record<string, unknown>;
+};
+
+function buildSurveyPayload(raw: SurveyPayloadInput): Record<string, unknown> {
   // 1) Start with backend-friendly defaults
-	const payload: any = {
-		interests: raw.interests ?? [],
-		dealbreakers: raw.dealbreakers ?? [],
-		on_campus_locations: raw.on_campus_locations ?? [],
+	const payload: Record<string, unknown> = {
+			interests: raw.interests ?? [],
+			dealbreakers: raw.dealbreakers ?? [],
+			on_campus_locations: raw.on_campus_locations ?? [],
 		answers: raw.answers ?? {},
 		smoke_vape: raw.smoke_vape ?? false,
 		drink: raw.drink ?? false,
@@ -25,10 +30,10 @@ function buildSurveyPayload(raw: any) {
 	};
 
   // 2) Copy over optional fields ONLY if they are not null/undefined
-	const optionalKeys = [
-		"housing_intent",
-		"budget_min",
-		"budget_max",
+		const optionalKeys: Array<keyof OnboardingData> = [
+			"housing_intent",
+			"budget_min",
+			"budget_max",
 		"move_in_date",
 		"wake_time",
 		"cleanliness",
@@ -40,8 +45,8 @@ function buildSurveyPayload(raw: any) {
 		"honors",
 		"llc_interest",
 		"num_roommates",
-		"have_lease",
-	];
+			"have_lease",
+		];
 
 	for (const k of optionalKeys) {
 		const v = raw[k];
@@ -82,7 +87,7 @@ const sendOnboardingData = async () => {
 
 		// 2) If survey already exists, fallback to PUT (update)
 		if (!response.ok) {
-		let errJson: any = null;
+			let errJson: { detail?: unknown } | null = null;
 		try {
 			errJson = await response.json();
 		} catch {}

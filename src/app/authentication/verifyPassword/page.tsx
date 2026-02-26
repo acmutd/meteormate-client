@@ -4,6 +4,11 @@ import LogoBox from "../../../components/LogoBox";
 import {useRouter, useSearchParams} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 
+function extractErrorMessage(error: unknown, fallback: string): string {
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+}
+
 export default function VerifyPassword() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -87,7 +92,7 @@ export default function VerifyPassword() {
             });
 
             if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
+                const data = (await response.json().catch(() => ({}))) as { detail?: string };
                 throw new Error(data.detail || "Invalid or expired code.");
             }
 
@@ -98,13 +103,10 @@ export default function VerifyPassword() {
             router.push("/authentication/newPassword");
         } catch (err: unknown) {
             console.error("Error verifying reset code:", err);
-            const errorMessage =
-                err &&
-                typeof err === "object" &&
-                "message" in err &&
-                typeof (err as any).message === "string"
-                    ? (err as any).message
-                    : "Verification failed. Please try again.";
+            const errorMessage = extractErrorMessage(
+                err,
+                "Verification failed. Please try again."
+            );
             setError(errorMessage);
         } finally {
             setIsVerifying(false);

@@ -43,7 +43,7 @@ export default function InactivityCard() {
         title="Set account as inactive?"
       >
         <p className="mb-6">
-          Setting your account as inactive will delete it in 2 years and you won't be matched with any users
+          Setting your account as inactive will delete it in 2 years and you won&apos;t be matched with any users
           during this period.
         </p>
 

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface ProgressHeaderProps {
   title: string;
   subtitle: string;
@@ -33,15 +35,19 @@ export default function ProgressHeader({
             background: 'linear-gradient(to right, #FF9100, #FFC94C)'
           }}
         >
-          <div 
-            className="absolute right-0 top-1/2 -translate-y-2/3 translate-x-1/2 z-10"
-          >
-            <img 
-              src={progressImage}
-              alt="Progress Indicator"
-              className="w-12 h-12 object-contain max-w-none"
-            />
-          </div>
+          {progressImage && (
+            <div 
+              className="absolute right-0 top-1/2 -translate-y-2/3 translate-x-1/2 z-10"
+            >
+              <Image
+                src={progressImage}
+                alt="Progress Indicator"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain max-w-none"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
