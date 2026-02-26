@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 const BACKEND_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "");
 
 async function proxyRequest(req: NextRequest, method: string) {
+    if (!BACKEND_URL) {
+        return new NextResponse(JSON.stringify({ detail: "No backend URL configured" }), {
+            status: 503,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
     const authorization = req.headers.get("Authorization");
 
     const headers: Record<string, string> = {
