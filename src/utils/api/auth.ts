@@ -1,5 +1,6 @@
 import { apiFetch } from "@/utils/api/client";
 import { Result, UserActivityPing, UserRegisterResponse } from "../types";
+import { UserProfile } from "@/types/userProfile";
 
 // send verification code defaults to verify for new accounts, reset for password reset
 export interface SendVerificationCodeOptions {
@@ -36,4 +37,9 @@ export async function SendVerificationCode(
         body: { email, uid, purpose },
         isPublic: true,
     });
+}
+
+// get current user
+export async function fetchCurrentUser(): Promise<Result<UserProfile>> {
+    return apiFetch<UserProfile>("/api/auth/me", { method: "GET" });
 }

@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
-import { fetchCurrentUser } from "@/api/auth";
+import { fetchCurrentUser } from "@/utils/api/auth";
 import { UserProfile } from "@/types/userProfile";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 
@@ -16,9 +15,9 @@ export default function Profile() {
   useEffect(() => {
     const fetchuser = async () => {
       try {
-        const token = await getCurrentUserIdToken();
-        const data = await fetchCurrentUser(token);
-        setUser(data);
+        const res = await fetchCurrentUser();
+        if (!res.ok) throw new Error(res.error || "Failed to fetch user");
+        setUser(res.data);
       } catch (err) {
         console.error("Profile fetch error:", err);
         setError("Failed to load profile");
