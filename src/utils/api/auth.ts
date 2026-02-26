@@ -39,6 +39,15 @@ export async function SendVerificationCode(
     });
 }
 
+// verify email with code
+export async function VerifyEmail(email: string, code: string): Promise<Result<{ message: string }>> {
+    return apiFetch<{ message: string }>("/api/auth/verify-email", {
+        method: "POST",
+        body: { email, code },
+        isPublic: true,
+    });
+}
+
 // get current user
 export async function fetchCurrentUser(): Promise<Result<UserProfile>> {
     return apiFetch<UserProfile>("/api/auth/me", { method: "GET" });
