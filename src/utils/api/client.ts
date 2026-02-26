@@ -1,26 +1,19 @@
 import { auth } from "@/firebase/firebase";
 import { parseApiError, Result } from "@/utils/types";
-
-type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-
-interface ApiFetchOptions {
-    method?: HttpMethod;
-    body?: unknown;
-    unauthenticated?: boolean;
-}
+import { ApiFetchOptions } from "@/types/apiCalls";
 
 export async function apiFetch<T>(
     path: string,
     options: ApiFetchOptions = {}
 ): Promise<Result<T>> {
-    const { method = "GET", body, unauthenticated = false } = options;
+    const { method = "GET", body, isPublic = false } = options;
 
     try {
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
         };
 
-        if (!unauthenticated) {
+        if (!isPublic) {
             const user = auth.currentUser;
 
             if (!user) {

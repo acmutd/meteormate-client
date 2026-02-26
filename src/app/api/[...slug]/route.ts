@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { HttpMethod } from "@/types/apiCalls";
 
 const BACKEND_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "");
 
-async function proxyRequest(req: NextRequest, method: string) {
+async function proxyRequest(req: NextRequest, method: HttpMethod) {
     if (!BACKEND_URL) {
         return new NextResponse(JSON.stringify({ detail: "No backend URL configured" }), {
             status: 503,
@@ -66,4 +67,12 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
     return proxyRequest(req, "DELETE");
+}
+
+export async function HEAD(req: NextRequest) {
+    return proxyRequest(req, "HEAD");
+}
+
+export async function PATCH(req: NextRequest) {
+    return proxyRequest(req, "PATCH");
 }

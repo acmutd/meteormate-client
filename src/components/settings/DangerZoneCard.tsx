@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import { WarningIcon } from "@/components/icons/settings-icons";
-import { callDeleteUser } from "@/utils/api/auth";
+import { DeleteUser } from "@/utils/api/auth";
 import { useRouter } from "next/navigation";
 
 const DELETE_ACCOUNT_CONFIRMATION_TEXT = "MeteorMate";
@@ -15,7 +15,7 @@ export default function DangerZoneCard() {
 
   const handleDeleteAccount = async () => {
     if (deleteConfirmationText === DELETE_ACCOUNT_CONFIRMATION_TEXT) {
-      const result = await callDeleteUser();
+      const result = await DeleteUser();
       if (!result.ok) {
         console.error(result.error);
         return;

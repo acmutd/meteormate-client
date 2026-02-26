@@ -3,7 +3,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
-import {callRegisterRoute, callSendVerificationCode} from "@/utils/api/auth";
+import {RegisterUser, SendVerificationCode} from "@/utils/api/auth";
 import {Check, X} from "lucide-react";
 import {
     validatePassword,
@@ -98,7 +98,7 @@ export default function CreateAccountPage() {
 
                 const utd_id = email.split("@")[0];
 
-                const authResponse = await callRegisterRoute(email, password, utd_id);
+                const authResponse = await RegisterUser(email, password, utd_id);
 
                 if (!authResponse.ok) {
                     toast({
@@ -115,7 +115,7 @@ export default function CreateAccountPage() {
                 localStorage.setItem("verificationEmail", email);
                 router.push("./verifyEmail");
 
-                const verifyResult = await callSendVerificationCode({ email, uid: userCredentials.id });
+                const verifyResult = await SendVerificationCode({ email, uid: userCredentials.id });
 
                 if (!verifyResult.ok) {
                     toast({

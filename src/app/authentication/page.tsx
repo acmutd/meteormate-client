@@ -10,7 +10,7 @@ import EmailInput from "@/components/forms/EmailInput";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {getAuthErrorMessage} from "@/utils/authErrors";
-import { callActivityPing } from "@/utils/api/auth";
+import { ActivityPing } from "@/utils/api/auth";
 import { getSurvey } from "@/utils/api/survey";
 
 
@@ -89,7 +89,7 @@ export default function LoginPage() {
                 setIsSigningIn(true);
                 await doSignInWithEmailAndPassword(email, password);
 
-                const pingResponse = await callActivityPing();
+                const pingResponse = await ActivityPing();
                 if (!pingResponse.ok) {
                     console.log(
                         `Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`
