@@ -47,7 +47,7 @@ export default function NotificationBell() {
         <div className="relative" ref={ref}>
             <button
                 onClick={() => setOpen((v) => !v)}
-                className=" cursor-pointer relative p-2 rounded-full cursor-rounder hover:bg-gray-100 transition"
+                className=" cursor-pointer relative p-2 rounded-full hover:bg-gray-100 transition"
                 aria-label="Notifications"
             >
                 <svg

@@ -3,7 +3,7 @@ import ProfileCard from "@/components/cardComponent/ProfileCard";
 
 export default function Discover() {
   return (
-    <div className="flex justify-center py-8">
+    <div className="flex justify-center py-7">
       <ProfileCard
         name="Aastha Sheth"
         subtitle="Comp sci. major - senior"
@@ -18,6 +18,24 @@ export default function Discover() {
         onDislike={() => console.log("dislike")}
         onRewind={() => console.log("rewind")}
         onLike={() => console.log("like")}
+        back={{
+					interests: [
+						{ label: "Music", selected: true },
+						{ label: "Art", selected: true },
+						{ label: "Lifting" },
+						{ label: "Hiking" },
+						{ label: "Video Games" },
+					],
+					habits: [
+						{ label: "Quiet", selected: true },
+						{ label: "Tidy", selected: true },
+						{ label: "Okay With Pets", selected: true },
+						{ label: "Cooks Often" },
+						{ label: "Early Bird" },
+					],
+					expandedBio:
+						"Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe. To do for mm: nuke atharva. WOHOOOOOOOOOOOOOOOOOOOOOOOOo",
+				}}
       />
     </div>
   );

@@ -1,11 +1,22 @@
 "use client";
 
 import Link from "next"
-import { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
 import { loadNotifications, type LikeNotification } from "@/lib/notifications";
+import ProfileCardBack from "@/components/cardComponent/ProfileCardBack";
 
+type Chip = {
+	label: string;
+	selected?: boolean; // orange if true
+	icon?: React.ReactNode;
+};
 
+type ProfileBackData = {
+	interests?: Chip[];
+	habits?: Chip[];
+	expandedBio?: string;
+};
 
 type Tag = {
     label: string;
@@ -19,6 +30,7 @@ type ProfileCardProps = {
     images: string[]; 
     tags?: Tag[];
     bio?: string;
+    back?: ProfileBackData;
 
     onDislike?: () => void;
     onRewind?: () => void;
@@ -40,12 +52,13 @@ function Dot({ active }: { active: boolean }) {
     );
     }
 
-    export default function ProfileCard({
+export default function ProfileCard({
     name,
     subtitle,
     images,
     tags = [],
     bio,
+    back,
     onDislike,
     onRewind,
     onLike,
@@ -53,11 +66,10 @@ function Dot({ active }: { active: boolean }) {
     const safeImages = useMemo(() => (images?.length ? images : [""]), [images]);
     const [idx, setIdx] = useState(0);
 
-    const canPrev = idx > 0;
-    const canNext = idx < safeImages.length - 1;
-
-    const prev = () => canPrev && setIdx((v) => v - 1);
-    const next = () => canNext && setIdx((v) => v + 1);
+    const [flipped, setFlipped] = useState(false); 
+    const flipToBack = () => setFlipped(true);
+    const flipToFront = () => setFlipped(false);
+    const toggleFlip = () => setFlipped((v) => !v);
 
     const [notifications, setNotifications] = useState<LikeNotification[]>([]);
     const [loadingNotifications, setLoadingNotifications] = useState(true);
@@ -83,45 +95,90 @@ function Dot({ active }: { active: boolean }) {
         .slice(0, 3);
     }, [notifications]);
 
+    const handleFlip = () => {
+        setFlipped((v) => !v);
+        onRewind?.();
+    };
+
     return (
-        <div className="flex w-[85%] justify-between">
-            <div className="flex flex-col">        
-                <div className="w-full max-w-2xl rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6">
-                    
-                    {/* Top: Stacked carousel - TODO for me */}
-                    <div className="relative rounded-[22px] overflow-hidden">
-                        <StackedCarousel images={images} altPrefix={name} />
-                    </div>
-
-
-                    {/* Tags row */}
-                    {tags.length > 0 && (
-                    <div className="mt-5 flex flex-wrap gap-3">
-                        {tags.map((t, i) => (
-                        <span
-                            key={`${t.label}-${i}`}
+        <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row">
+            <div className="flex flex-col flex-1 min-w-0 lg:items-center">
+                {/* we don't need the old wrapper so here I made the new one just few changes  */}
+                <div className="w-full max-w-md sm:max-w-xl lg:max-w-195 relative">
+                    <div className="[perspective:1200px] relative w-full h-[67vh] max-h-[720px] min-h-[520px]">
+                        <div
                             className={cn(
-                            "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border",
-                            t.tone === "gray"
-                                ? "bg-gray-50 text-gray-700 border-gray-200"
-                                : "bg-[#FF9100] text-white border-[#FF9100]"
+                                "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
+                                flipped ? "[transform:rotateY(180deg)]" : "[transform:rotateY(0deg)]"
                             )}
                         >
-                            {t.label}
-                        </span>
-                        ))}
-                    </div>
-                    )}
+                            {/* FRONT FACE */}
+                            <div
+                                className={cn(
+                                "absolute inset-0 h-full w-full",
+                                "[backface-visibility:hidden] [-webkit-backface-visibility:hidden]",
+                                "[transform:rotateY(0deg)]"
+                                )}
+                            >
+                                {/* use ONE shared outer card shell */}
+                                <div className="h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                <div className="relative rounded-[22px] overflow-hidden">
+                                    <StackedCarousel images={images} altPrefix={name} />
+                                </div>
 
-                    {/* Bio ?!*/}
-                    {bio && (
-                    <p className="mt-5 text-[17px] leading-relaxed text-gray-600">
-                        {bio}
-                    </p>
-                    )}
+                                {tags.length > 0 && (
+                                    <div className="mt-5 flex flex-wrap gap-3">
+                                    {tags.map((t, i) => (
+                                        <span
+                                        key={`${t.label}-${i}`}
+                                        className={cn(
+                                            "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border",
+                                            t.tone === "gray"
+                                            ? "bg-gray-50 text-gray-700 border-gray-200"
+                                            : "bg-[#FF9100] text-white border-[#FF9100]"
+                                        )}
+                                        >
+                                        {t.label}
+                                        </span>
+                                    ))}
+                                    </div>
+                                )}
+
+                                {bio && (
+                                    <p className="mt-5 text-[17px] leading-relaxed text-gray-600">
+                                    {bio}
+                                    </p>
+                                )}
+                                </div>
+                            </div>
+
+                            {/* BACK FACE */}
+                            <div
+                                className={cn(
+                                "absolute inset-0 h-full w-full",
+                                "[backface-visibility:hidden] [-webkit-backface-visibility:hidden]",
+                                "[transform:rotateY(180deg)]"
+                                )}
+                            >
+                                {/* SAME shared outer card shell to preserve exact shape */}
+                                <div className="h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                {/* if back content is taller, allow scrolling INSIDE without changing card height */}
+                                    <div className="h-full overflow-auto">
+                                        <ProfileCardBack
+                                            name={name}
+                                            onFlipBack={flipToFront}
+                                            interests={back?.interests}
+                                            habits={back?.habits}
+                                            expandedBio={back?.expandedBio}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {/* Action buttonsssss */}
-                <div className="mt-8 flex items-center justify-center gap-10">
+                <div className="mt-6 w-full flex items-center justify-center gap-8 sm:gap-10">
                     <button
                         type="button"
                         onClick={onDislike}
@@ -130,10 +187,10 @@ function Dot({ active }: { active: boolean }) {
                     >
                         <span className="text-3xl text-orange-500">×</span>
                     </button>
-
+                    
                     <button
                         type="button"
-                        onClick={onRewind}
+                        onClick={toggleFlip}
                         className="cursor-pointer h-16 w-16 rounded-full border border-[#F1EADA] bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center"
                         aria-label="Rewind"
                     >
@@ -152,9 +209,9 @@ function Dot({ active }: { active: boolean }) {
                     </button>
                     </div> 
                 </div>
-                
-                <div className="flex-col h-full">
-                    <div className="rounded-2xl h-[35%] border border-[#F1EADA] bg-white shadow-sm p-6 flex-col mb-6">
+                {/** right side here */}
+                <div className="w-full lg:w-[380px] xl:w-105 shrink-0 flex flex-col gap-6 lg:ml-auto lg:items-end">
+                    <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10">
                         <div className="flex items-center justify-start gap-2 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
@@ -174,7 +231,7 @@ function Dot({ active }: { active: boolean }) {
                         
                     </div>
                     {/* Here's the filter's and recent activity */}
-                    <div className="rounded-2xl h-[30%] border border-[#F1EADA] bg-white shadow-sm p-6 flex-col">
+                    <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10 max-h-90 overflow-auto">
                         <div className="flex items-center justify-start gap-2 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
