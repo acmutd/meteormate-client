@@ -2,10 +2,19 @@ import { auth } from "@/firebase/firebase";
 import { parseApiError, Result } from "@/utils/types";
 import { ApiFetchOptions } from "@/types/apiCalls";
 
+const isDev = process.env.NODE_ENV === 'development';
+const baseUrl = isDev ? (process.env.NEXT_PUBLIC_API_BASE_URL || "") : "";
+
 export async function apiFetch<T>(
     path: string,
     options: ApiFetchOptions = {}
 ): Promise<Result<T>> {
+    // Ensure path starts with a slash, and remove any trailing slash from baseUrl
+    const cleanedPath = path.startsWith('/') ? path : `/${path}`;
+    const cleanedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    const finalUrl = `${cleanedBaseUrl}${cleanedPath}`;
+
+    // console.log(`[API FETCH] ${options.method || 'GET'} -> ${finalUrl}`);
     const { method = "GET", body, isPublic = false } = options;
 
     try {
@@ -28,7 +37,7 @@ export async function apiFetch<T>(
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetch(path, {
+        const response = await fetch(finalUrl, {
             method,
             headers,
             body: body !== undefined ? JSON.stringify(body) : undefined,
