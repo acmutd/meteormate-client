@@ -10,26 +10,10 @@ import EmailInput from "@/components/forms/EmailInput";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {getAuthErrorMessage} from "@/utils/authErrors";
-import {callActivityPing} from "@/utils/api/auth";
+import { callActivityPing } from "@/utils/api/auth";
+import { getSurvey } from "@/utils/api/survey";
 
-async function hasSurvey(idToken: string): Promise<boolean> {
-    const res = await fetch(`api/survey/me`, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${idToken}`,
-            "Content-Type": "application/json",
-        },
-    });
 
-    if (res.status === 404) return false;
-    if (res.ok) return true;
-
-    if (res.status === 401) {
-        throw new Error("AUTH_EXPIRED");
-    }
-
-    throw new Error(`UNEXPECTED_${res.status}`);
-}
 
 export default function LoginPage() {
     const router = useRouter();
@@ -103,11 +87,7 @@ export default function LoginPage() {
         try {
             if (!isSigningIn) {
                 setIsSigningIn(true);
-                const userCredential = await doSignInWithEmailAndPassword(
-                    email,
-                    password
-                );
-                const idToken = await userCredential.user.getIdToken();
+                await doSignInWithEmailAndPassword(email, password);
 
                 const pingResponse = await callActivityPing();
                 if (!pingResponse.ok) {
@@ -115,7 +95,8 @@ export default function LoginPage() {
                         `Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`
                     );
                 }
-                const completed = await hasSurvey(idToken);
+                const surveyResult = await getSurvey();
+                const completed = surveyResult.ok;
 
                 toast({
                     type: "success",

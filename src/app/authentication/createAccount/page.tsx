@@ -3,7 +3,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
-import {doSendEmailVerification} from "@/firebase/auth";
+import {callRegisterRoute, callSendVerificationCode} from "@/utils/api/auth";
 import {Check, X} from "lucide-react";
 import {
     validatePassword,
@@ -15,7 +15,7 @@ import EmailInput from "@/components/forms/EmailInput";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {getAuthErrorMessage} from "@/utils/authErrors";
-import {callRegisterRoute} from "@/utils/api/auth";
+
 
 export default function CreateAccountPage() {
     const router = useRouter();
@@ -111,9 +111,20 @@ export default function CreateAccountPage() {
 
                 const userCredentials = authResponse.data;
 
-                await doSendEmailVerification(email, userCredentials.id);
-
+                // set email in local storage
                 localStorage.setItem("verificationEmail", email);
+                router.push("./verifyEmail");
+
+                const verifyResult = await callSendVerificationCode({ email, uid: userCredentials.id });
+
+                if (!verifyResult.ok) {
+                    toast({
+                        type: "error",
+                        title: "Could not send verification email",
+                        description: verifyResult.error,
+                    });
+                    return;
+                }
 
                 toast({
                     type: "success",
@@ -121,7 +132,9 @@ export default function CreateAccountPage() {
                     description: "We sent you a verification code. Check your email to continue.",
                 });
 
+                // navigate only after everything is set up
                 router.push("./verifyEmail");
+
             }
         } catch (err: unknown) {
             console.error("Signup error:", err);

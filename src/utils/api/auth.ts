@@ -1,67 +1,39 @@
-import { auth } from "@/firebase/firebase";
-import { parseApiError, Result, UserActivityPing, UserRegisterResponse } from "../types";
+import { apiFetch } from "@/utils/api/client";
+import { Result, UserActivityPing, UserRegisterResponse } from "../types";
 
-export async function callRegisterRoute(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
-    try {
-        const response = await fetch(`/api/auth/register`, {
-            'method': 'POST',
-            'headers': {
-                'Content-Type': 'application/json',
-            },
-            'body': JSON.stringify({
-                email,
-                password,
-                utd_id
-            })
-        });
-
-        if (!response.ok) {
-            const { message, code } = await parseApiError(response)
-            return { ok: false, error: message, code }
-        }
-
-        const data = (await response.json()) as UserRegisterResponse
-
-        return { ok: true, data }
-    } catch (error) {
-        return {
-            ok: false,
-            error: error instanceof Error ? error.message : "Internal Server Error",
-            code: "500"
-        }
-    }
+// send verification code defaults to verify for new accounts, reset for password reset
+export interface SendVerificationCodeOptions {
+    email: string;
+    uid?: string;
+    purpose?: "verify" | "reset";
 }
 
+// register
+export async function callRegisterRoute(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
+    return apiFetch<UserRegisterResponse>("/api/auth/register", {
+        method: "POST",
+        body: { email, password, utd_id },
+        unauthenticated: true,
+    });
+}
+
+// activity ping
 export async function callActivityPing(): Promise<Result<UserActivityPing>> {
-    try {
-        const user = auth.currentUser;
-        if (!user) {
-            return { ok: false, error: 'User not authenticated, please sign in or try again', code: "401" }
-        }
+    return apiFetch<UserActivityPing>("/api/auth/activity-ping", { method: "GET" });
+}
 
-        const userToken = await user.getIdToken();
+// delete user
+export async function callDeleteUser(): Promise<Result<void>> {
+    return apiFetch<void>("/api/auth/delete", { method: "DELETE" });
+}
 
-        const response = await fetch(`/api/auth/activity-ping`, {
-            'method': 'POST',
-            'headers': {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-        });
-
-        if (!response.ok) {
-            const { message, code } = await parseApiError(response)
-            return { ok: false, error: message, code }
-        }
-
-        const data = (await response.json()) as UserActivityPing
-
-        return { ok: true, data }
-    } catch (error) {
-        return {
-            ok: false,
-            error: error instanceof Error ? error.message : "Internal Server Error",
-            code: "500"
-        }
-    }
+export async function callSendVerificationCode(
+    options: SendVerificationCodeOptions
+): Promise<Result<{ message: string }>> {
+    const { email, uid, purpose = "verify" } = options;
+    return apiFetch<{ message: string }>("/api/auth/send-verification-code", {
+        method: "POST",
+        body: { email, uid, purpose },
+        unauthenticated: true,
+    });
 }
