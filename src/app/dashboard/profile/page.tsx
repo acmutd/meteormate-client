@@ -319,6 +319,7 @@ export default function Profile() {
           </button>
           <button
             type="button"
+            title="NOT IMPLEMENTED YET" // delete later
             className="px-6 py-2 rounded-lg bg-[#FBD7A8] text-black font-medium shadow"
           >
             View Profile
