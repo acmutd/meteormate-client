@@ -22,7 +22,7 @@ export type NumRoommates = "no_preference" | "one" | "two" | "three";
 
 export type HaveLeaseLength = "semester" | "academic_year" | "year";
 
-export interface SurveyCreate {
+export interface SurveyCreateBody {
     housing_intent?: HousingIntent | null;
 
     budget_min?: number | null;
@@ -55,7 +55,7 @@ export interface SurveyCreate {
     drink?: boolean;
 }
 
-export interface SurveyUpdate {
+export interface SurveyUpdateBody {
     housing_intent?: HousingIntent | null;
 
     budget_min?: number | null;

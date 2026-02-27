@@ -1,19 +1,18 @@
 import { apiFetch } from "@/utils/api/client";
 import { Result, UserActivityPing, UserRegisterResponse } from "../types";
 import { UserProfile } from "@/types/userProfile";
-
-// send verification code defaults to verify for new accounts, reset for password reset
-export interface SendVerificationCodeOptions {
-    email: string;
-    uid?: string;
-    purpose?: "verify" | "reset";
-}
+import {
+    RegisterUserBody,
+    SendVerificationCodeBody,
+    VerifyEmailBody,
+} from "@/types/auth";
 
 // register
 export async function RegisterUser(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
+    const body: RegisterUserBody = { email, password, utd_id };
     return apiFetch<UserRegisterResponse>("/api/auth/register", {
         method: "POST",
-        body: { email, password, utd_id },
+        body,
         isPublic: true,
     });
 }
@@ -29,21 +28,22 @@ export async function DeleteUser(): Promise<Result<void>> {
 }
 
 export async function SendVerificationCode(
-    options: SendVerificationCodeOptions
+    options: SendVerificationCodeBody
 ): Promise<Result<{ message: string }>> {
-    const { email, uid, purpose = "verify" } = options;
+    const body: SendVerificationCodeBody = { ...options, purpose: options.purpose ?? "verify" };
     return apiFetch<{ message: string }>("/api/auth/send-verification-code", {
         method: "POST",
-        body: { email, uid, purpose },
+        body,
         isPublic: true,
     });
 }
 
 // verify email with code
 export async function VerifyEmail(email: string, code: string): Promise<Result<{ message: string }>> {
+    const body: VerifyEmailBody = { email, code };
     return apiFetch<{ message: string }>("/api/auth/verify-email", {
         method: "POST",
-        body: { email, code },
+        body,
         isPublic: true,
     });
 }

@@ -1,6 +1,6 @@
 import { apiFetch } from "@/utils/api/client";
 import { Result } from "@/utils/types";
-import { SurveyCreate, SurveyResponse, SurveyUpdate } from "@/types/survey";
+import { SurveyCreateBody, SurveyResponse, SurveyUpdateBody } from "@/types/survey";
 
 // fetches user survey for the profile page when we integrate that
 export async function getSurvey(): Promise<Result<SurveyResponse>> {
@@ -8,11 +8,11 @@ export async function getSurvey(): Promise<Result<SurveyResponse>> {
 }
 
 // creates a new survey
-export async function submitSurvey(body: SurveyCreate): Promise<Result<SurveyResponse>> {
+export async function submitSurvey(body: SurveyCreateBody): Promise<Result<SurveyResponse>> {
     return apiFetch<SurveyResponse>("/api/survey", { method: "POST", body });
 }
 
 // updates a survey
-export async function updateSurvey(body: SurveyUpdate): Promise<Result<SurveyResponse>> {
+export async function updateSurvey(body: SurveyUpdateBody): Promise<Result<SurveyResponse>> {
     return apiFetch<SurveyResponse>("/api/survey", { method: "PUT", body });
 }
