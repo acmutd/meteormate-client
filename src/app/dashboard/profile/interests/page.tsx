@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import NextStepButton from "@/components/NextStepButton";
-import { useRouter } from "next/navigation";
 import InterestCard from '@/components/InterestCard';
 import {
   loadOnboardingData,
@@ -20,7 +18,6 @@ const MAX_SELECTIONS = 6;
 
 export default function InterestsPage() {
 	const [selectedInterests, setSelectedInterests] = useState<string[]>([]);	
-	const router = useRouter();
 	const [hydrated, setHydrated] = useState(false);
 
 	useEffect(() => {
@@ -35,11 +32,6 @@ export default function InterestsPage() {
 		if (!hydrated) return;
 		updateOnboardingData({ interests: selectedInterests });
   	}, [hydrated, selectedInterests]);
-
-	const handleNextStep = () => {
-		router.push("/dashboard/profile");
-		console.log(selectedInterests)
-	}
 
 	const handleToggle = (interest: string) => {
     setSelectedInterests((prev) => {
@@ -61,9 +53,10 @@ export default function InterestsPage() {
 				backgroundSize: "cover",
 			}}
 		>
-			<div className="w-[76%] h-190 bg-[#FFFFFF] rounded-2xl shadow-2xl">
+			<div className="w-[76%] h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl">
 				<div className="mt-8 ml-6 mr-6">
-					<h1 className="text-3xl font-bold mb-8">Select Your Interests</h1>
+					<p className="text-3xl font-bold">Select Your Interests</p>
+          <p className="text-center text-md text-gray-600 mb-6">Pick a few interests to show who you are! You may pick up to 6.</p>
 					<div className="max-w-4xl mx-auto">
 						<div className="flex flex-col gap-4">
 						{INTEREST_ROWS.map((row, rowIndex) => (
@@ -88,10 +81,13 @@ export default function InterestsPage() {
 					</div>
 				</div>
 				<div className="flex justify-center mt-8 mb-8">
-					<NextStepButton
-						className="mt-3 mb-4"
-						onClick={handleNextStep}
-					/>
+					<button
+            type="button"
+            title="NOT IMPLEMENTED YET" // delete later
+            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+          >
+            Update Profile
+          </button>
 				</div>
 			</div>
 		</div>
