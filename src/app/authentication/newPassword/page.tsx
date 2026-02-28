@@ -7,11 +7,7 @@ import LoadingSpinner from "../../../components/LoadingSpinner";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {Check, X} from "lucide-react";
-
-function extractErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof Error && error.message) return error.message;
-    return fallback;
-}
+import {extractErrorMessage} from "@/utils/errorHandling";
 
 export default function NewPasswordPage() {
     const router = useRouter();

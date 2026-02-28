@@ -3,11 +3,7 @@ import React, {useEffect, useRef, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter, useSearchParams} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
-
-function extractErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof Error && error.message) return error.message;
-    return fallback;
-}
+import {extractErrorMessage} from "@/utils/errorHandling";
 
 export default function VerifyPassword() {
     const router = useRouter();
