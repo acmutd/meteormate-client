@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   DiscoverIcon,
@@ -12,15 +12,28 @@ import {
 } from "@/components/icons/sidebar-icons";
 
 export default function Sidebar() {
+    const router = useRouter();
     const pathname = usePathname();
 
     const items = [
         { label: "Discover", href: "/dashboard", icon: DiscoverIcon },
         { label: "Matches", href: "/dashboard/matches", icon: MatchesIcon },
-        { label: "Messages", href: "/dashboard/messages", icon: MessagesIcon },
-        { label: "Settings", href: "/dashboard/settings", icon: SettingsIcon },
+        { label: "Notification", href: "/dashboard/notify", icon: MessagesIcon },
         { label: "Profile", href: "/dashboard/profile", icon: ProfileIcon },
     ];
+
+    const isSettingsActive = pathname === "/dashboard/settings";
+
+    const navItemClass = (active: boolean) =>
+    `w-full flex items-center gap-3 px-5 py-2 rounded-md transition cursor-pointer ${
+        active
+        ? "bg-gradient-to-r from-orange-400 to-yellow-400 text-white shadow-md"
+        : "text-gray-700 hover:bg-gray-50"
+    }`;
+
+    const iconClass = (active: boolean) =>
+    `w-6 h-6 transition ${active ? "text-white" : "text-gray-800"}`;
+
 
     return (
         <aside className="w-70 border-r border-[#F1EADA] px-5 py-5 mx-1 mt-3 mb-3 flex flex-col">
@@ -53,11 +66,20 @@ export default function Sidebar() {
 
             <div className="pt-4 border-t border-[#F1EADA] mb-2">
 
-                <div className="rounded-md border-none bg-[#FFE5C2] px-5 py-4 mb-4 grid grid-cols-1 justify-center">
+                <div className="rounded-md border-none bg-[#FFE5C2] px-10 py-2 mb-4 flex flex-col justify-center items-center">
                     <p className="text-[75%] text-center mb-1 text-gray-600"> Want to learn more about the other ACM products?</p>
                     {/* todo - make this button relatively positioned instead of absolute */}
-                    <a href="https://acmutd.co/development" className="px-10 py-2"><button className="bg-linear-to-r from-orange-400 to-yellow-400 text-white w-30 h-10 rounded-md text-[65%] cursor-pointer"> Learn More </button></a>
+                    <a href="https://acmutd.co/development"><button className="bg-linear-to-r from-orange-400 to-yellow-400 text-white px-12 py-1 rounded-md text-[65%] cursor-pointer items-center justify-center"> Learn More </button></a>
                 </div>
+
+                <button
+                    onClick={() => router.push("/dashboard/settings")}
+                    className={navItemClass(isSettingsActive)}
+                    >
+                        <SettingsIcon className={iconClass(isSettingsActive)} />
+                        <span>Settings</span>
+                </button>
+
                 <button
                     onClick={() => {
                         // todo: still need to make the logout thing working - aastha notes
