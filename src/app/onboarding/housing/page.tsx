@@ -4,13 +4,15 @@ import {useEffect, useState} from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import DoneButton from "@/components/DoneButton";
 import ProgressHeader from "@/components/ProgressHeader";
-import React, {useMemo} from "react";
+import {useMemo} from "react";
 import {useSearchParams, useRouter} from "next/navigation";
-import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
-import {getAuth} from "firebase/auth";
+import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage"
 import PriceRangeSlider from "@/components/PriceRangeSlider";
+import { getAuth } from "firebase/auth";
 
 function buildSurveyPayload(raw: any) {
+	
+
   // 1) Start with backend-friendly defaults
 	const payload: any = {
 		interests: raw.interests ?? [],
@@ -60,24 +62,24 @@ const sendOnboardingData = async () => {
 		const user = auth.currentUser;
 
 		if (!user) {
-		return { ok: false, error: "user not currently signed in." };
+			return { ok: false, error: "user not currently signed in." };
 		}
 
 		const token = await user.getIdToken();
 		const base = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 		if (!base) {
-		return { ok: false, error: "NEXT_PUBLIC_API_BASE_URL is not set" };
+			return { ok: false, error: "NEXT_PUBLIC_API_BASE_URL is not set" };
 		}
 
 		// 1) Try POST first (create)
-		let response = await fetch(`/api/survey`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify(body),
+		let response = await fetch(`${base}/api/survey/`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(body),
 		});
 
 		// 2) If survey already exists, fallback to PUT (update)
@@ -90,7 +92,7 @@ const sendOnboardingData = async () => {
 		const detail = errJson?.detail ? String(errJson.detail) : "";
 
 		if (response.status === 400 && detail.toLowerCase().includes("already exists")) {
-			response = await fetch(`/api/survey`, {
+			response = await fetch(`/api/survey/`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
@@ -100,8 +102,8 @@ const sendOnboardingData = async () => {
 			});
 		} else {
 			return {
-			ok: false,
-			error: `HTTP error ${response.status}${detail ? ` (${detail})` : ""}`,
+				ok: false,
+				error: `HTTP error ${response.status}${detail ? ` (${detail})` : ""}`,
 			};
 		}
 		}
@@ -560,6 +562,29 @@ export default function HousingPage() {
 
     const router = useRouter();
     const searchParams = useSearchParams();
+
+	const auth = getAuth();
+	// const [user, setUser] = useState<User | null>(null);
+	// const [idToken, setIdToken] = useState<string | null>(null);
+
+	// useEffect(() => {
+	// 	const unsub = onAuthStateChanged(auth, async (u) => {
+	// 		setUser(u);
+
+	// 		if (u) {
+	// 			const token = await u.getIdToken(true);
+	// 			setIdToken(token);
+	// 			console.log(" Logged in user:", u);
+	// 			console.log(" UID:", u.uid);
+	// 			console.log(" Email:", u.email);
+	// 			console.log(" ID Token:", token);
+	// 		} else {
+	// 			console.log(" No user logged in");
+	// 		}
+	// 	});
+
+	// 	return () => unsub();
+	// }, [auth]);
 
     const living = useMemo(
         () => searchParams.get("living") ?? "",

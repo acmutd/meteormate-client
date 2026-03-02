@@ -63,13 +63,16 @@ export default function ProfileCard({
     onRewind,
     onLike,
     }: ProfileCardProps) {
-    const safeImages = useMemo(() => (images?.length ? images : [""]), [images]);
-    const [idx, setIdx] = useState(0);
+    //const safeImages = useMemo(() => (images?.length ? images : [""]), [images]);
+    //const [idx, setIdx] = useState(0);
 
     const [flipped, setFlipped] = useState(false); 
-    const flipToBack = () => setFlipped(true);
+    //const flipToBack = () => setFlipped(true);
     const flipToFront = () => setFlipped(false);
     const toggleFlip = () => setFlipped((v) => !v);
+    const [peek, setPeek] = useState(false);  
+    const [peekDown, setPeekDown] = useState(false);
+    const [showHint, setShowHint] = useState(true);
 
     const [notifications, setNotifications] = useState<LikeNotification[]>([]);
     const [loadingNotifications, setLoadingNotifications] = useState(true);
@@ -109,7 +112,13 @@ export default function ProfileCard({
                         <div
                             className={cn(
                                 "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
-                                flipped ? "[transform:rotateY(180deg)]" : "[transform:rotateY(0deg)]"
+                                flipped
+                                    ? "[transform:rotateY(-180deg)]"
+                                    : peek
+                                    ? (peekDown
+                                        ? "[transform:rotateY(-10deg)]"
+                                        : "[transform:rotateY(-7deg)]")
+                                    : "[transform:rotateY(0deg)]"
                             )}
                         >
                             {/* FRONT FACE */}
@@ -121,10 +130,10 @@ export default function ProfileCard({
                                 )}
                             >
                                 {/* use ONE shared outer card shell */}
-                                <div className="h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
-                                <div className="relative rounded-[22px] overflow-hidden">
-                                    <StackedCarousel images={images} altPrefix={name} />
-                                </div>
+                                <div className="relative h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                    <div className="relative rounded-[22px] overflow-hidden">
+                                        <StackedCarousel images={images} altPrefix={name} />
+                                    </div>
 
                                 {tags.length > 0 && (
                                     <div className="mt-5 flex flex-wrap gap-3">
@@ -149,6 +158,55 @@ export default function ProfileCard({
                                     {bio}
                                     </p>
                                 )}
+                                {showHint && !flipped && (
+                                    <div className="absolute bottom-16 right-4 z-30 animate-fade-in">
+                                        <div className="relative bg-white border border-[#F1EADA] shadow-md rounded-xl px-4 py-2 text-sm text-gray-700">
+                                        Flip over to see more details!
+
+                                        {/* little triangle */}
+                                        <div className="absolute -bottom-2 right-4 w-3 h-3 bg-white border-l border-b border-[#F1EADA] rotate-45" />
+                                        </div>
+                                    </div>
+                                )}
+                                {/* Bottom-right peek + flip hotspot */}
+                                <button
+                                    type="button"
+                                    aria-label="Flip card"
+                                    onMouseEnter={() => setPeek(true)}
+                                    onMouseLeave={() => {
+                                        setPeek(false);
+                                        setPeekDown(false);
+                                    }}
+                                    onMouseDown={() => setPeekDown(true)}
+                                    onMouseUp={() => setPeekDown(false)}
+                                    onClick={() => {
+                                        setFlipped(true);
+                                        setShowHint(false);
+                                    }}
+                                    className={cn(
+                                        "cursor-pointer absolute bottom-4 right-4 z-20",
+                                        "h-12 w-12 rounded-2xl",
+                                        // "border border-[#F1EADA] bg-white/80 backdrop-blur",
+                                        // "shadow-sm hover:shadow-md transition",
+                                        "flex items-center justify-center",
+                                        "group"
+                                    )}
+                                    >
+                                    
+                                    {/* <span className="text-lg text-gray-700 transition group-hover:translate-x-[1px] group-hover:-translate-y-[1px]">
+                                        ↻
+                                    </span> */}
+
+                                    
+                                    <span
+                                        className={cn(
+                                        "pointer-events-none absolute bottom-0 right-0",
+                                        "h-5 w-5 rounded-tl-2xl",
+                                        "border-l border-t border-[#F1EADA]",
+                                        "bg-white/60"
+                                        )}
+                                    />
+                                </button>
                                 </div>
                             </div>
 
@@ -161,17 +219,50 @@ export default function ProfileCard({
                                 )}
                             >
                                 {/* SAME shared outer card shell to preserve exact shape */}
-                                <div className="h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                <div className="relative h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
                                 {/* if back content is taller, allow scrolling INSIDE without changing card height */}
                                     <div className="h-full overflow-auto">
                                         <ProfileCardBack
                                             name={name}
-                                            onFlipBack={flipToFront}
                                             interests={back?.interests}
                                             habits={back?.habits}
                                             expandedBio={back?.expandedBio}
                                         />
                                     </div>
+                                    {/* Bottom-right flip-back hotspot */}
+                                    <button
+                                        type="button"
+                                        aria-label="Flip back"
+                                        onMouseEnter={() => setPeek(true)}
+                                        onMouseLeave={() => {
+                                            setPeek(false);
+                                            setPeekDown(false);
+                                        }}
+                                        onMouseDown={() => setPeekDown(true)}
+                                        onMouseUp={() => setPeekDown(false)}
+                                        onClick={() => setFlipped(false)}
+                                        className={cn(
+                                            "cursor-pointer absolute bottom-4 right-4 z-20",
+                                            "h-12 w-12 rounded-2xl",
+                                            // "border border-[#F1EADA] bg-white/80 backdrop-blur",
+                                            // "shadow-sm hover:shadow-md transition",
+                                            "flex items-center justify-center",
+                                            "group"
+                                        )}
+                                        >
+                                        {/* <span className="text-lg text-gray-700 transition group-hover:-translate-x-[1px] group-hover:-translate-y-[1px]">
+                                            ↺
+                                        </span> */}
+
+                                        <span
+                                            className={cn(
+                                            "pointer-events-none absolute bottom-0 right-0",
+                                            "h-5 w-5 rounded-tl-2xl",
+                                            "border-l border-t border-[#F1EADA]",
+                                            "bg-white/60"
+                                            )}
+                                        />
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -188,14 +279,6 @@ export default function ProfileCard({
                         <span className="text-3xl text-orange-500">×</span>
                     </button>
                     
-                    <button
-                        type="button"
-                        onClick={toggleFlip}
-                        className="cursor-pointer h-16 w-16 rounded-full border border-[#F1EADA] bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center"
-                        aria-label="Rewind"
-                    >
-                        <span className="text-2xl text-gray-700">↺</span>
-                    </button>
                     <button
                         type="button"
                         onClick={onLike}
