@@ -64,8 +64,6 @@ export default function Discover() {
         leftImg="/p2.png"
         rightImg="/p3.jpg"
         rightName="Usagi"
-        meteorLeftPng="/meteor-left.png"
-        meteorRightPng="/meteor-right.png"
       />
     
       <div className="flex justify-center py-7">
