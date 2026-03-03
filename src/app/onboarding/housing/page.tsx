@@ -7,8 +7,8 @@ import ProgressHeader from "@/components/ProgressHeader";
 import React, {useMemo} from "react";
 import {useSearchParams, useRouter} from "next/navigation";
 import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
-import {getAuth} from "firebase/auth";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
+import {submitSurvey, updateSurvey} from "@/utils/api/survey";
 
 function buildSurveyPayload(raw: any) {
   // 1) Start with backend-friendly defaults
@@ -52,75 +52,22 @@ function buildSurveyPayload(raw: any) {
 }
 
 const sendOnboardingData = async () => {
-	try {
-		const raw = loadOnboardingData();
-		const body = buildSurveyPayload(raw);
+	const raw = loadOnboardingData();
+	const body = buildSurveyPayload(raw);
 
-		const auth = getAuth();
-		const user = auth.currentUser;
+	// try post first
+	let result = await submitSurvey(body);
 
-		if (!user) {
-		return { ok: false, error: "user not currently signed in." };
-		}
-
-		const token = await user.getIdToken();
-		const base = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-		if (!base) {
-		return { ok: false, error: "NEXT_PUBLIC_API_BASE_URL is not set" };
-		}
-
-		// 1) Try POST first (create)
-		let response = await fetch(`/api/survey`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify(body),
-		});
-
-		// 2) If survey already exists, fallback to PUT (update)
-		if (!response.ok) {
-		let errJson: any = null;
-		try {
-			errJson = await response.json();
-		} catch {}
-
-		const detail = errJson?.detail ? String(errJson.detail) : "";
-
-		if (response.status === 400 && detail.toLowerCase().includes("already exists")) {
-			response = await fetch(`/api/survey`, {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-			body: JSON.stringify(body),
-			});
-		} else {
-			return {
-			ok: false,
-			error: `HTTP error ${response.status}${detail ? ` (${detail})` : ""}`,
-			};
-		}
-		}
-
-		if (!response.ok) {
-		let detail = "";
-		try {
-			const errJson = await response.json();
-			detail = errJson?.detail ? ` (${errJson.detail})` : "";
-		} catch {}
-		return { ok: false, error: `HTTP error ${response.status}${detail}` };
-		}
-
-		clearOnboardingData();
-		return { ok: true };
-	} catch (error) {
-		const msg = error instanceof Error ? error.message : "Unexpected error";
-		return { ok: false, error: msg };
+	// if survey already exists, fallback to put
+	if (!result.ok && result.code === "400" && result.error.toLowerCase().includes("already exists")) {
+		result = await updateSurvey(body);
 	}
+
+	if (result.ok) {
+		clearOnboardingData();
+	}
+
+	return result;
 };
 
 
@@ -134,7 +81,7 @@ function OnCampusUI() {
 			return;
 		}
 
-		router.push("/onboarding/dashboard"); // placeholder is fine for now
+		router.push("/dashboard"); // placeholder is fine for now
 	};
 
     const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
@@ -379,7 +326,7 @@ function OffCampusUI() {
 			return;
 		}
 
-		router.push("/onboarding/dashboard"); // placeholder is fine for now
+		router.push("/dashboard"); // placeholder is fine for now
 	};
 
 

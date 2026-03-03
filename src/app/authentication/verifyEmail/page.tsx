@@ -3,6 +3,7 @@ import React, {useRef, useState, useEffect} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import { VerifyEmail, SendVerificationCode } from "@/utils/api/auth";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
@@ -74,18 +75,10 @@ export default function VerifyEmailPage() {
                 return;
             }
 
-            const response = await fetch(`/api/auth/verify-email`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email: storedEmail,
-                    code: verificationCode,
-                }),
-            });
+            const response = await VerifyEmail(storedEmail, verificationCode);
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                setError(errorData.detail || "Invalid code. Please try again.");
+                setError(response.error || "Invalid code. Please try again.");
                 return;
             }
 
@@ -111,15 +104,10 @@ export default function VerifyEmailPage() {
 
         try {
             setIsResending(true);
-            const res = await fetch(`/api/auth/send-verification-code`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({email: storedEmail, purpose: "verify"}),
-            });
+            const response = await SendVerificationCode({ email: storedEmail, purpose: "verify" });
 
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                setError(data.detail || "Failed to resend code.");
+            if (!response.ok) {
+                setError(response.error || "Failed to resend code.");
             }
         } catch {
             setError("Failed to resend code. Please try again.");
