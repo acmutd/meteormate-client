@@ -28,7 +28,7 @@ export default function LifestylePreferencesPage() {
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
+  const handleUpdateProfile = () => {
     if (!hydrated) return;
 
     updateOnboardingData({
@@ -36,12 +36,7 @@ export default function LifestylePreferencesPage() {
       cleanliness: selectedCleanliness,
       noise_tolerance: selectedNoiseTolerance,
     });
-  }, [
-    hydrated,
-    selectedWakeupTime,
-    selectedCleanliness,
-    selectedNoiseTolerance,
-  ]);
+  };
 
   const handleToggle = (
     currentValue: string | null,
@@ -196,8 +191,8 @@ export default function LifestylePreferencesPage() {
           <div className="flex justify-center">
             <button
               type="button"
-              title="NOT IMPLEMENTED YET" // delete later
-              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+              onClick={handleUpdateProfile}
+              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
             >
               Update Profile
             </button>
