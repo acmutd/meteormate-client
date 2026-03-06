@@ -44,16 +44,18 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
         onClick={handlePrevious}
         className="fixed left-[22%] top-1/2 -translate-y-1/2 z-10 p-3"
       >
-        <svg
-          className="w-6 h-6 text-[#FF9100]"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24">
+          <defs>
+            <linearGradient id="arrowGradientLeft" x1="8" y1="5" x2="16" y2="19" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#FFD36B" />
+              <stop offset="1" stopColor="#F58200" />
+            </linearGradient>
+          </defs>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={4}
+            stroke="url(#arrowGradientLeft)"
             d="M15 19l-7-7 7-7"
           />
         </svg>
@@ -65,16 +67,18 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
         onClick={handleNext}
         className="fixed right-[5%] top-1/2 -translate-y-1/2 z-10 p-3"
       >
-        <svg
-          className="w-6 h-6 text-[#FF9100]"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24">
+          <defs>
+            <linearGradient id="arrowGradientRight" x1="8" y1="5" x2="16" y2="19" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#FFD36B" />
+              <stop offset="1" stopColor="#F58200" />
+            </linearGradient>
+          </defs>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={4}
+            stroke="url(#arrowGradientRight)"
             d="M9 5l7 8-8 7"
           />
         </svg>
