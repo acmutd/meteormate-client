@@ -3,12 +3,14 @@ import React from "react";
 import { useState, useEffect } from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import { DatePicker } from "@/components/DatePicker";
+import { useToast } from "@/components/ui/ToastProvider";
 import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage";
 
 export default function LifestylePersonalityPage() {
+  const { toast } = useToast();
 
   const [selectedCookingPreference, setselectedCookingPreference] = useState<
     string | null
@@ -39,7 +41,7 @@ export default function LifestylePersonalityPage() {
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
+  const handleUpdateProfile = () => {
     if (!hydrated) return;
     updateOnboardingData({
       cooking_frequency: selectedCookingPreference,
@@ -48,14 +50,13 @@ export default function LifestylePersonalityPage() {
       housing_intent: selectedLivingPreference,
       move_in_date: selectedMoveInDate,
     });
-  }, [
-    hydrated,
-    selectedCookingPreference,
-    selectedPetPreferences,
-    selectedGuestsPreference,
-    selectedLivingPreference,
-    selectedMoveInDate,
-  ]);
+
+    toast({
+      type: "success",
+      title: "Profile updated",
+      description: "Your lifestyle personality preferences were saved.",
+    });
+  };
 
   const handleDateChange = (date: string | null) => {
     setSelectedMoveInDate(date);
@@ -263,8 +264,8 @@ export default function LifestylePersonalityPage() {
           <div className="flex justify-center">
             <button
               type="button"
-              title="NOT IMPLEMENTED YET" // delete later
-              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+              onClick={handleUpdateProfile}
+              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
             >
               Update Profile
             </button>
