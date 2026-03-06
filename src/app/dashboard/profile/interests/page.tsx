@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import InterestCard from "@/components/InterestCard";
+import { useToast } from "@/components/ui/ToastProvider";
 import {
   loadOnboardingData,
   updateOnboardingData,
@@ -27,6 +28,7 @@ const MAX_SELECTIONS = 6;
 export default function InterestsPage() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const saved = loadOnboardingData();
@@ -36,10 +38,16 @@ export default function InterestsPage() {
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
+  const handleUpdateProfile = () => {
     if (!hydrated) return;
+
     updateOnboardingData({ interests: selectedInterests });
-  }, [hydrated, selectedInterests]);
+    toast({
+      type: "success",
+      title: "Profile updated",
+      description: "Your interests were saved.",
+    });
+  };
 
   const handleToggle = (interest: string) => {
     setSelectedInterests((prev) => {
@@ -93,8 +101,8 @@ export default function InterestsPage() {
         <div className="flex justify-center mt-8 mb-8">
           <button
             type="button"
-            title="NOT IMPLEMENTED YET" // delete later
-            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+            onClick={handleUpdateProfile}
+            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
           >
             Update Profile
           </button>
