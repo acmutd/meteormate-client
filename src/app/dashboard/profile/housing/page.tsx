@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
+import { useToast } from "@/components/ui/ToastProvider";
 import {
     loadOnboardingData,
     updateOnboardingData,
 } from "@/utils/onboardingStorage";
 
 export default function HousingPage() {
+    const { toast } = useToast();
     const [selectedLivingPreference, setSelectedLivingPreference] = useState<
         string | null
     >(null);
@@ -62,7 +64,7 @@ export default function HousingPage() {
         setHydrated(true);
     }, []);
 
-    useEffect(() => {
+    const handleUpdateProfile = () => {
         if (!hydrated) return;
 
         // Keep required field populated when on-campus is selected.
@@ -82,18 +84,13 @@ export default function HousingPage() {
             budget_min: selectedBudgetMin,
             budget_max: selectedBudgetMax,
         });
-    }, [
-        hydrated,
-        selectedLivingPreference,
-        selectedLocation,
-        selectedHonorsStatus,
-        selectedLLCPreference,
-        selectedNumOfRoommates,
-        selectedLeaseStatus,
-        selectedHaveLeaseLength,
-        selectedBudgetMin,
-        selectedBudgetMax,
-    ]);
+
+        toast({
+            type: "success",
+            title: "Profile updated",
+            description: "Your housing preferences were saved.",
+        });
+    };
 
     const handleBooleanToggle = (
         currentValue: boolean | null,
@@ -450,8 +447,8 @@ export default function HousingPage() {
                     <div className="flex justify-center mt-8">
                         <button
                             type="button"
-                            title="Not yet implemented"
-                            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+                            onClick={handleUpdateProfile}
+                            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
                         >
                             Update Profile
                         </button>
