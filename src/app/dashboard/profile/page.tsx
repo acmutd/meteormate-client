@@ -61,24 +61,24 @@ export default function Profile() {
           gender,
           classification,
           bio,
-          age
+          age,
         }),
       });
       if (!response.ok) throw new Error("Failed to update profile");
       const updatedData = await fetchCurrentUser(token);
       setUser(updatedData);
       toast({
-      type: "success",
-      title: "Profile updated",
-      description: "Your changes were saved.",
-    });
+        type: "success",
+        title: "Profile updated",
+        description: "Your changes were saved.",
+      });
     } catch (err) {
       console.error("Update error:", err);
       toast({
-      type: "error",
-      title: "Profile failed to update",
-      description: "Your changes were not saved.",
-    });
+        type: "error",
+        title: "Profile failed to update",
+        description: "Your changes were not saved.",
+      });
     }
   };
 
@@ -89,7 +89,8 @@ export default function Profile() {
 
   const inputStyle =
     "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white";
-  const selectStyle = "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white appearance-none cursor-pointer";
+  const selectStyle =
+    "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white appearance-none cursor-pointer";
 
   return (
     <div
@@ -224,7 +225,12 @@ export default function Profile() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -252,7 +258,12 @@ export default function Profile() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -281,7 +292,12 @@ export default function Profile() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -318,7 +334,6 @@ export default function Profile() {
               </div>
             </div>
           </div>
-
         </div>
         <div className="flex justify-center gap-6 mr-[1%]">
           <button
