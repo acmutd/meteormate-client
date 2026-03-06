@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
+import { useToast } from "@/components/ui/ToastProvider";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import {
   loadOnboardingData,
@@ -19,6 +20,7 @@ export default function LifestylePreferencesPage() {
   >(null);
 
   const [hydrated, setHydrated] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const saved = loadOnboardingData();
@@ -35,6 +37,12 @@ export default function LifestylePreferencesPage() {
       wake_time: selectedWakeupTime,
       cleanliness: selectedCleanliness,
       noise_tolerance: selectedNoiseTolerance,
+    });
+
+    toast({
+      type: "success",
+      title: "Profile updated",
+      description: "Your lifestyle preferences were saved.",
     });
   };
 
