@@ -313,7 +313,7 @@ export default function Profile() {
           <button
             type="button"
             onClick={handleUpdateProfile}
-            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
           >
             Update Profile
           </button>
