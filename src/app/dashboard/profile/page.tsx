@@ -4,6 +4,7 @@ import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/api/auth";
 import { UserProfile } from "@/types/userProfile";
+import { useToast } from "@/components/ui/ToastProvider";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 
 export default function Profile() {
@@ -19,6 +20,8 @@ export default function Profile() {
   const [age, setAge] = useState("");
 
   const BIO_CHAR_LIMIT = 250;
+
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchuser = async () => {
@@ -64,10 +67,18 @@ export default function Profile() {
       if (!response.ok) throw new Error("Failed to update profile");
       const updatedData = await fetchCurrentUser(token);
       setUser(updatedData);
-      alert("Profile updated successfully!");
+      toast({
+      type: "success",
+      title: "Profile updated",
+      description: "Your changes were saved.",
+    });
     } catch (err) {
       console.error("Update error:", err);
-      alert("Failed to update profile");
+      toast({
+      type: "error",
+      title: "Profile failed to update",
+      description: "Your changes were not saved.",
+    });
     }
   };
 
