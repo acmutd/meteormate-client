@@ -2,12 +2,14 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
+import { useToast } from "@/components/ui/ToastProvider";
 import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
 
 export default function LifestyleHabitsPage() {
+  const { toast } = useToast();
 
   const [selectedCloseness, setSelectedCloseness] = useState<string | null>(
     null,
@@ -33,7 +35,7 @@ export default function LifestyleHabitsPage() {
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
+  const handleUpdateProfile = () => {
     if (!hydrated) return;
 
     updateOnboardingData({
@@ -42,13 +44,13 @@ export default function LifestyleHabitsPage() {
       drink: selectedDrink,
       dealbreakers: selectedDealbreakers,
     });
-  }, [
-    hydrated,
-    selectedCloseness,
-    selectedSmokeVape,
-    selectedDrink,
-    selectedDealbreakers,
-  ]);
+
+    toast({
+      type: "success",
+      title: "Profile updated",
+      description: "Your lifestyle habits preferences were saved.",
+    });
+  };
 
   const handleToggle = (
     currentValue: string | null,
@@ -179,8 +181,8 @@ export default function LifestyleHabitsPage() {
           <div className="flex justify-center">
             <button
               type="button"
-              title="NOT IMPLEMENTED YET" // delete later
-              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243]"
+              onClick={handleUpdateProfile}
+              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
             >
               Update Profile
             </button>
