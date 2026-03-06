@@ -8,6 +8,20 @@ import {
     loadOnboardingData,
     updateOnboardingData,
 } from "@/utils/onboardingStorage";
+import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+
+interface HousingState {
+    housing_intent: string | null;
+    on_campus_locations: string[];
+    honors: boolean | null;
+    llc_interest: boolean | null;
+    num_roommates: string | null;
+    have_lease: boolean | null;
+    have_lease_length: string | null;
+    budget_min: number | null;
+    budget_max: number | null;
+}
 
 export default function HousingPage() {
     const { toast } = useToast();
@@ -38,28 +52,65 @@ export default function HousingPage() {
     const [selectedBudgetMax, setSelectedBudgetMax] = useState<number | null>(
         null,
     );
+    const [initialValues, setInitialValues] = useState<HousingState>({
+        housing_intent: null,
+        on_campus_locations: [],
+        honors: null,
+        llc_interest: null,
+        num_roommates: null,
+        have_lease: null,
+        have_lease_length: null,
+        budget_min: null,
+        budget_max: null,
+    });
 
     const [hydrated, setHydrated] = useState(false);
+
+    const isDirty =
+        hydrated &&
+        (selectedLivingPreference !== initialValues.housing_intent ||
+            JSON.stringify(selectedLocation) !==
+                JSON.stringify(initialValues.on_campus_locations) ||
+            selectedHonorsStatus !== initialValues.honors ||
+            selectedLLCPreference !== initialValues.llc_interest ||
+            selectedNumOfRoommates !== initialValues.num_roommates ||
+            selectedLeaseStatus !== initialValues.have_lease ||
+            selectedHaveLeaseLength !== initialValues.have_lease_length ||
+            selectedBudgetMin !== initialValues.budget_min ||
+            selectedBudgetMax !== initialValues.budget_max);
+
+    const { isDialogOpen, confirmNavigation, cancelNavigation } =
+        useUnsavedChangesGuard({ isDirty });
 
     useEffect(() => {
         const saved = loadOnboardingData();
 
-        setSelectedLivingPreference(saved.housing_intent ?? null);
-
-        if (Array.isArray(saved.on_campus_locations)) {
-            setSelectedLocation(saved.on_campus_locations);
-        }
-        setSelectedHonorsStatus(saved.honors ?? null);
-        setSelectedLLCPreference(saved.llc_interest ?? null);
-        setSelectedNumOfRoommates(saved.num_roommates ?? null);
-
-        setSelectedLeaseStatus(saved.have_lease ?? null);
-        setSelectedHaveLeaseLength(saved.have_lease_length ?? null);
-
         const min = saved.budget_min ?? 600;
         const max = saved.budget_max ?? 1400;
+        const normalized: HousingState = {
+            housing_intent: saved.housing_intent ?? null,
+            on_campus_locations: Array.isArray(saved.on_campus_locations)
+                ? saved.on_campus_locations
+                : [],
+            honors: saved.honors ?? null,
+            llc_interest: saved.llc_interest ?? null,
+            num_roommates: saved.num_roommates ?? null,
+            have_lease: saved.have_lease ?? null,
+            have_lease_length: saved.have_lease_length ?? null,
+            budget_min: min,
+            budget_max: max,
+        };
+
+        setSelectedLivingPreference(normalized.housing_intent);
+        setSelectedLocation(normalized.on_campus_locations);
+        setSelectedHonorsStatus(normalized.honors);
+        setSelectedLLCPreference(normalized.llc_interest);
+        setSelectedNumOfRoommates(normalized.num_roommates);
+        setSelectedLeaseStatus(normalized.have_lease);
+        setSelectedHaveLeaseLength(normalized.have_lease_length);
         setSelectedBudgetMin(min);
         setSelectedBudgetMax(max);
+        setInitialValues(normalized);
 
         setHydrated(true);
     }, []);
@@ -74,6 +125,18 @@ export default function HousingPage() {
                 : selectedHaveLeaseLength;
 
         updateOnboardingData({
+            housing_intent: selectedLivingPreference,
+            on_campus_locations: selectedLocation,
+            honors: selectedHonorsStatus,
+            llc_interest: selectedLLCPreference,
+            num_roommates: selectedNumOfRoommates,
+            have_lease: selectedLeaseStatus,
+            have_lease_length: leaseLength,
+            budget_min: selectedBudgetMin,
+            budget_max: selectedBudgetMax,
+        });
+
+        setInitialValues({
             housing_intent: selectedLivingPreference,
             on_campus_locations: selectedLocation,
             honors: selectedHonorsStatus,
@@ -133,8 +196,14 @@ export default function HousingPage() {
     );
 
     return (
-        <div className="flex flex-col justify-center items-center relative">
-            <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
+        <>
+            <UnsavedChangesDialog
+                isOpen={isDialogOpen}
+                onConfirm={confirmNavigation}
+                onCancel={cancelNavigation}
+            />
+            <div className="flex flex-col justify-center items-center relative">
+                <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
                 <div className="text-center mt-2 shrink-0">
                     <p className="text-3xl font-bold">Housing</p>
                     <p className="text-center text-md text-gray-600">
@@ -448,7 +517,8 @@ export default function HousingPage() {
                         </button>
                     </div>
                 </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }

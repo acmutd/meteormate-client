@@ -8,6 +8,16 @@ import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage";
+import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+
+interface LifestylePersonalityState {
+  cooking_frequency: string | null;
+  pet_preference: string | null;
+  guests_frequency: string | null;
+  housing_intent: string | null;
+  move_in_date: string | null;
+}
 
 export default function LifestylePersonalityPage() {
   const { toast } = useToast();
@@ -27,23 +37,58 @@ export default function LifestylePersonalityPage() {
   const [selectedMoveInDate, setSelectedMoveInDate] = useState<string | null>(
     null,
   );
+  const [initialValues, setInitialValues] = useState<LifestylePersonalityState>({
+    cooking_frequency: null,
+    pet_preference: null,
+    guests_frequency: null,
+    housing_intent: null,
+    move_in_date: null,
+  });
 
   const [hydrated, setHydrated] = useState(false); // again to keep track of the sekected oreferebces abd stuff
+
+  const isDirty =
+    hydrated &&
+    (selectedCookingPreference !== initialValues.cooking_frequency ||
+      selectedPetPreferences !== initialValues.pet_preference ||
+      selectedGuestsPreference !== initialValues.guests_frequency ||
+      selectedLivingPreference !== initialValues.housing_intent ||
+      selectedMoveInDate !== initialValues.move_in_date);
+
+  const { isDialogOpen, confirmNavigation, cancelNavigation } =
+    useUnsavedChangesGuard({ isDirty });
 
   useEffect(() => {
     // loading it once and the next use effect for the changes made and keeping track
     const saved = loadOnboardingData();
-    setselectedCookingPreference(saved.cooking_frequency ?? null);
-    setselectedPetPreferences(saved.pet_preference ?? null);
-    setSelectedGuestsPreferences(saved.guests_frequency ?? null);
-    setselectedLivingPreference(saved.housing_intent ?? null);
-    setSelectedMoveInDate(saved.move_in_date ?? null);
+    const normalized: LifestylePersonalityState = {
+      cooking_frequency: saved.cooking_frequency ?? null,
+      pet_preference: saved.pet_preference ?? null,
+      guests_frequency: saved.guests_frequency ?? null,
+      housing_intent: saved.housing_intent ?? null,
+      move_in_date: saved.move_in_date ?? null,
+    };
+
+    setselectedCookingPreference(normalized.cooking_frequency);
+    setselectedPetPreferences(normalized.pet_preference);
+    setSelectedGuestsPreferences(normalized.guests_frequency);
+    setselectedLivingPreference(normalized.housing_intent);
+    setSelectedMoveInDate(normalized.move_in_date);
+    setInitialValues(normalized);
     setHydrated(true);
   }, []);
 
   const handleUpdateProfile = () => {
     if (!hydrated) return;
     updateOnboardingData({
+      cooking_frequency: selectedCookingPreference,
+      pet_preference: selectedPetPreferences,
+      guests_frequency: selectedGuestsPreference,
+      housing_intent: selectedLivingPreference,
+      move_in_date: selectedMoveInDate,
+    });
+
+    setInitialValues({
       cooking_frequency: selectedCookingPreference,
       pet_preference: selectedPetPreferences,
       guests_frequency: selectedGuestsPreference,
@@ -80,8 +125,14 @@ export default function LifestylePersonalityPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center relative">
-      <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
+    <>
+      <UnsavedChangesDialog
+        isOpen={isDialogOpen}
+        onConfirm={confirmNavigation}
+        onCancel={cancelNavigation}
+      />
+      <div className="flex flex-col justify-center items-center relative">
+        <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
         <div className="text-center mt-2 shrink-0">
           <p className="text-3xl font-bold">Lifestyle Personality</p>
           <p className="text-center text-md text-gray-600">
@@ -265,7 +316,8 @@ export default function LifestylePersonalityPage() {
             </button>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

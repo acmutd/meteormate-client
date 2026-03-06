@@ -7,6 +7,15 @@ import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
+import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+
+interface LifestyleHabitsState {
+  roommate_closeness: string | null;
+  smoke_vape: boolean | null;
+  drink: boolean | null;
+  dealbreakers: string[];
+}
 
 export default function LifestyleHabitsPage() {
   const { toast } = useToast();
@@ -21,17 +30,40 @@ export default function LifestyleHabitsPage() {
   const [selectedDealbreakers, setSelectedDealbreakers] = useState<string[]>(
     [],
   );
+  const [initialValues, setInitialValues] = useState<LifestyleHabitsState>({
+    roommate_closeness: null,
+    smoke_vape: null,
+    drink: null,
+    dealbreakers: [],
+  });
 
   const [hydrated, setHydrated] = useState(false); // flag for pages
 
+  const isDirty =
+    hydrated &&
+    (selectedCloseness !== initialValues.roommate_closeness ||
+      selectedSmokeVape !== initialValues.smoke_vape ||
+      selectedDrink !== initialValues.drink ||
+      JSON.stringify(selectedDealbreakers) !==
+        JSON.stringify(initialValues.dealbreakers));
+
+  const { isDialogOpen, confirmNavigation, cancelNavigation } =
+    useUnsavedChangesGuard({ isDirty });
+
   useEffect(() => {
     const saved = loadOnboardingData();
-    setSelectedCloseness(saved.roommate_closeness ?? null);
-    setSelectedSmokeVape(saved.smoke_vape ?? null);
-    setSelectedDrink(saved.drink ?? null);
-    if (Array.isArray(saved.dealbreakers)) {
-      setSelectedDealbreakers(saved.dealbreakers);
-    }
+    const normalized: LifestyleHabitsState = {
+      roommate_closeness: saved.roommate_closeness ?? null,
+      smoke_vape: saved.smoke_vape ?? null,
+      drink: saved.drink ?? null,
+      dealbreakers: Array.isArray(saved.dealbreakers) ? saved.dealbreakers : [],
+    };
+
+    setSelectedCloseness(normalized.roommate_closeness);
+    setSelectedSmokeVape(normalized.smoke_vape);
+    setSelectedDrink(normalized.drink);
+    setSelectedDealbreakers(normalized.dealbreakers);
+    setInitialValues(normalized);
     setHydrated(true);
   }, []);
 
@@ -39,6 +71,13 @@ export default function LifestyleHabitsPage() {
     if (!hydrated) return;
 
     updateOnboardingData({
+      roommate_closeness: selectedCloseness,
+      smoke_vape: selectedSmokeVape,
+      drink: selectedDrink,
+      dealbreakers: selectedDealbreakers,
+    });
+
+    setInitialValues({
       roommate_closeness: selectedCloseness,
       smoke_vape: selectedSmokeVape,
       drink: selectedDrink,
@@ -77,8 +116,14 @@ export default function LifestyleHabitsPage() {
   };
   
   return (
-    <div className="flex flex-col justify-center items-center relative">
-      <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
+    <>
+      <UnsavedChangesDialog
+        isOpen={isDialogOpen}
+        onConfirm={confirmNavigation}
+        onCancel={cancelNavigation}
+      />
+      <div className="flex flex-col justify-center items-center relative">
+        <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
         <div className="text-center mt-2 shrink-0">
           <p className="text-3xl font-bold">Lifestyle Preferences</p>
           <p className="text-center text-md text-gray-600">
@@ -182,7 +227,8 @@ export default function LifestyleHabitsPage() {
             </button>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

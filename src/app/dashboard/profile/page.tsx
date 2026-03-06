@@ -6,6 +6,16 @@ import { fetchCurrentUser } from "@/api/auth";
 import { UserProfile } from "@/types/userProfile";
 import { useToast } from "@/components/ui/ToastProvider";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";
+import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+
+interface ProfileFormState {
+  major: string;
+  gender: string;
+  classification: string;
+  bio: string;
+  age: string;
+}
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -18,10 +28,29 @@ export default function Profile() {
   const [classification, setClassification] = useState("");
   const [bio, setBio] = useState("");
   const [age, setAge] = useState("");
+  const [initialValues, setInitialValues] = useState<ProfileFormState>({
+    major: "",
+    gender: "",
+    classification: "",
+    bio: "",
+    age: "",
+  });
+  const [hasLoadedProfileData, setHasLoadedProfileData] = useState(false);
 
   const BIO_CHAR_LIMIT = 250;
 
   const { toast } = useToast();
+
+  const isDirty =
+    hasLoadedProfileData &&
+    (major !== initialValues.major ||
+      gender !== initialValues.gender ||
+      classification !== initialValues.classification ||
+      bio !== initialValues.bio ||
+      age !== initialValues.age);
+
+  const { isDialogOpen, confirmNavigation, cancelNavigation } =
+    useUnsavedChangesGuard({ isDirty });
 
   useEffect(() => {
     const fetchuser = async () => {
@@ -29,13 +58,21 @@ export default function Profile() {
         const token = await getCurrentUserIdToken();
         const data = await fetchCurrentUser(token);
         setUser(data);
-        if (data.profile) {
-          setMajor(data.profile.major || "");
-          setGender(data.profile.gender || "");
-          setClassification(data.profile.classification || "");
-          setBio(data.profile.bio || "");
-          setAge(data.profile.age || "");
-        }
+        const normalized: ProfileFormState = {
+          major: data.profile?.major || "",
+          gender: data.profile?.gender || "",
+          classification: data.profile?.classification || "",
+          bio: data.profile?.bio || "",
+          age: data.profile?.age || "",
+        };
+
+        setMajor(normalized.major);
+        setGender(normalized.gender);
+        setClassification(normalized.classification);
+        setBio(normalized.bio);
+        setAge(normalized.age);
+        setInitialValues(normalized);
+        setHasLoadedProfileData(true);
       } catch (err) {
         console.error("Profile fetch error:", err);
         setError("Failed to load profile");
@@ -67,6 +104,14 @@ export default function Profile() {
       if (!response.ok) throw new Error("Failed to update profile");
       const updatedData = await fetchCurrentUser(token);
       setUser(updatedData);
+      const normalized: ProfileFormState = {
+        major,
+        gender,
+        classification,
+        bio,
+        age,
+      };
+      setInitialValues(normalized);
       toast({
         type: "success",
         title: "Profile updated",
@@ -93,8 +138,14 @@ export default function Profile() {
     "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white appearance-none cursor-pointer";
 
   return (
-    <div className="flex flex-col justify-center items-center relative">
-      <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl ">
+    <>
+      <UnsavedChangesDialog
+        isOpen={isDialogOpen}
+        onConfirm={confirmNavigation}
+        onCancel={cancelNavigation}
+      />
+      <div className="flex flex-col justify-center items-center relative">
+        <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl ">
         <div className="mt-4 ml-6">
           <ProfileGallery userId={userData.id} />
         </div>
@@ -329,7 +380,7 @@ export default function Profile() {
             </div>
           </div>
         </div>
-        <div className="flex justify-center gap-6 mr-[1%]">
+          <div className="flex justify-center gap-6 mr-[1%]">
           <button
             type="button"
             onClick={handleUpdateProfile}
@@ -344,8 +395,9 @@ export default function Profile() {
           >
             View Profile
           </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

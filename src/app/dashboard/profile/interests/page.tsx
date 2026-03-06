@@ -6,6 +6,8 @@ import {
   loadOnboardingData,
   updateOnboardingData,
 } from "@/utils/onboardingStorage";
+import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
 
 const INTEREST_ROWS = [
   ["Climbing", "Anime", "Running", "Instruments", "Reading", "Gaming"],
@@ -27,14 +29,25 @@ const MAX_SELECTIONS = 6;
 
 export default function InterestsPage() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [initialInterests, setInitialInterests] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const { toast } = useToast();
 
+  const isDirty =
+    hydrated &&
+    JSON.stringify(selectedInterests) !== JSON.stringify(initialInterests);
+
+  const { isDialogOpen, confirmNavigation, cancelNavigation } =
+    useUnsavedChangesGuard({ isDirty });
+
   useEffect(() => {
     const saved = loadOnboardingData();
-    if (Array.isArray(saved.interests)) {
-      setSelectedInterests(saved.interests);
-    }
+    const normalizedInterests = Array.isArray(saved.interests)
+      ? saved.interests
+      : [];
+
+    setSelectedInterests(normalizedInterests);
+    setInitialInterests(normalizedInterests);
     setHydrated(true);
   }, []);
 
@@ -42,6 +55,7 @@ export default function InterestsPage() {
     if (!hydrated) return;
 
     updateOnboardingData({ interests: selectedInterests });
+    setInitialInterests(selectedInterests);
     toast({
       type: "success",
       title: "Profile updated",
@@ -62,8 +76,14 @@ export default function InterestsPage() {
   };
 
   return (
-    <div className="flex flex-col text-center justify-center items-center relative">
-      <div className="w-[76%] h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl">
+    <>
+      <UnsavedChangesDialog
+        isOpen={isDialogOpen}
+        onConfirm={confirmNavigation}
+        onCancel={cancelNavigation}
+      />
+      <div className="flex flex-col text-center justify-center items-center relative">
+        <div className="w-[76%] h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl">
         <div className="mt-8 ml-6 mr-6">
           <p className="text-3xl font-bold">Select Your Interests</p>
           <p className="text-center text-md text-gray-600 mb-6">
@@ -101,7 +121,8 @@ export default function InterestsPage() {
             Update Profile
           </button>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
