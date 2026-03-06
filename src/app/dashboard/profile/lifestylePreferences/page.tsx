@@ -55,13 +55,7 @@ export default function LifestylePreferencesPage() {
   };
 
   return (
-    <div
-      className="flex flex-col justify-center items-center relative"
-      style={{
-        backgroundImage: "url('/stars_orange.svg')",
-        backgroundSize: "cover",
-      }}
-    >
+    <div className="flex flex-col justify-center items-center relative">
       <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl">
         <div className="text-center mt-2">
           <p className="text-3xl font-bold">Lifestyle Preferences</p>

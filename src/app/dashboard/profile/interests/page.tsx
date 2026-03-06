@@ -62,13 +62,7 @@ export default function InterestsPage() {
   };
 
   return (
-    <div
-      className="flex flex-col text-center justify-center items-center relative"
-      style={{
-        backgroundImage: "url('/stars_orange.svg')",
-        backgroundSize: "cover",
-      }}
-    >
+    <div className="flex flex-col text-center justify-center items-center relative">
       <div className="w-[76%] h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl">
         <div className="mt-8 ml-6 mr-6">
           <p className="text-3xl font-bold">Select Your Interests</p>

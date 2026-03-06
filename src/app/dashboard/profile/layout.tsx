@@ -33,7 +33,13 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      style={{
+        backgroundImage: "url('/stars_orange.svg')",
+        backgroundSize: "cover",
+      }}
+    >
       <button
         onClick={handlePrevious}
         className="fixed left-[22%] top-1/2 -translate-y-1/2 z-10 p-3"
