@@ -93,7 +93,7 @@ export default function LifestylePersonalityPage() {
             Help us find your ideal roommate by selecting your preferences!
           </p>
         </div>
-        <div className="py-8 px-15 w-full flex flex-col overflow-y-auto flex-1">
+        <div className="py-8 px-15 w-full flex flex-col overflow-y-auto flex-1 custom-scrollbar">
           <p className="text-black text-sm mt-1 mb-2">How often do you cook?</p>
           {/*grid for the 3 options*/}
           <div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
