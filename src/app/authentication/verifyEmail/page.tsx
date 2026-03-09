@@ -186,7 +186,7 @@ export default function VerifyEmailPage() {
                                         "bg-white/5 text-black placeholder:text-zinc-400",
                                         "border border-zinc-300",
                                         "outline-none",
-                                        "focus:border-primary-hover focus:ring-2 focus:ring-primary-hover/30",
+                                        "focus:border-primary focus:ring-2 focus:ring-primary/30",
                                         "disabled:opacity-50 disabled:cursor-not-allowed",
                                         "transition-all duration-200",
                                     ].join(" ")}
@@ -205,8 +205,8 @@ export default function VerifyEmailPage() {
                                 "border font-medium",
                                 isVerifying
                                     ? "bg-zinc-500/10 text-zinc-400 border-zinc-500/10 cursor-not-allowed"
-                                    : "bg-primary-hover text-white border-primary-hover/30 hover:bg-primary hover:border-primary/40 cursor-pointer shadow-lg shadow-orange-900/20",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-hover/40 focus-visible:ring-offset-0",
+                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer shadow-lg shadow-orange-900/20",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                             type="button"
                         >

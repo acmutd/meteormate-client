@@ -99,7 +99,7 @@ export default function HowItWorks() {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-16 space-y-4">
           <span
-              className="inline-block py-1 px-3 rounded-full bg-primary-hover/10 border border-primary-hover/20 text-primary-hover text-xs font-medium tracking-wider uppercase">
+              className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
             Features
           </span>
                     <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">

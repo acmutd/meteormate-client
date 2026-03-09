@@ -164,7 +164,7 @@ export default function LoginPage() {
                     className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 sm:p-8">
                     {created && (
                         <div
-                            className="mb-6 rounded-md border border-primary-hover/20 bg-primary-hover/10 p-3 text-sm text-primary-hover text-center"
+                            className="mb-6 rounded-md border border-primary/20 bg-primary/10 p-3 text-sm text-primary text-center"
                             role="status"
                             aria-live="polite"
                         >
@@ -175,7 +175,7 @@ export default function LoginPage() {
                     {/* Create Account Button */}
                     <button
                         onClick={() => router.push("/authentication/createAccount")}
-                        className="w-full mb-6 py-3 rounded-3xl border border-zinc-500 text-zinc-500 font-light text-sm md:text-[15px] hover:bg-white/5 hover:border-primary/90 hover:text-primary transition-all duration-300"
+                        className="w-full mb-6 py-3 rounded-3xl border border-zinc-500 text-zinc-500 font-light text-sm md:text-[15px] hover:bg-white/5 hover:border-primary-hover/90 hover:text-primary-hover transition-all duration-300"
                     >
                         Create an account
                     </button>
@@ -221,8 +221,8 @@ export default function LoginPage() {
                                 "border font-medium",
                                 isSigningIn
                                     ? "bg-white/10 text-zinc-400 border-white/10 cursor-not-allowed"
-                                    : "bg-primary text-white border-primary-hover/30 hover:bg-primary-hover hover:border-primary/40 cursor-pointer shadow-lg shadow-orange-900/20",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-hover/40 focus-visible:ring-offset-0",
+                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer shadow-lg shadow-orange-900/20",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                         >
                             {isSigningIn && <LoadingSpinner size="sm"/>}

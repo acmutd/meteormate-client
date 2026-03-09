@@ -136,7 +136,7 @@ export default function VerifyPassword() {
                 <div className="mx-auto w-full max-w-md">
                     <div className="text-center mb-4">
             <span
-                className="inline-block py-1 px-3 rounded-full bg-primary-hover/10 border border-primary-hover/20 text-primary-hover text-xs font-medium tracking-wider uppercase">
+                className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
               Password reset
             </span>
 
@@ -174,7 +174,7 @@ export default function VerifyPassword() {
                                         "bg-white/5 text-white",
                                         "border border-white/10",
                                         "outline-none",
-                                        "focus:border-primary-hover/40 focus:ring-2 focus:ring-primary-hover/30",
+                                        "focus:border-primary/40 focus:ring-2 focus:ring-primary/30",
                                         "disabled:opacity-50 disabled:cursor-not-allowed",
                                         "transition-colors",
                                     ].join(" ")}
@@ -193,8 +193,8 @@ export default function VerifyPassword() {
                                 "border",
                                 isVerifying
                                     ? "bg-white/10 text-zinc-400 border-white/10 cursor-not-allowed"
-                                    : "bg-primary-hover text-white border-primary-hover/30 hover:bg-primary hover:border-primary/40 cursor-pointer",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-hover/40 focus-visible:ring-offset-0",
+                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                             type="button"
                         >
