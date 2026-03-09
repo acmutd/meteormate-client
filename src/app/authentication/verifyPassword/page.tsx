@@ -117,7 +117,7 @@ export default function VerifyPassword() {
                 {/* Back arrow */}
                 <button
                     onClick={() => router.push("/authentication/forgotPassword")}
-                    className="absolute top-8 left-5 p-2 rounded-full text-white/90 hover:text-white hover:bg-white/5 border border-white/10 hover:border-orange-500/30 transition-colors"
+                    className="absolute top-8 left-5 p-2 rounded-full text-white/90 hover:text-white hover:bg-white/5 border border-white/10 hover:border-primary-hover/30 transition-colors"
                     aria-label="Back"
                     type="button"
                 >
@@ -136,7 +136,7 @@ export default function VerifyPassword() {
                 <div className="mx-auto w-full max-w-md">
                     <div className="text-center mb-4">
             <span
-                className="inline-block py-1 px-3 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-xs font-medium tracking-wider uppercase">
+                className="inline-block py-1 px-3 rounded-full bg-primary-hover/10 border border-primary-hover/20 text-primary-hover text-xs font-medium tracking-wider uppercase">
               Password reset
             </span>
 
@@ -174,7 +174,7 @@ export default function VerifyPassword() {
                                         "bg-white/5 text-white",
                                         "border border-white/10",
                                         "outline-none",
-                                        "focus:border-orange-500/40 focus:ring-2 focus:ring-orange-500/30",
+                                        "focus:border-primary-hover/40 focus:ring-2 focus:ring-primary-hover/30",
                                         "disabled:opacity-50 disabled:cursor-not-allowed",
                                         "transition-colors",
                                     ].join(" ")}
@@ -193,8 +193,8 @@ export default function VerifyPassword() {
                                 "border",
                                 isVerifying
                                     ? "bg-white/10 text-zinc-400 border-white/10 cursor-not-allowed"
-                                    : "bg-orange-500 text-white border-orange-500/30 hover:bg-orange-400 hover:border-orange-400/40 cursor-pointer",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 focus-visible:ring-offset-0",
+                                    : "bg-primary-hover text-white border-primary-hover/30 hover:bg-primary hover:border-primary/40 cursor-pointer",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-hover/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                             type="button"
                         >

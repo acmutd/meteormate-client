@@ -186,7 +186,7 @@ export default function CreateAccountPage() {
         <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
             <button
                 onClick={router.back}
-                className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/10 border border-white/10 hover:border-orange-500/30 transition-colors"
+                className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/10 border border-white/10 hover:border-primary-hover/30 transition-colors"
                 aria-label="Go back"
                 type="button"
             >
@@ -290,8 +290,8 @@ export default function CreateAccountPage() {
                                     "border font-medium",
                                     !canSubmit
                                         ? "bg-zinc-500/10 text-zinc-400 border-white/10 cursor-not-allowed"
-                                        : "bg-orange-500 text-white border-orange-500/30 hover:bg-orange-400 hover:border-orange-400/40 cursor-pointer shadow-lg shadow-orange-900/20",
-                                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 focus-visible:ring-offset-0",
+                                        : "bg-primary text-white border-primary-hover/30 hover:bg-primary-hover hover:border-primary/40 cursor-pointer shadow-lg shadow-orange-900/20",
+                                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-hover/40 focus-visible:ring-offset-0",
                                 ].join(" ")}
                             >
                                 {isSigningUp && <LoadingSpinner size="sm"/>}
