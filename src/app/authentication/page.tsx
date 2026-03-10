@@ -221,7 +221,7 @@ export default function LoginPage() {
                                 "border font-medium",
                                 isSigningIn
                                     ? "bg-white/10 text-zinc-400 border-white/10 cursor-not-allowed"
-                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer shadow-lg shadow-orange-900/20",
+                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer shadow-lg shadow-primary/20",
                                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                         >
