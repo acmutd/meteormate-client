@@ -8,6 +8,7 @@ import {
 } from "@/utils/onboardingStorage";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { getMySurvey, upsertSurvey } from "@/api/survey";
 
 const INTEREST_ROWS = [
   ["Climbing", "Anime", "Running", "Instruments", "Reading", "Gaming"],
@@ -41,26 +42,56 @@ export default function InterestsPage() {
     useUnsavedChangesGuard({ isDirty });
 
   useEffect(() => {
-    const saved = loadOnboardingData();
-    const normalizedInterests = Array.isArray(saved.interests)
-      ? saved.interests
-      : [];
+    const hydrateFromStorageAndBackend = async () => {
+      const saved = loadOnboardingData();
+      const fallback = Array.isArray(saved.interests)
+        ? saved.interests
+        : [];
 
-    setSelectedInterests(normalizedInterests);
-    setInitialInterests(normalizedInterests);
-    setHydrated(true);
+      let normalized = fallback;
+
+      try {
+        const survey = await getMySurvey();
+        normalized = Array.isArray(survey.interests)
+          ? (survey.interests as string[])
+          : fallback;
+      } catch (error) {
+        console.warn(
+          "Failed to load survey from backend, using local draft",
+          error,
+        );
+      }
+
+      setSelectedInterests(normalized);
+      setInitialInterests(normalized);
+      setHydrated(true);
+    };
+
+    void hydrateFromStorageAndBackend();
   }, []);
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     if (!hydrated) return;
 
-    updateOnboardingData({ interests: selectedInterests });
-    setInitialInterests(selectedInterests);
-    toast({
-      type: "success",
-      title: "Profile updated",
-      description: "Your interests were saved.",
-    });
+    try {
+      const payload = { interests: selectedInterests };
+
+      await upsertSurvey(payload);
+      updateOnboardingData(payload);
+      setInitialInterests(selectedInterests);
+      toast({
+        type: "success",
+        title: "Profile updated",
+        description: "Your interests were saved.",
+      });
+    } catch (error) {
+      console.error("Failed to save interests", error);
+      toast({
+        type: "error",
+        title: "Save failed",
+        description: "Something wrong happened. Please try again.",
+      });
+    }
   };
 
   const handleToggle = (interest: string) => {
