@@ -108,12 +108,7 @@ export default function LifestyleHabitsPage() {
       await upsertSurvey(payload);
       updateOnboardingData(payload);
 
-    setInitialValues({
-      roommate_closeness: selectedCloseness,
-      smoke_vape: selectedSmokeVape,
-      drink: selectedDrink,
-      dealbreakers: selectedDealbreakers,
-    });
+    setInitialValues(payload);
 
       toast({
         type: "success",
