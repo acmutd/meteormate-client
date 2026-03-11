@@ -18,7 +18,7 @@ logger = logging.getLogger("meteormate." + __name__)
 router = APIRouter()
 
 
-@router.post("/", response_model=SurveyResponse)
+@router.post("", response_model=SurveyResponse)
 async def create_survey(
     survey_data: SurveyCreate,
     current_user_token=Depends(get_current_user),
@@ -62,7 +62,7 @@ async def get_my_survey(
     return survey
 
 
-@router.put("/", response_model=SurveyResponse)
+@router.put("", response_model=SurveyResponse)
 async def update_survey(
     survey_data: SurveyUpdate,
     current_user_token=Depends(get_current_user),
