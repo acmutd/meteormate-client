@@ -124,7 +124,7 @@ export default function LifestyleHabitsPage() {
       />
       <div className="flex flex-col justify-center items-center relative">
         <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
-        <div className="text-center mt-2 shrink-0 relative px-8">
+        <div className="text-center mt-2 shrink-0 relative">
           <button
             type="button"
             onClick={handleUpdateProfile}

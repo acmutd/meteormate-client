@@ -133,7 +133,14 @@ export default function LifestylePersonalityPage() {
       />
       <div className="flex flex-col justify-center items-center relative">
         <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
-        <div className="text-center mt-2 shrink-0">
+        <div className="text-center mt-2 shrink-0 relative">
+          <button
+            type="button"
+            onClick={handleUpdateProfile}
+            className="absolute right-8 top-4 px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
+          >
+            Update Profile
+          </button>
           <p className="text-3xl font-bold">Lifestyle Personality</p>
           <p className="text-center text-md text-gray-600">
             Help us find your ideal roommate by selecting your preferences!
@@ -305,15 +312,6 @@ export default function LifestylePersonalityPage() {
                 );
               }}
             />
-          </div>
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={handleUpdateProfile}
-              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
-            >
-              Update Profile
-            </button>
           </div>
         </div>
         </div>

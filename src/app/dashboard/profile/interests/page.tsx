@@ -84,7 +84,14 @@ export default function InterestsPage() {
       />
       <div className="flex flex-col text-center justify-center items-center relative">
         <div className="w-[76%] h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl">
-        <div className="mt-8 ml-6 mr-6">
+        <div className="text-center mt-2 relative">
+          <button
+            type="button"
+            onClick={handleUpdateProfile}
+            className="absolute right-8 top-4 px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
+          >
+            Update Profile
+          </button>
           <p className="text-3xl font-bold">Select Your Interests</p>
           <p className="text-center text-md text-gray-600 mb-6">
             Pick a few interests to show who you are! You may pick up to 6.
@@ -111,15 +118,6 @@ export default function InterestsPage() {
               ))}
             </div>
           </div>
-        </div>
-        <div className="flex justify-center mt-8 mb-8">
-          <button
-            type="button"
-            onClick={handleUpdateProfile}
-            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
-          >
-            Update Profile
-          </button>
         </div>
         </div>
       </div>
