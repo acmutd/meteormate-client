@@ -10,6 +10,7 @@ import {
 } from "@/utils/onboardingStorage";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { getMySurvey, upsertSurvey } from "@/api/survey";
 
 interface HousingState {
     housing_intent: string | null;
@@ -83,76 +84,121 @@ export default function HousingPage() {
         useUnsavedChangesGuard({ isDirty });
 
     useEffect(() => {
-        const saved = loadOnboardingData();
+        const hydrateFromStorageAndBackend = async () => {
+            const saved = loadOnboardingData();
 
-        const min = saved.budget_min ?? 600;
-        const max = saved.budget_max ?? 1400;
-        const normalized: HousingState = {
-            housing_intent: saved.housing_intent ?? null,
-            on_campus_locations: Array.isArray(saved.on_campus_locations)
-                ? saved.on_campus_locations
-                : [],
-            honors: saved.honors ?? null,
-            llc_interest: saved.llc_interest ?? null,
-            num_roommates: saved.num_roommates ?? null,
-            have_lease: saved.have_lease ?? null,
-            have_lease_length: saved.have_lease_length ?? null,
-            budget_min: min,
-            budget_max: max,
+            const fallbackMin = saved.budget_min ?? 600;
+            const fallbackMax = saved.budget_max ?? 1400;
+            const fallback: HousingState = {
+                housing_intent: saved.housing_intent ?? null,
+                on_campus_locations: Array.isArray(saved.on_campus_locations)
+                    ? saved.on_campus_locations
+                    : [],
+                honors: saved.honors ?? null,
+                llc_interest: saved.llc_interest ?? null,
+                num_roommates: saved.num_roommates ?? null,
+                have_lease: saved.have_lease ?? null,
+                have_lease_length: saved.have_lease_length ?? null,
+                budget_min: fallbackMin,
+                budget_max: fallbackMax,
+            };
+
+            let normalized = fallback;
+
+            try {
+                const survey = await getMySurvey();
+                normalized = {
+                    housing_intent:
+                        (survey.housing_intent as string | null | undefined) ??
+                        fallback.housing_intent,
+                    on_campus_locations: Array.isArray(survey.on_campus_locations)
+                        ? (survey.on_campus_locations as string[])
+                        : fallback.on_campus_locations,
+                    honors:
+                        (survey.honors as boolean | null | undefined) ??
+                        fallback.honors,
+                    llc_interest:
+                        (survey.llc_interest as boolean | null | undefined) ??
+                        fallback.llc_interest,
+                    num_roommates:
+                        (survey.num_roommates as string | null | undefined) ??
+                        fallback.num_roommates,
+                    have_lease:
+                        (survey.have_lease as boolean | null | undefined) ??
+                        fallback.have_lease,
+                    have_lease_length:
+                        (survey.have_lease_length as string | null | undefined) ??
+                        fallback.have_lease_length,
+                    budget_min:
+                        (survey.budget_min as number | null | undefined) ??
+                        fallback.budget_min,
+                    budget_max:
+                        (survey.budget_max as number | null | undefined) ??
+                        fallback.budget_max,
+                };
+            } catch (error) {
+                console.warn(
+                    "Failed to load survey from backend, using local draft",
+                    error,
+                );
+            }
+
+            setSelectedLivingPreference(normalized.housing_intent);
+            setSelectedLocation(normalized.on_campus_locations);
+            setSelectedHonorsStatus(normalized.honors);
+            setSelectedLLCPreference(normalized.llc_interest);
+            setSelectedNumOfRoommates(normalized.num_roommates);
+            setSelectedLeaseStatus(normalized.have_lease);
+            setSelectedHaveLeaseLength(normalized.have_lease_length);
+            setSelectedBudgetMin(normalized.budget_min);
+            setSelectedBudgetMax(normalized.budget_max);
+            setInitialValues(normalized);
+
+            setHydrated(true);
         };
 
-        setSelectedLivingPreference(normalized.housing_intent);
-        setSelectedLocation(normalized.on_campus_locations);
-        setSelectedHonorsStatus(normalized.honors);
-        setSelectedLLCPreference(normalized.llc_interest);
-        setSelectedNumOfRoommates(normalized.num_roommates);
-        setSelectedLeaseStatus(normalized.have_lease);
-        setSelectedHaveLeaseLength(normalized.have_lease_length);
-        setSelectedBudgetMin(min);
-        setSelectedBudgetMax(max);
-        setInitialValues(normalized);
-
-        setHydrated(true);
+        void hydrateFromStorageAndBackend();
     }, []);
 
-    const handleUpdateProfile = () => {
+    const handleUpdateProfile = async () => {
         if (!hydrated) return;
 
-        // Keep required field populated when on-campus is selected.
-        const leaseLength =
-            selectedLivingPreference === "on_campus"
-                ? "academic_year"
-                : selectedHaveLeaseLength;
+        try {
+            // Keep required field populated when on-campus is selected.
+            const leaseLength =
+                selectedLivingPreference === "on_campus"
+                    ? "academic_year"
+                    : selectedHaveLeaseLength;
 
-        updateOnboardingData({
-            housing_intent: selectedLivingPreference,
-            on_campus_locations: selectedLocation,
-            honors: selectedHonorsStatus,
-            llc_interest: selectedLLCPreference,
-            num_roommates: selectedNumOfRoommates,
-            have_lease: selectedLeaseStatus,
-            have_lease_length: leaseLength,
-            budget_min: selectedBudgetMin,
-            budget_max: selectedBudgetMax,
-        });
+            const payload = {
+                housing_intent: selectedLivingPreference,
+                on_campus_locations: selectedLocation,
+                honors: selectedHonorsStatus,
+                llc_interest: selectedLLCPreference,
+                num_roommates: selectedNumOfRoommates,
+                have_lease: selectedLeaseStatus,
+                have_lease_length: leaseLength,
+                budget_min: selectedBudgetMin,
+                budget_max: selectedBudgetMax,
+            };
 
-        setInitialValues({
-            housing_intent: selectedLivingPreference,
-            on_campus_locations: selectedLocation,
-            honors: selectedHonorsStatus,
-            llc_interest: selectedLLCPreference,
-            num_roommates: selectedNumOfRoommates,
-            have_lease: selectedLeaseStatus,
-            have_lease_length: leaseLength,
-            budget_min: selectedBudgetMin,
-            budget_max: selectedBudgetMax,
-        });
+            await upsertSurvey(payload);
+            updateOnboardingData(payload);
+            setInitialValues(payload);
 
-        toast({
-            type: "success",
-            title: "Profile updated",
-            description: "Your housing preferences were saved.",
-        });
+            toast({
+                type: "success",
+                title: "Profile updated",
+                description: "Your housing preferences were saved.",
+            });
+        } catch (error) {
+            console.error("Failed to save housing preferences", error);
+            toast({
+                type: "error",
+                title: "Save failed",
+                description: "Something wrong happened. Please try again.",
+            });
+        }
     };
 
     const handleBooleanToggle = (
