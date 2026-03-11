@@ -142,7 +142,7 @@ export default function LifestylePersonalityPage() {
             Update Profile
           </button>
           <p className="text-3xl font-bold">Lifestyle Personality</p>
-          <p className="text-center text-md text-gray-600">
+          <p className="text-center text-md text-gray-600 mb-2">
             Help us find your ideal roommate by selecting your preferences!
           </p>
         </div>
