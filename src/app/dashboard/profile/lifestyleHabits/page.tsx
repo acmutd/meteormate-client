@@ -9,6 +9,7 @@ import {
 } from "@/utils/onboardingStorage"; // we are just storing the information here to save the progress and eventually send it all to the backend in one go
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { getMySurvey, upsertSurvey } from "@/api/survey";
 
 interface LifestyleHabitsState {
   roommate_closeness: string | null;
@@ -51,31 +52,61 @@ export default function LifestyleHabitsPage() {
     useUnsavedChangesGuard({ isDirty });
 
   useEffect(() => {
-    const saved = loadOnboardingData();
-    const normalized: LifestyleHabitsState = {
-      roommate_closeness: saved.roommate_closeness ?? null,
-      smoke_vape: saved.smoke_vape ?? null,
-      drink: saved.drink ?? null,
-      dealbreakers: Array.isArray(saved.dealbreakers) ? saved.dealbreakers : [],
+    const hydrateFromStorageAndBackend = async () => {
+      const saved = loadOnboardingData();
+      const fallback: LifestyleHabitsState = {
+        roommate_closeness: saved.roommate_closeness ?? null,
+        smoke_vape: saved.smoke_vape ?? null,
+        drink: saved.drink ?? null,
+        dealbreakers: Array.isArray(saved.dealbreakers)
+          ? saved.dealbreakers
+          : [],
+      };
+
+      let normalized = fallback;
+
+      try {
+        const survey = await getMySurvey();
+        normalized = {
+          roommate_closeness:
+            (survey.roommate_closeness as string | null | undefined) ??
+            fallback.roommate_closeness,
+          smoke_vape:
+            (survey.smoke_vape as boolean | null | undefined) ??
+            fallback.smoke_vape,
+          drink: (survey.drink as boolean | null | undefined) ?? fallback.drink,
+          dealbreakers: Array.isArray(survey.dealbreakers)
+            ? (survey.dealbreakers as string[])
+            : fallback.dealbreakers,
+        };
+      } catch (error) {
+        console.warn("Failed to load survey from backend, using local draft", error);
+      }
+
+      setSelectedCloseness(normalized.roommate_closeness);
+      setSelectedSmokeVape(normalized.smoke_vape);
+      setSelectedDrink(normalized.drink);
+      setSelectedDealbreakers(normalized.dealbreakers);
+      setInitialValues(normalized);
+      setHydrated(true);
     };
 
-    setSelectedCloseness(normalized.roommate_closeness);
-    setSelectedSmokeVape(normalized.smoke_vape);
-    setSelectedDrink(normalized.drink);
-    setSelectedDealbreakers(normalized.dealbreakers);
-    setInitialValues(normalized);
-    setHydrated(true);
+    void hydrateFromStorageAndBackend();
   }, []);
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     if (!hydrated) return;
 
-    updateOnboardingData({
-      roommate_closeness: selectedCloseness,
-      smoke_vape: selectedSmokeVape,
-      drink: selectedDrink,
-      dealbreakers: selectedDealbreakers,
-    });
+    try {
+      const payload = {
+        roommate_closeness: selectedCloseness,
+        smoke_vape: selectedSmokeVape ?? false,
+        drink: selectedDrink ?? false,
+        dealbreakers: selectedDealbreakers,
+      };
+
+      await upsertSurvey(payload);
+      updateOnboardingData(payload);
 
     setInitialValues({
       roommate_closeness: selectedCloseness,
@@ -84,11 +115,19 @@ export default function LifestyleHabitsPage() {
       dealbreakers: selectedDealbreakers,
     });
 
-    toast({
-      type: "success",
-      title: "Profile updated",
-      description: "Your lifestyle habits preferences were saved.",
-    });
+      toast({
+        type: "success",
+        title: "Profile updated",
+        description: "Your lifestyle habits preferences were saved.",
+      });
+    } catch (error) {
+      console.error("Failed to save lifestyle habits", error);
+      toast({
+        type: "error",
+        title: "Save failed",
+        description: "Something wrong happened. Please try again.",
+      });
+    }
   };
 
   const handleToggle = (
