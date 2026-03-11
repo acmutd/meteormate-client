@@ -213,7 +213,7 @@ export default function HousingPage() {
                         Update Profile
                     </button>
                     <p className="text-3xl font-bold">Housing</p>
-                    <p className="text-center text-md text-gray-600">
+                    <p className="text-center text-md text-gray-600 mb-2">
                         Help us find your ideal roommate by selecting your housing
                         preferences!
                     </p>
