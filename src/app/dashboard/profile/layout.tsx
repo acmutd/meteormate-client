@@ -42,9 +42,13 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
     >
       <Link
         href={previousPath}
-        className="fixed left-[22%] top-1/2 -translate-y-1/2 z-10 p-3"
+        className="group fixed left-[22%] top-1/2 -translate-y-1/2 z-10 p-3 duration-200 hover:-translate-x-1 hover:scale-105"
       >
-        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24">
+        <svg
+          className="h-10 w-10 group-hover:scale-110"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
           <defs>
             <linearGradient id="arrowGradientLeft" x1="8" y1="5" x2="16" y2="19" gradientUnits="userSpaceOnUse">
               <stop stopColor="#FFD36B" />
@@ -65,9 +69,13 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
 
       <Link
         href={nextPath}
-        className="fixed right-[5%] top-1/2 -translate-y-1/2 z-10 p-3"
+        className="group fixed right-[5%] top-1/2 -translate-y-1/2 z-10 p-3 duration-200 hover:translate-x-1 hover:scale-105"
       >
-        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24">
+        <svg
+          className="h-10 w-10 group-hover:scale-110"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
           <defs>
             <linearGradient id="arrowGradientRight" x1="8" y1="5" x2="16" y2="19" gradientUnits="userSpaceOnUse">
               <stop stopColor="#FFD36B" />
