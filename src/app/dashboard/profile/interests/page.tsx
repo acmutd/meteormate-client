@@ -93,7 +93,7 @@ export default function InterestsPage() {
             Update Profile
           </button>
           <p className="text-3xl font-bold">Select Your Interests</p>
-          <p className="text-center text-md text-gray-600 mb-6">
+          <p className="text-center text-md text-gray-600 mb-14">
             Pick a few interests to show who you are! You may pick up to 6.
           </p>
           <div className="max-w-4xl mx-auto">
