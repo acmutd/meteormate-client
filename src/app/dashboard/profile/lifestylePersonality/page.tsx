@@ -10,6 +10,7 @@ import {
 } from "@/utils/onboardingStorage";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { getMySurvey, upsertSurvey } from "@/api/survey";
 
 interface LifestylePersonalityState {
   cooking_frequency: string | null;
@@ -59,48 +60,86 @@ export default function LifestylePersonalityPage() {
     useUnsavedChangesGuard({ isDirty });
 
   useEffect(() => {
-    // loading it once and the next use effect for the changes made and keeping track
-    const saved = loadOnboardingData();
-    const normalized: LifestylePersonalityState = {
-      cooking_frequency: saved.cooking_frequency ?? null,
-      pet_preference: saved.pet_preference ?? null,
-      guests_frequency: saved.guests_frequency ?? null,
-      housing_intent: saved.housing_intent ?? null,
-      move_in_date: saved.move_in_date ?? null,
+    const hydrateFromStorageAndBackend = async () => {
+      const saved = loadOnboardingData();
+      const fallback: LifestylePersonalityState = {
+        cooking_frequency: saved.cooking_frequency ?? null,
+        pet_preference: saved.pet_preference ?? null,
+        guests_frequency: saved.guests_frequency ?? null,
+        housing_intent: saved.housing_intent ?? null,
+        move_in_date: saved.move_in_date ?? null,
+      };
+
+      let normalized = fallback;
+
+      try {
+        const survey = await getMySurvey();
+        normalized = {
+          cooking_frequency:
+            (survey.cooking_frequency as string | null | undefined) ??
+            fallback.cooking_frequency,
+          pet_preference:
+            (survey.pet_preference as string | null | undefined) ??
+            fallback.pet_preference,
+          guests_frequency:
+            (survey.guests_frequency as string | null | undefined) ??
+            fallback.guests_frequency,
+          housing_intent:
+            (survey.housing_intent as string | null | undefined) ??
+            fallback.housing_intent,
+          move_in_date:
+            (survey.move_in_date as string | null | undefined) ??
+            fallback.move_in_date,
+        };
+      } catch (error) {
+        console.warn(
+          "Failed to load survey from backend, using local draft",
+          error,
+        );
+      }
+
+      setselectedCookingPreference(normalized.cooking_frequency);
+      setselectedPetPreferences(normalized.pet_preference);
+      setSelectedGuestsPreferences(normalized.guests_frequency);
+      setselectedLivingPreference(normalized.housing_intent);
+      setSelectedMoveInDate(normalized.move_in_date);
+      setInitialValues(normalized);
+      setHydrated(true);
     };
 
-    setselectedCookingPreference(normalized.cooking_frequency);
-    setselectedPetPreferences(normalized.pet_preference);
-    setSelectedGuestsPreferences(normalized.guests_frequency);
-    setselectedLivingPreference(normalized.housing_intent);
-    setSelectedMoveInDate(normalized.move_in_date);
-    setInitialValues(normalized);
-    setHydrated(true);
+    void hydrateFromStorageAndBackend();
   }, []);
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     if (!hydrated) return;
-    updateOnboardingData({
-      cooking_frequency: selectedCookingPreference,
-      pet_preference: selectedPetPreferences,
-      guests_frequency: selectedGuestsPreference,
-      housing_intent: selectedLivingPreference,
-      move_in_date: selectedMoveInDate,
-    });
 
-    setInitialValues({
-      cooking_frequency: selectedCookingPreference,
-      pet_preference: selectedPetPreferences,
-      guests_frequency: selectedGuestsPreference,
-      housing_intent: selectedLivingPreference,
-      move_in_date: selectedMoveInDate,
-    });
+    try {
+      const payload = {
+        cooking_frequency: selectedCookingPreference,
+        pet_preference: selectedPetPreferences,
+        guests_frequency: selectedGuestsPreference,
+        housing_intent: selectedLivingPreference,
+        move_in_date: selectedMoveInDate,
+      };
 
-    toast({
-      type: "success",
-      title: "Profile updated",
-      description: "Your lifestyle personality preferences were saved.",
-    });
+      await upsertSurvey(payload);
+      updateOnboardingData(payload);
+
+      setInitialValues(payload);
+
+      toast({
+        type: "success",
+        title: "Profile updated",
+        description: "Your lifestyle personality preferences were saved.",
+      });
+    } catch (error) {
+      console.error("Failed to save lifestyle personality", error);
+      toast({
+        type: "error",
+        title: "Save failed",
+        description: "Something wrong happened. Please try again.",
+      });
+    }
   };
 
   const handleDateChange = (date: string | null) => {
