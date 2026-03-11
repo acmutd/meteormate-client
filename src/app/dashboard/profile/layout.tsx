@@ -34,7 +34,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
 
   return (
     <div
-      className="relative"
+      className="relative min-h-full"
       style={{
         backgroundImage: "url('/stars_orange.svg')",
         backgroundSize: "cover",
