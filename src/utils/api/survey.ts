@@ -33,14 +33,14 @@ export async function getMySurvey(): Promise<SurveyResponse> {
 }
 
 export async function upsertSurvey(payload: SurveyPayload): Promise<SurveyResponse> {
-    let response = await submitSurvey(payload as SurveyCreateBody);
+    let response = await updateSurvey(payload as SurveyUpdateBody);
 
     if (!response.ok) {
-        const isAlreadyExists =
-            response.code === "400" && response.error.toLowerCase().includes("already exists");
+        const isNotFound =
+            response.code === "404" && response.error.toLowerCase().includes("survey");
 
-        if (isAlreadyExists) {
-            response = await updateSurvey(payload as SurveyUpdateBody);
+        if (isNotFound) {
+            response = await submitSurvey(payload as SurveyCreateBody);
         }
     }
 
