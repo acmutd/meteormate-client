@@ -68,7 +68,7 @@ export default function PasswordInput({
                         "font-light text-[14px] md:text-[15px] text-left",
                         "border border-zinc-700",
                         "text-black placeholder:text-zinc-600",
-                        "focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500",
+                        "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary",
                         "disabled:opacity-50 disabled:cursor-not-allowed",
                         "transition-all duration-200",
                     ].join(" ")}
@@ -79,7 +79,7 @@ export default function PasswordInput({
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-zinc-500 hover:text-orange-300 transition-colors"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-zinc-500 hover:text-primary-hover transition-colors"
                     >
                         {showPassword ? (
                             <svg

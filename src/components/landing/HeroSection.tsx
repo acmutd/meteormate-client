@@ -23,10 +23,10 @@ export default function HeroSection() {
 
                         {/* Badge */}
                         <div
-                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-xs font-semibold text-[#E87500] mb-8 mx-auto lg:mx-0">
+                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-xs font-semibold text-primary mb-8 mx-auto lg:mx-0">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inset-0 rounded-full bg-orange-400 opacity-75"/>
-                <span className="relative inset-0 rounded-full bg-[#E87500]"/>
+                <span className="animate-ping absolute inset-0 rounded-full bg-primary opacity-75"/>
+                <span className="relative inset-0 rounded-full bg-primary"/>
               </span>
                             Powered by ACM Development
                         </div>
@@ -34,7 +34,7 @@ export default function HeroSection() {
                         <h1 className="text-5xl md:text-6xl lg:text-[5rem] xl:text-7xl font-black tracking-[-0.03em] bg-gradient-to-r from-white via-white/95 to-zinc-200 bg-clip-text text-transparent mb-6 leading-[0.9]">
                             Find your perfect <br/>
                             <span
-                                className="block bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                                className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 roommate here at UT Dallas.
               </span>
                         </h1>
@@ -50,7 +50,7 @@ export default function HeroSection() {
                                 smooth={true}
                                 duration={800}
                                 offset={-100}
-                                className="group relative bg-gradient-to-r from-orange-400 to-yellow-500 group-hover:from-orange-500 group-hover:to-yellow-400 group-hover:shadow-xl text-white font-bold px-8 py-4 rounded-2xl text-lg shadow-2xl hover:shadow-orange-500/25 hover:scale-[1.02] transition-all duration-300"
+                                className="group relative bg-gradient-to-r from-primary to-secondary group-hover:from-primary-hover group-hover:to-secondary-hover group-hover:shadow-xl text-white font-bold px-8 py-4 rounded-2xl text-lg shadow-2xl hover:shadow-primary-hover/25 hover:scale-[1.02] transition-all duration-300"
                             >
                 <span className="relative z-10 flex items-center gap-2">
                   Get Started

@@ -58,7 +58,7 @@ export default function Navbar() {
 						<div className="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 					</div>
 					<div className="flex flex-col leading-tight">
-						<h1 className="font-pavanam font-bold md:text-2xl text-lg tracking-tight bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">
+						<h1 className="font-pavanam font-bold md:text-2xl text-lg tracking-tight bg-gradient-to-r from-primary via-secondary to-primary-hover bg-clip-text text-transparent drop-shadow-lg">
 							MeteorMate
 						</h1>
 						<span className="text-[10px] md:text-xs font-pavanam font-medium text-white/70 uppercase tracking-widest">
@@ -82,7 +82,7 @@ export default function Navbar() {
 							className="relative cursor-pointer font-outfit font-medium text-lg text-white/90 hover:text-white transition-colors duration-300 group"
 						>
 							{link.label}
-							<span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-400 to-yellow-500 transition-all duration-300 group-hover:w-full" />
+							<span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary transition-all duration-300 group-hover:w-full" />
 						</Link>
 					))}
 
@@ -96,7 +96,7 @@ export default function Navbar() {
 						}}
 						disabled={isNavigating}
 					>
-						<span className="outfit-bold border-0 bg-gradient-to-br from-orange-400 to-yellow-500 text-white rounded-full px-8 py-3 transition-all duration-300 group-hover:from-orange-500 group-hover:to-yellow-400 group-hover:shadow-xl shadow-lg inline-flex items-center gap-3 text-base">
+						<span className="outfit-bold border-0 bg-gradient-to-br from-primary to-secondary text-white rounded-full px-8 py-3 transition-all duration-300 group-hover:from-primary-hover group-hover:to-secondary-hover group-hover:shadow-xl shadow-lg inline-flex items-center gap-3 text-base">
 							{isNavigating && (
 								<LoadingSpinner size="sm" className="border-white" />
 							)}
@@ -117,7 +117,7 @@ export default function Navbar() {
 						}}
 						disabled={isNavigating}
 					>
-						<span className="outfit-bold bg-gradient-to-br from-orange-400 to-yellow-500 text-white rounded-full px-5 py-2 text-sm inline-flex items-center gap-2 shadow-md">
+						<span className="outfit-bold bg-gradient-to-br from-primary to-secondary text-white rounded-full px-5 py-2 text-sm inline-flex items-center gap-2 shadow-md">
 							{isNavigating && <LoadingSpinner size="sm" className="border-white" />}
 							Login
 						</span>
