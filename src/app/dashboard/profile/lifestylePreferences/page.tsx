@@ -9,6 +9,7 @@ import {
 } from "@/utils/onboardingStorage";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { getMySurvey, upsertSurvey } from "@/utils/api/survey";
 
 interface LifestylePreferencesState {
   wake_time: string | null;
@@ -45,40 +46,74 @@ export default function LifestylePreferencesPage() {
     useUnsavedChangesGuard({ isDirty });
 
   useEffect(() => {
-    const saved = loadOnboardingData();
-    const normalized: LifestylePreferencesState = {
-      wake_time: saved.wake_time ?? null,
-      cleanliness: saved.cleanliness ?? null,
-      noise_tolerance: saved.noise_tolerance ?? null,
+    const hydrateFromStorageAndBackend = async () => {
+      const saved = loadOnboardingData();
+      const fallback: LifestylePreferencesState = {
+        wake_time: saved.wake_time ?? null,
+        cleanliness: saved.cleanliness ?? null,
+        noise_tolerance: saved.noise_tolerance ?? null,
+      };
+
+      let normalized = fallback;
+
+      try {
+        const survey = await getMySurvey();
+        normalized = {
+          wake_time:
+            (survey.wake_time as string | null | undefined) ??
+            fallback.wake_time,
+          cleanliness:
+            (survey.cleanliness as string | null | undefined) ??
+            fallback.cleanliness,
+          noise_tolerance:
+            (survey.noise_tolerance as string | null | undefined) ??
+            fallback.noise_tolerance,
+        };
+      } catch (error) {
+        console.warn(
+          "Failed to load survey from backend, using local draft",
+          error,
+        );
+      }
+
+      setSelectedWakeupTime(normalized.wake_time);
+      setSelectedCleanliness(normalized.cleanliness);
+      setSelectedNoiseTolerance(normalized.noise_tolerance);
+      setInitialValues(normalized);
+      setHydrated(true);
     };
 
-    setSelectedWakeupTime(normalized.wake_time);
-    setSelectedCleanliness(normalized.cleanliness);
-    setSelectedNoiseTolerance(normalized.noise_tolerance);
-    setInitialValues(normalized);
-    setHydrated(true);
+    void hydrateFromStorageAndBackend();
   }, []);
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     if (!hydrated) return;
 
-    updateOnboardingData({
-      wake_time: selectedWakeupTime,
-      cleanliness: selectedCleanliness,
-      noise_tolerance: selectedNoiseTolerance,
-    });
+    try {
+      const payload = {
+        wake_time: selectedWakeupTime,
+        cleanliness: selectedCleanliness,
+        noise_tolerance: selectedNoiseTolerance,
+      };
 
-    setInitialValues({
-      wake_time: selectedWakeupTime,
-      cleanliness: selectedCleanliness,
-      noise_tolerance: selectedNoiseTolerance,
-    });
+      await upsertSurvey(payload);
+      updateOnboardingData(payload);
 
-    toast({
-      type: "success",
-      title: "Profile updated",
-      description: "Your lifestyle preferences were saved.",
-    });
+      setInitialValues(payload);
+
+      toast({
+        type: "success",
+        title: "Profile updated",
+        description: "Your lifestyle preferences were saved.",
+      });
+    } catch (error) {
+      console.error("Failed to save lifestyle preferences", error);
+      toast({
+        type: "error",
+        title: "Save failed",
+        description: "Something wrong happened. Please try again.",
+      });
+    }
   };
 
   const handleToggle = (

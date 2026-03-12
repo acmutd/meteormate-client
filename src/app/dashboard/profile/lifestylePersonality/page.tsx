@@ -10,7 +10,7 @@ import {
 } from "@/utils/onboardingStorage";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
-import { getMySurvey, upsertSurvey } from "@/api/survey";
+import { getMySurvey, upsertSurvey } from "@/utils/api/survey";
 
 interface LifestylePersonalityState {
   cooking_frequency: string | null;
