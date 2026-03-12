@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
-import { fetchCurrentUser } from "@/api/auth";
+import { fetchCurrentUser } from "@/utils/api/auth";
 import { UserProfile } from "@/types/userProfile";
 import { useToast } from "@/components/ui/ToastProvider";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";

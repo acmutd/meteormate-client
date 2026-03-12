@@ -1,12 +1,21 @@
-// the discover page - dashboard we are using to make sure that all the pages of the main app are here 
-export default function settings() {
+"use client";
+
+import EmailPreferencesCard from "@/components/settings/EmailPreferencesCard";
+import InactivityCard from "@/components/settings/InactivityCard";
+import DangerZoneCard from "@/components/settings/DangerZoneCard";
+
+export default function Settings() {
   return (
-    <div>
-      <h2 className="text-2xl font-semibold">Settings</h2>
-      <p className="mt-2 text-sm text-gray-600">
-        You’re logged in. This page is rendered inside the (app) layout, so the
-        Navbar + Sidebar should always be visible.
-      </p>
+    <div className="w-full max-w-2xl mx-auto">
+      <h2 className="text-3xl font-bold text-gray-800">Settings</h2>
+      <p className="mt-2 text-gray-600">Manage your account and preferences</p>
+
+      <div className="flex flex-col gap-10 mt-8">
+        <EmailPreferencesCard />
+        <InactivityCard />
+        <DangerZoneCard />
+      </div>
     </div>
   );
 }
+

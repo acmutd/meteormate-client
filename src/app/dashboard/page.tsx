@@ -1,55 +1,76 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getCurrentUserIdToken } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
-import { fetchCurrentUser } from "@/api/auth";
+import { fetchCurrentUser } from "@/utils/api/auth";
 import { UserProfile } from "@/types/userProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ProfileCard from "@/components/cardComponent/ProfileCard";
 
-export default function Dashboard() {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+export default function Discover() {
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = await getCurrentUserIdToken();
-        const data = await fetchCurrentUser(token);
-        setUser(data);
-      } catch (err) {
-        console.error("Dashboard auth error:", err);
-        router.push("/authentication?toast=not-signed-in");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, [router]);
+    useEffect(() => {
+        const fetchUser = async () => {
+        try {
+            const res = await fetchCurrentUser();
+            if (!res.ok) throw new Error(res.error || "Failed to fetch user");
+            setUser(res.data);
+        } catch (err) {
+            console.error("Dashboard auth error:", err);
+            router.push("/authentication?toast=not-signed-in");
+        } finally {
+            setLoading(false);
+        }
+        };
+        fetchUser();
+    }, [router]);
 
-  if (loading) {
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+            </div>
+        );
+    }
+
+    if (!user) return null;
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (!user) return null;
-
-  return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
-        <div className="grid gap-6">
-          <div className="bg-zinc-900 p-6 rounded-lg border border-white/10">
-            <h2 className="text-2xl mb-4">
-              Welcome, {user.profile?.first_name || "User"}
-            </h2>
-            <p className="text-zinc-400">Your dashboard is being built.</p>
-          </div>
+        <div className="flex justify-center py-7">
+            <ProfileCard
+                name="Aastha Sheth"
+                subtitle="Comp sci. major - senior"
+                images={["/p2.png", "/p3.jpg","/p2.png"]}
+                tags={[
+                { label: "Does not have a lease", tone: "orange"},
+                { label: "Year long lease", tone: "orange"},
+                { label: "$1200 Rent range", tone: "orange"},
+                { label: "Has a pet", tone: "gray" },
+                ]}
+                bio="Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe..."
+                onDislike={() => console.log("dislike")}
+                onRewind={() => console.log("rewind")}
+                onLike={() => console.log("like")}
+                back={{
+                            interests: [
+                                { label: "Music", selected: true },
+                                { label: "Art", selected: true },
+                                { label: "Lifting" },
+                                { label: "Hiking" },
+                                { label: "Video Games" },
+                            ],
+                            habits: [
+                                { label: "Quiet", selected: true },
+                                { label: "Tidy", selected: true },
+                                { label: "Okay With Pets", selected: true },
+                                { label: "Cooks Often" },
+                                { label: "Early Bird" },
+                            ],
+                            expandedBio:
+                                "Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe. To do for mm: nuke atharva. WOHOOOOOOOOOOOOOOOOOOOOOOOOo",
+                        }}
+            />
         </div>
-      </div>
-    </div>
-  );
+    );
 }
