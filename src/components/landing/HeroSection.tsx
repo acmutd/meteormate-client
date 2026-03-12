@@ -34,7 +34,7 @@ export default function HeroSection() {
                         <h1 className="text-5xl md:text-6xl lg:text-[5rem] xl:text-7xl font-black tracking-[-0.03em] bg-gradient-to-r from-white via-white/95 to-zinc-200 bg-clip-text text-transparent mb-6 leading-[0.9]">
                             Find your perfect <br/>
                             <span
-                                className="block bg-gradient-to-r from-primary via-secondary to-primary-hover bg-clip-text text-transparent">
+                                className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 roommate here at UT Dallas.
               </span>
                         </h1>

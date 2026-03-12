@@ -23,7 +23,7 @@ export default function PrivacyPage() {
                     className="w-10 h-10 md:w-14 md:h-14 transition-transform duration-300 group-hover:scale-110"
                 />
                 <div className="flex flex-col leading-tight">
-                    <h1 className="font-pavanam font-bold md:text-2xl text-lg tracking-tight bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">
+                    <h1 className="font-pavanam font-bold md:text-2xl text-lg tracking-tight bg-gradient-to-r from-primary via-yellow-400 to-secondary bg-clip-text text-transparent drop-shadow-lg">
                         MeteorMate
                     </h1>
                     <span
@@ -46,8 +46,8 @@ export default function PrivacyPage() {
             <div className="max-w-4xl mx-auto">
                 {/* Hero Section */}
                 <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-orange-400/20 to-yellow-500/20 mb-6">
-              <Shield className="w-10 h-10 text-orange-400" />
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-6">
+              <Shield className="w-10 h-10 text-primary" />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
               Your Privacy Matters
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
             {/* Encryption */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                   <Lock className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold">End-to-End Encryption</h2>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
             {/* Data Retention */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                   <Trash2 className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold">Automatic Deletion</h2>
@@ -88,7 +88,7 @@ export default function PrivacyPage() {
             {/* No PII Logging */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                   <Eye className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold">Minimal Logging</h2>
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
             {/* Your Control */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                   <UserCheck className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold">You&apos;re In Control</h2>
@@ -113,9 +113,9 @@ export default function PrivacyPage() {
           </div>
 
           {/* Data Practices Section */}
-          <div className="bg-gradient-to-br from-orange-400/10 to-yellow-500/10 border border-orange-400/20 rounded-2xl p-8 md:p-12 mb-12">
+          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl p-8 md:p-12 mb-12">
             <div className="flex items-center gap-4 mb-6">
-              <Database className="w-8 h-8 text-orange-400" />
+              <Database className="w-8 h-8 text-primary" />
               <h2 className="text-3xl font-bold">Our Data Practices</h2>
             </div>
             <div className="space-y-4 text-white/80 leading-relaxed">
@@ -149,7 +149,7 @@ export default function PrivacyPage() {
               Questions about privacy? Email us at{" "}
               <a
                 href="mailto:info@meteormate.com"
-                className="text-orange-400 hover:text-orange-300 transition-colors"
+                className="text-primary hover:text-primary-hover transition-colors"
               >
                 info@meteormate.com
               </a>
