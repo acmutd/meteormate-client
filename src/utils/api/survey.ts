@@ -1,6 +1,11 @@
 import { apiFetch } from "@/utils/api/client";
 import { Result } from "@/utils/types";
-import { SurveyCreateBody, SurveyResponse, SurveyUpdateBody } from "@/types/survey";
+import {
+    SurveyCreateBody,
+    SurveyPayload,
+    SurveyResponse,
+    SurveyUpdateBody,
+} from "@/types/survey";
 
 // fetches user survey for the profile page when we integrate that
 export async function getSurvey(): Promise<Result<SurveyResponse>> {
@@ -15,4 +20,33 @@ export async function submitSurvey(body: SurveyCreateBody): Promise<Result<Surve
 // updates a survey
 export async function updateSurvey(body: SurveyUpdateBody): Promise<Result<SurveyResponse>> {
     return apiFetch<SurveyResponse>("/api/survey", { method: "PUT", body });
+}
+
+// Backward-compatible API used by dashboard profile pages.
+export async function getMySurvey(): Promise<SurveyResponse> {
+    const response = await getSurvey();
+    if (!response.ok) {
+        throw new Error(`Failed to fetch survey: ${response.code} (${response.error})`);
+    }
+
+    return response.data;
+}
+
+export async function upsertSurvey(payload: SurveyPayload): Promise<SurveyResponse> {
+    let response = await submitSurvey(payload as SurveyCreateBody);
+
+    if (!response.ok) {
+        const isAlreadyExists =
+            response.code === "400" && response.error.toLowerCase().includes("already exists");
+
+        if (isAlreadyExists) {
+            response = await updateSurvey(payload as SurveyUpdateBody);
+        }
+    }
+
+    if (!response.ok) {
+        throw new Error(`Failed to save survey: ${response.code} (${response.error})`);
+    }
+
+    return response.data;
 }
