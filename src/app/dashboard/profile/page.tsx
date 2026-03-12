@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/utils/api/auth";
 import { UserProfile } from "@/types/userProfile";
 import { useToast } from "@/components/ui/ToastProvider";
+import { apiFetch } from "@/utils/api/client";
+import { UpdateUserProfileBody } from "@/types/profile";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
@@ -54,15 +56,16 @@ export default function Profile() {
   useEffect(() => {
     const fetchuser = async () => {
       try {
-        const token = await getCurrentUserIdToken();
-        const data = await fetchCurrentUser(token);
-        setUser(data);
+        const data = await fetchCurrentUser();
+        if (!data.ok) throw new Error(data.error || "Failed to fetch profile");
+
+        setUser(data.data);
         const normalized: ProfileFormState = {
-          major: data.profile?.major || "",
-          gender: data.profile?.gender || "",
-          classification: data.profile?.classification || "",
-          bio: data.profile?.bio || "",
-          age: data.profile?.age || "",
+          major: data.data.profile?.major || "",
+          gender: data.data.profile?.gender || "",
+          classification: data.data.profile?.classification || "",
+          bio: data.data.profile?.bio || "",
+          age: data.data.profile?.age !== undefined ? String(data.data.profile.age) : "",
         };
 
         setMajor(normalized.major);
@@ -85,24 +88,25 @@ export default function Profile() {
 
   const handleUpdateProfile = async () => {
     try {
-      const token = await getCurrentUserIdToken();
-      const response = await fetch("/api/profiles/update", {
+      const parsedAge = age.trim() === "" ? null : Number(age);
+      const updatePayload: UpdateUserProfileBody = {
+        major,
+        gender,
+        classification,
+        bio,
+        age: parsedAge,
+      };
+
+      const updateResult = await apiFetch("/api/profiles/update", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          major,
-          gender,
-          classification,
-          bio,
-          age,
-        }),
+        body: updatePayload,
       });
-      if (!response.ok) throw new Error("Failed to update profile");
-      const updatedData = await fetchCurrentUser(token);
-      setUser(updatedData);
+      if (!updateResult.ok) throw new Error(updateResult.error || "Failed to update profile");
+
+      const updatedData = await fetchCurrentUser();
+      if (!updatedData.ok) throw new Error(updatedData.error || "Failed to refresh profile");
+      setUser(updatedData.data);
+
       const normalized: ProfileFormState = {
         major,
         gender,
