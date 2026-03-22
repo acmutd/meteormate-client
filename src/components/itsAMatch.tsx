@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 
 type MatchOverlayProps = {
 	open: boolean;
@@ -31,6 +32,7 @@ export function ItsAMatchOverlay({
 
 }: MatchOverlayProps) {
 	if (!open) return null;
+    const router = useRouter();
 
 	return (
 		<div className="fixed inset-0 z-[2000]">
@@ -123,10 +125,14 @@ export function ItsAMatchOverlay({
 					<div className="mt-6 flex justify-center">
 						<button
 							type="button"
-							onClick={onConfirm ?? onClose}
+							onClick={() => {
+                                if (onConfirm) onConfirm();
+                                else onClose();
+                                router.push("./dashboard/matches");
+                            }}
 							className="cursor-pointer rounded-2xl bg-[#FF9100] px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition"
 						>
-							Confirm Match
+							Go to Matches
 						</button>
 					</div>
 
