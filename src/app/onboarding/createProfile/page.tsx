@@ -90,8 +90,8 @@ export default function CreateProfilePage() {
 		setPreview(imageUrl);
 	};
 
-	const inputStyle = "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white";
-	const selectStyle = "w-full px-4 py-3 border border-[#FF9100] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9100] bg-white appearance-none cursor-pointer";
+	const inputStyle = "w-full px-4 py-3 border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white";
+	const selectStyle = "w-full px-4 py-3 border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white appearance-none cursor-pointer";
 
 	return (
 		<div className="flex flex-col items-center min-h-screen">
@@ -107,7 +107,7 @@ export default function CreateProfilePage() {
 					<h1 className="text-black font-medium text-sm mb-3">Your Profile Picture</h1>
 					<div
 						onClick={handleImageClick}
-						className="bg-[#F6F3ED] w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
+						className="bg-surface-cream w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
 					>
 						{preview ? (
 							<Image
@@ -320,7 +320,7 @@ export default function CreateProfilePage() {
 					{/* age */}
 					<div>
 						<h1 className="text-black font-medium text-sm mb-2">Birthday</h1>
-						<div className="[&_input]:border-[#FF9100] [&_input]:focus:ring-[#FF9100]">
+						<div className="[&_input]:border-primary [&_input]:focus:ring-primary">
 							<DatePicker
 								value={birthday}
 								onChange={setBirthday}

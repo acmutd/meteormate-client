@@ -135,7 +135,7 @@ export default function ProfileCard({
                                             "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border",
                                             t.tone === "gray"
                                             ? "bg-gray-50 text-gray-700 border-gray-200"
-                                            : "bg-[#FF9100] text-white border-[#FF9100]"
+                                            : "bg-primary text-white border-[#FF9100]"
                                         )}
                                         >
                                         {t.label}
@@ -185,7 +185,7 @@ export default function ProfileCard({
                         className="cursor-pointer h-16 w-16 rounded-full border border-[#F1EADA] bg-white shadow-sm hover:shadow-md transition flex items-center justify-center"
                         aria-label="Dislike"
                     >
-                        <span className="text-3xl text-orange-500">×</span>
+                        <span className="text-3xl text-primary">×</span>
                     </button>
                     
                     <button
@@ -272,7 +272,7 @@ export default function ProfileCard({
                                             </span>{" "}
                                             liked your profile
                                             {!n.isRead && (
-                                                <span className="ml-2 inline-block h-2 w-2 rounded-full bg-orange-400 align-middle" />
+                                                <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
                                             )}
                                         </p>
                                     </div>

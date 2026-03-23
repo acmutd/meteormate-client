@@ -27,7 +27,7 @@ export default function Sidebar() {
     const navItemClass = (active: boolean) =>
     `w-full flex items-center gap-3 px-5 py-2 rounded-md transition cursor-pointer ${
         active
-        ? "bg-gradient-to-r from-orange-400 to-yellow-400 text-white shadow-md"
+        ? "bg-gradient-to-r from-primary to-secondary text-white shadow-md"
         : "text-gray-700 hover:bg-gray-50"
     }`;
 
@@ -50,7 +50,7 @@ export default function Sidebar() {
                     href={item.href}
                     className={`flex items-center gap-3 px-5 py-2 rounded-md transition ${
                         isActive
-                        ? "bg-gradient-to-r from-orange-400 to-yellow-400 text-white shadow-md"
+                        ? "bg-gradient-to-r from-primary to-secondary text-white shadow-md"
                         : "text-gray-700 hover:bg-gray-50"
                     }`}
                     >
@@ -71,7 +71,7 @@ export default function Sidebar() {
                 <div className="rounded-md border-none bg-[#FFE5C2] px-10 py-2 mb-4 flex flex-col justify-center items-center">
                     <p className="text-[75%] text-center mb-1 text-gray-600"> Want to learn more about the other ACM products?</p>
                     {/* todo - make this button relatively positioned instead of absolute */}
-                    <a href="https://acmutd.co/development"><button className="bg-linear-to-r from-orange-400 to-yellow-400 text-white px-12 py-1 rounded-md text-[65%] cursor-pointer items-center justify-center"> Learn More </button></a>
+                    <a href="https://acmutd.co/development"><button className="bg-linear-to-r from-primary to-secondary text-white px-12 py-1 rounded-md text-[65%] cursor-pointer items-center justify-center"> Learn More </button></a>
                 </div>
 
                 <button

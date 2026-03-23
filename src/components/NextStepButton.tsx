@@ -28,7 +28,7 @@ const NextStepButton: React.FC<NextStepButtonProps> = ({
 					${
 					disabled
 						? "bg-gray-300 text-gray-500 cursor-not-allowed"
-						: "bg-gradient-to-r from-[#FF9100] to-[#FFC94C] hover:from-[#E68200] hover:to-[#E3B03C] text-white cursor-pointer"
+						: "bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover text-white cursor-pointer"
 					}
 					${className || ""}
 				`}
