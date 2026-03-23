@@ -203,6 +203,15 @@ export default function HousingPage() {
 
             await upsertSurvey(payload);
             updateOnboardingData(payload);
+
+            setSelectedLocation(payload.on_campus_locations);
+            setSelectedHonorsStatus(payload.honors);
+            setSelectedLLCPreference(payload.llc_interest);
+            setSelectedNumOfRoommates(payload.num_roommates);
+            setSelectedLeaseStatus(payload.have_lease);
+            setSelectedHaveLeaseLength(payload.have_lease_length);
+            setSelectedBudgetMin(payload.budget_min);
+            setSelectedBudgetMax(payload.budget_max);
             setInitialValues(payload);
 
             toast({
