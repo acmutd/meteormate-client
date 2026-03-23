@@ -35,13 +35,8 @@ export async function getMySurvey(): Promise<SurveyResponse> {
 export async function upsertSurvey(payload: SurveyPayload): Promise<SurveyResponse> {
     let response = await updateSurvey(payload as SurveyUpdateBody);
 
-    if (!response.ok) {
-        const isNotFound =
-            response.code === "404" && response.error.toLowerCase().includes("survey");
-
-        if (isNotFound) {
-            response = await submitSurvey(payload as SurveyCreateBody);
-        }
+    if (!response.ok && (response.code === "404")) {
+        response = await submitSurvey(payload as SurveyCreateBody);
     }
 
     if (!response.ok) {
