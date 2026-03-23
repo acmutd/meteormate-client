@@ -164,7 +164,7 @@ export default function HousingPage() {
         if (!hydrated) return;
 
         try {
-            const payload = {
+            const payload: HousingState = {
                 housing_intent: selectedLivingPreference,
                 on_campus_locations: selectedLocation,
                 honors: selectedHonorsStatus,
@@ -175,6 +175,27 @@ export default function HousingPage() {
                 budget_min: selectedBudgetMin,
                 budget_max: selectedBudgetMax,
             };
+
+            if (selectedLivingPreference === "on_campus") {
+                payload.have_lease = null;
+                payload.have_lease_length = null;
+                payload.budget_min = null;
+                payload.budget_max = null;
+            } else if (selectedLivingPreference === "off_campus") {
+                payload.on_campus_locations = [];
+                payload.honors = null;
+                payload.llc_interest = null;
+                payload.num_roommates = null;
+            } else {
+                payload.on_campus_locations = [];
+                payload.honors = null;
+                payload.llc_interest = null;
+                payload.num_roommates = null;
+                payload.have_lease = null;
+                payload.have_lease_length = null;
+                payload.budget_min = null;
+                payload.budget_max = null;
+            }
 
             await upsertSurvey(payload);
             updateOnboardingData(payload);
