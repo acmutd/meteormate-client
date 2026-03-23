@@ -39,6 +39,7 @@ export default function Profile() {
   const [hasLoadedProfileData, setHasLoadedProfileData] = useState(false);
 
   const BIO_CHAR_LIMIT = 250;
+  const currentYear = new Date().getFullYear();
 
   const { toast } = useToast();
 
@@ -328,11 +329,11 @@ export default function Profile() {
                 <option value="" disabled>
                   Select an option...
                 </option>
-                <option value="freshman">Class of 2030</option>
-                <option value="sophomore">Class of 2029</option>
-                <option value="junior">Class of 2028</option>
-                <option value="senior">Class of 2027</option>
-                <option value="graduate">Class of 2026</option>
+                <option value="freshman">Class of {currentYear + 4}</option>
+                <option value="sophomore">Class of {currentYear + 3}</option>
+                <option value="junior">Class of {currentYear + 2}</option>
+                <option value="senior">Class of {currentYear + 1}</option>
+                <option value="graduate">Class of {currentYear}</option>
               </select>
               <svg
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
