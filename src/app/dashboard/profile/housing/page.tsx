@@ -13,7 +13,6 @@ import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
 import { getMySurvey, upsertSurvey } from "@/utils/api/survey";
 
 interface HousingState {
-    housing_intent: string | null;
     on_campus_locations: string[];
     honors: boolean | null;
     llc_interest: boolean | null;
@@ -26,9 +25,7 @@ interface HousingState {
 
 export default function HousingPage() {
     const { toast } = useToast();
-    const [selectedLivingPreference, setSelectedLivingPreference] = useState<
-        string | null
-    >(null);
+    const [housingIntent, setHousingIntent] = useState<string | null>(null);
 
     const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
     const [selectedHonorsStatus, setSelectedHonorsStatus] = useState<
@@ -54,7 +51,6 @@ export default function HousingPage() {
         null,
     );
     const [initialValues, setInitialValues] = useState<HousingState>({
-        housing_intent: null,
         on_campus_locations: [],
         honors: null,
         llc_interest: null,
@@ -69,8 +65,7 @@ export default function HousingPage() {
 
     const isDirty =
         hydrated &&
-        (selectedLivingPreference !== initialValues.housing_intent ||
-            JSON.stringify(selectedLocation) !==
+        (JSON.stringify(selectedLocation) !==
                 JSON.stringify(initialValues.on_campus_locations) ||
             selectedHonorsStatus !== initialValues.honors ||
             selectedLLCPreference !== initialValues.llc_interest ||
@@ -86,11 +81,11 @@ export default function HousingPage() {
     useEffect(() => {
         const hydrateFromStorageAndBackend = async () => {
             const saved = loadOnboardingData();
+            const fallbackHousingIntent = saved.housing_intent ?? null;
 
             const fallbackMin = saved.budget_min ?? 600;
             const fallbackMax = saved.budget_max ?? 1400;
             const fallback: HousingState = {
-                housing_intent: saved.housing_intent ?? null,
                 on_campus_locations: Array.isArray(saved.on_campus_locations)
                     ? saved.on_campus_locations
                     : [],
@@ -104,13 +99,14 @@ export default function HousingPage() {
             };
 
             let normalized = fallback;
+            let resolvedHousingIntent = fallbackHousingIntent;
 
             try {
                 const survey = await getMySurvey();
+                resolvedHousingIntent =
+                    (survey.housing_intent as string | null | undefined) ??
+                    fallbackHousingIntent;
                 normalized = {
-                    housing_intent:
-                        (survey.housing_intent as string | null | undefined) ??
-                        fallback.housing_intent,
                     on_campus_locations: Array.isArray(survey.on_campus_locations)
                         ? (survey.on_campus_locations as string[])
                         : fallback.on_campus_locations,
@@ -143,7 +139,7 @@ export default function HousingPage() {
                 );
             }
 
-            setSelectedLivingPreference(normalized.housing_intent);
+            setHousingIntent(resolvedHousingIntent);
             setSelectedLocation(normalized.on_campus_locations);
             setSelectedHonorsStatus(normalized.honors);
             setSelectedLLCPreference(normalized.llc_interest);
@@ -162,10 +158,18 @@ export default function HousingPage() {
 
     const handleUpdateProfile = async () => {
         if (!hydrated) return;
+        if (!housingIntent) {
+            toast({
+                type: "error",
+                title: "Living preference missing",
+                description:
+                    "Set your living preference in Lifestyle Personality first.",
+            });
+            return;
+        }
 
         try {
             const payload: HousingState = {
-                housing_intent: selectedLivingPreference,
                 on_campus_locations: selectedLocation,
                 honors: selectedHonorsStatus,
                 llc_interest: selectedLLCPreference,
@@ -176,12 +180,12 @@ export default function HousingPage() {
                 budget_max: selectedBudgetMax,
             };
 
-            if (selectedLivingPreference === "on_campus") {
+            if (housingIntent === "on_campus") {
                 payload.have_lease = null;
                 payload.have_lease_length = null;
                 payload.budget_min = null;
                 payload.budget_max = null;
-            } else if (selectedLivingPreference === "off_campus") {
+            } else if (housingIntent === "off_campus") {
                 payload.on_campus_locations = [];
                 payload.honors = null;
                 payload.llc_interest = null;
@@ -255,6 +259,12 @@ export default function HousingPage() {
     const showRoommateOptions = selectedLocation.some((loc) =>
         ["northside", "cc", "uv"].includes(loc),
     );
+    const livingPreferenceLabel =
+        housingIntent === "on_campus"
+            ? "On-Campus"
+            : housingIntent === "off_campus"
+              ? "Off-Campus"
+              : null;
 
     return (
         <>
@@ -283,36 +293,21 @@ export default function HousingPage() {
                 <div className="py-8 px-15 w-full flex flex-col overflow-y-auto flex-1 custom-scrollbar">
                     <h1 className="text-black text-xl font-bold">Living Preference</h1>
                     <p className="text-black text-sm mt-1 mb-2">
-                        Do you plan on living on-campus or off-campus?
+                        This value is managed in Lifestyle Personality.
                     </p>
-                    <div className="grid grid-cols-2 gap-4 mb-6 cursor-pointer">
-                        <LifestylePreferencesCard
-                            title="On-Campus"
-                            imageSrc="/on_campus_card.svg"
-                            isSelected={selectedLivingPreference === "on_campus"}
-                            onClick={() =>
-                                handleStringToggle(
-                                    selectedLivingPreference,
-                                    setSelectedLivingPreference,
-                                    "on_campus",
-                                )
-                            }
-                        />
-                        <LifestylePreferencesCard
-                            title="Off-Campus"
-                            imageSrc="/off_campus_card.svg"
-                            isSelected={selectedLivingPreference === "off_campus"}
-                            onClick={() =>
-                                handleStringToggle(
-                                    selectedLivingPreference,
-                                    setSelectedLivingPreference,
-                                    "off_campus",
-                                )
-                            }
-                        />
+                    <div className="mb-6 rounded-lg border border-[#FF9100]/40 bg-[#FFF7ED] px-4 py-3 text-sm text-gray-800">
+                        <span className="font-semibold">Current setting:</span>{" "}
+                        {livingPreferenceLabel ?? "Not set"}
                     </div>
 
-                    {selectedLivingPreference === "on_campus" && (
+                    {!livingPreferenceLabel && (
+                        <p className="text-sm text-red-600 mb-4">
+                            Please set living preference in Lifestyle Personality before
+                            editing housing details here.
+                        </p>
+                    )}
+
+                    {housingIntent === "on_campus" && (
                         <>
                             <p className="text-black text-sm font-bold mt-1 mb-2">
                                 Location: Northside, UV, CC, or Freshmen dorms?
@@ -469,7 +464,7 @@ export default function HousingPage() {
                         </>
                     )}
 
-                    {selectedLivingPreference === "off_campus" && (
+                    {housingIntent === "off_campus" && (
                         <>
                             <h1 className="text-black text-xl font-bold">Do you have a lease?</h1>
                             <p className="text-black text-sm mb-3 mt-2">
