@@ -164,12 +164,6 @@ export default function HousingPage() {
         if (!hydrated) return;
 
         try {
-            // Keep required field populated when on-campus is selected.
-            const leaseLength =
-                selectedLivingPreference === "on_campus"
-                    ? "academic_year"
-                    : selectedHaveLeaseLength;
-
             const payload = {
                 housing_intent: selectedLivingPreference,
                 on_campus_locations: selectedLocation,
@@ -177,7 +171,7 @@ export default function HousingPage() {
                 llc_interest: selectedLLCPreference,
                 num_roommates: selectedNumOfRoommates,
                 have_lease: selectedLeaseStatus,
-                have_lease_length: leaseLength,
+                have_lease_length: selectedHaveLeaseLength,
                 budget_min: selectedBudgetMin,
                 budget_max: selectedBudgetMax,
             };
