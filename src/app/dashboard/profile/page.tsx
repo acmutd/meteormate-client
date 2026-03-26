@@ -89,7 +89,29 @@ export default function Profile() {
 
   const handleUpdateProfile = async () => {
     try {
-      const parsedAge = age.trim() === "" ? null : Number(age);
+      const trimmedAge = age.trim();
+      const isValidAgeFormat = trimmedAge === "" || /^\d+$/.test(trimmedAge);
+
+      if (!isValidAgeFormat) {
+        toast({
+          type: "error",
+          title: "Invalid age",
+          description: "Please enter a valid number for age.",
+        });
+        return;
+      }
+
+      const numericAge = Number(age);
+      if (numericAge < 16 || numericAge > 80 || trimmedAge === "") {
+        toast({
+          type: "error",
+          title: "Invalid age",
+          description: "Age must be between 16 and 80"
+        })
+        return;
+      }
+      const parsedAge = numericAge;
+
       const updatePayload: UpdateUserProfileBody = {
         major,
         gender,
@@ -358,7 +380,19 @@ export default function Profile() {
                 type="number"
                 className={`${inputStyle}`}
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
+                onChange={(e) => {
+                  const nextAge = e.target.value;
+                  if (nextAge === "" || /^\d+$/.test(nextAge)) {
+                    setAge(nextAge);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-", "."].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                min={16}
+                max={80}
                 placeholder="Enter your age"
               />
             </div>
