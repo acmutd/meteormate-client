@@ -95,12 +95,21 @@ export default function InterestsPage() {
   };
 
   const handleToggle = (interest: string) => {
+    const isAlreadySelected = selectedInterests.includes(interest);
+    const hasReachedLimit = selectedInterests.length >= MAX_SELECTIONS;
+
+    if (!isAlreadySelected && hasReachedLimit) {
+      toast({
+        type: "error",
+        title: "Limit Reached",
+        description: `You can only select up to ${MAX_SELECTIONS} interests.`,
+      });
+      return;
+    }
+
     setSelectedInterests((prev) => {
       if (prev.includes(interest)) {
         return prev.filter((i) => i !== interest);
-      }
-      if (prev.length >= MAX_SELECTIONS) {
-        return prev;
       }
       return [...prev, interest];
     });
