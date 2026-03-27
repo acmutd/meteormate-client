@@ -23,6 +23,9 @@ interface HousingState {
     budget_max: number | null;
 }
 
+const DEFAULT_BUDGET_MIN = 600;
+const DEFAULT_BUDGET_MAX = 1400;
+
 export default function HousingPage() {
     const { toast } = useToast();
     const [housingIntent, setHousingIntent] = useState<string | null>(null);
@@ -83,8 +86,8 @@ export default function HousingPage() {
             const saved = loadOnboardingData();
             const fallbackHousingIntent = saved.housing_intent ?? null;
 
-            const fallbackMin = saved.budget_min ?? 600;
-            const fallbackMax = saved.budget_max ?? 1400;
+            const fallbackMin = saved.budget_min ?? DEFAULT_BUDGET_MIN;
+            const fallbackMax = saved.budget_max ?? DEFAULT_BUDGET_MAX;
             const fallback: HousingState = {
                 on_campus_locations: Array.isArray(saved.on_campus_locations)
                     ? saved.on_campus_locations
