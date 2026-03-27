@@ -198,7 +198,7 @@ export default function NotificationPage() {
             <div>
                 <h2 className="text-2xl font-semibold">
                     Your{" "}
-                    <span className="bg-linear-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                    <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                     notifications
                     </span>
                 </h2>
@@ -218,7 +218,7 @@ export default function NotificationPage() {
                 onClick={() => setFilter("all")}
                 className={`cursor-pointer px-4 py-2 rounded-2xl text-sm font-medium transition ${
                 filter === "all"
-                    ? "bg-linear-to-r from-orange-400 to-yellow-400 text-white shadow-md"
+                    ? "bg-linear-to-r from-primary to-secondary text-white shadow-md"
                     : "border border-[#F1EADA] text-gray-700 hover:bg-gray-50"
                 }`}
             >
@@ -240,7 +240,7 @@ export default function NotificationPage() {
                 onClick={() => setFilter("unread")}
                 className={`cursor-pointer px-4 py-2 rounded-2xl text-sm font-medium transition ${
                 filter === "unread"
-                    ? "bg-linear-to-r from-orange-400 to-yellow-400 text-white shadow-md"
+                    ? "bg-linear-to-r from-primary to-secondary text-white shadow-md"
                     : "border border-[#F1EADA] text-gray-700 hover:bg-gray-50"
                 }`}
             >
@@ -278,7 +278,7 @@ export default function NotificationPage() {
                     </p>
                     <Link
                     href="/dashboard"
-                    className="cursor-pointer inline-flex mt-4 px-4 py-2 rounded-md text-sm font-medium bg-linear-to-r from-orange-400 to-yellow-400 text-white shadow-md"
+                    className="cursor-pointer inline-flex mt-4 px-4 py-2 rounded-md text-sm font-medium bg-linear-to-r from-primary to-secondary text-white shadow-md"
                     >
                     Go to Discover
                     </Link>
@@ -315,7 +315,7 @@ export default function NotificationPage() {
                                 <span className="font-semibold">{n.liker.name}</span>{" "}
                                 liked your profile
                                 {!n.isRead && (
-                                    <span className="ml-2 inline-block h-2 w-2 rounded-full bg-orange-400 align-middle" />
+                                    <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
                                 )}
                                 </p>
 

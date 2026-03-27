@@ -3,6 +3,7 @@ import React, {useRef, useState, useEffect} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import { VerifyEmail, SendVerificationCode } from "@/utils/api/auth";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
@@ -74,18 +75,10 @@ export default function VerifyEmailPage() {
                 return;
             }
 
-            const response = await fetch(`/api/auth/verify-email`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email: storedEmail,
-                    code: verificationCode,
-                }),
-            });
+            const response = await VerifyEmail(storedEmail, verificationCode);
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                setError(errorData.detail || "Invalid code. Please try again.");
+                setError(response.error || "Invalid code. Please try again.");
                 return;
             }
 
@@ -111,15 +104,10 @@ export default function VerifyEmailPage() {
 
         try {
             setIsResending(true);
-            const res = await fetch(`/api/auth/send-verification-code`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({email: storedEmail, purpose: "verify"}),
-            });
+            const response = await SendVerificationCode({ email: storedEmail, purpose: "verify" });
 
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                setError(data.detail || "Failed to resend code.");
+            if (!response.ok) {
+                setError(response.error || "Failed to resend code.");
             }
         } catch {
             setError("Failed to resend code. Please try again.");
@@ -136,7 +124,7 @@ export default function VerifyEmailPage() {
                 {/* Back arrow - Dark */}
                 <button
                     onClick={router.back}
-                    className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/10 border border-white/10 hover:border-orange-500/30 transition-colors"
+                    className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/10 border border-white/10 hover:border-primary-hover/30 transition-colors"
                     aria-label="Go back"
                     type="button"
                 >
@@ -198,7 +186,7 @@ export default function VerifyEmailPage() {
                                         "bg-white/5 text-black placeholder:text-zinc-400",
                                         "border border-zinc-300",
                                         "outline-none",
-                                        "focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30",
+                                        "focus:border-primary focus:ring-2 focus:ring-primary/30",
                                         "disabled:opacity-50 disabled:cursor-not-allowed",
                                         "transition-all duration-200",
                                     ].join(" ")}
@@ -217,8 +205,8 @@ export default function VerifyEmailPage() {
                                 "border font-medium",
                                 isVerifying
                                     ? "bg-zinc-500/10 text-zinc-400 border-zinc-500/10 cursor-not-allowed"
-                                    : "bg-orange-500 text-white border-orange-500/30 hover:bg-orange-400 hover:border-orange-400/40 cursor-pointer shadow-lg shadow-orange-900/20",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 focus-visible:ring-offset-0",
+                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer shadow-lg shadow-primary/20",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                             type="button"
                         >
@@ -233,7 +221,7 @@ export default function VerifyEmailPage() {
                                 "w-full mt-3 text-sm underline underline-offset-4",
                                 isResending
                                     ? "text-zinc-400 cursor-not-allowed"
-                                    : "text-zinc-500 hover:text-orange-500 cursor-pointer transition-colors",
+                                    : "text-zinc-500 hover:text-primary-hover cursor-pointer transition-colors",
                             ].join(" ")}
                             type="button"
                         >

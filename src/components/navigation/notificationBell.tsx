@@ -66,7 +66,7 @@ export default function NotificationBell() {
                 </svg>
 
                 {unread > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-400 text-white text-[10px] flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] flex items-center justify-center">
                     {unread > 9 ? "9+" : unread}
                 </span>
                 )}
@@ -115,7 +115,7 @@ export default function NotificationBell() {
                                 <p className="text-sm font-medium text-gray-900 truncate">
                                     <span className="font-semibold">{n.liker.name}</span> liked your profile
                                     {!n.isRead && (
-                                    <span className="ml-2 inline-block h-2 w-2 rounded-full bg-orange-400 align-middle" />
+                                    <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
                                     )}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-0.5">

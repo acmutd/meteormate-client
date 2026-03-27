@@ -36,7 +36,7 @@ export default function GetStarted() {
                    }
                 }}
                 disabled={isNavigating}
-                className="outfit-bold md:px-7 md:py-4 p-2 rounded-[20px] border-0 md:text-[24px] text-[10px] flex justify-center items-center gap-2 button-find cursor-pointer mt-2 bg-gradient-to-br from-orange-400 to-yellow-500 hover:opacity-80 transition-opacity duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="outfit-bold md:px-7 md:py-4 p-2 rounded-[20px] border-0 md:text-[24px] text-[10px] flex justify-center items-center gap-2 button-find cursor-pointer mt-2 bg-gradient-to-br from-primary to-secondary hover:opacity-80 transition-opacity duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
              >
                 {isNavigating && <LoadingSpinner size="sm" />}
                 Start Your Search

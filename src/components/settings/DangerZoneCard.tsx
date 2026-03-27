@@ -3,19 +3,28 @@
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import { WarningIcon } from "@/components/icons/settings-icons";
+import { DeleteUser } from "@/utils/api/auth";
+import { useRouter } from "next/navigation";
 
 const DELETE_ACCOUNT_CONFIRMATION_TEXT = "MeteorMate";
 
 export default function DangerZoneCard() {
+  const router = useRouter();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (deleteConfirmationText === DELETE_ACCOUNT_CONFIRMATION_TEXT) {
-      // TODO: Backend call to delete account
-      console.log("Deleting account...");
+      const result = await DeleteUser();
+      if (!result.ok) {
+        console.error(result.error);
+        return;
+      }
       setShowDeleteModal(false);
-    }
+      }
+    
+      // redirect to landing page
+      router.push("/");
   };
 
   return (

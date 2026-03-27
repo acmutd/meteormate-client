@@ -68,10 +68,7 @@ export default function InterestsPage() {
 					{INTEREST_ROWS.map((row, rowIndex) => (
 						<div 
 						key={rowIndex} 
-						className="flex gap-4 justify-center"
-						style={{ 
-							marginLeft: rowIndex % 2 === 1 ? '1rem' : '0' 
-						}}
+						className={`flex gap-4 justify-center ${rowIndex % 2 === 1 ? 'ml-4' : ''}`}
 						>
 						{row.map(interest => (
 							<InterestCard
