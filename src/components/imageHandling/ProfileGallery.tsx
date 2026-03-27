@@ -25,7 +25,7 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
           method: "GET",
         });
         if (!res.ok) {
-          throw new Error(res.error || "Failed to recieve profile images");
+          throw new Error(res.error || "Failed to receive profile images");
         }
 
         const data = res.data;
