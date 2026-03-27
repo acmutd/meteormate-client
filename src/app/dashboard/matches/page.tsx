@@ -76,7 +76,7 @@ function MatchCard({ user }: { user: MatchUser }) {
   return (
     <div className="group relative overflow-hidden rounded-3xl border border-orange-100 bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-r from-orange-100 via-yellow-50 to-amber-100 opacity-80" />
+      <div className="absolute inset-x-0 top-0 h-24 opacity-80" />
 
       <div className="relative p-5">
         <div className="flex items-start gap-4">
@@ -155,7 +155,7 @@ export default function Matches() {
         <div className="mb-8 overflow-hidden rounded-[28px] border border-orange-100 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-orange-400">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary">
                 <Home className="h-3.5 w-3.5 fill-current" />
                 Your roommate matches
               </div>
