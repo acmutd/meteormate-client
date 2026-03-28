@@ -3,7 +3,6 @@ import { Result, UserActivityPing, UserRegisterResponse } from "../types";
 import { UserProfile } from "@/types/userProfile";
 import {
     RegisterUserBody,
-    SendVerificationCodeBody,
     VerifyEmailBody,
 } from "@/types/auth";
 
@@ -28,23 +27,18 @@ export async function DeleteUser(): Promise<Result<void>> {
 }
 
 export async function SendVerificationCode(
-    options: SendVerificationCodeBody
 ): Promise<Result<{ message: string }>> {
-    const body: SendVerificationCodeBody = { ...options, purpose: options.purpose ?? "verify" };
-    return apiFetch<{ message: string }>("/api/auth/send-verification-code", {
-        method: "POST",
-        body,
-        isPublic: true,
+    return apiFetch<{ message: string }>("/api/verification/account_verification", {
+        method: "GET",
     });
 }
 
 // verify email with code
 export async function VerifyEmail(email: string, code: string): Promise<Result<{ message: string }>> {
     const body: VerifyEmailBody = { email, code };
-    return apiFetch<{ message: string }>("/api/auth/verify-email", {
+    return apiFetch<{ message: string }>("/api/verification/account_verification", {
         method: "POST",
         body,
-        isPublic: true,
     });
 }
 
