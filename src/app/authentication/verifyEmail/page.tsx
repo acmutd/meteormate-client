@@ -104,7 +104,7 @@ export default function VerifyEmailPage() {
 
         try {
             setIsResending(true);
-            const response = await SendVerificationCode({ email: storedEmail, purpose: "verify" });
+            const response = await SendVerificationCode();
 
             if (!response.ok) {
                 setError(response.error || "Failed to resend code.");
