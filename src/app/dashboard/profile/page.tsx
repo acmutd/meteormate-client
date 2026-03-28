@@ -9,6 +9,7 @@ import { UpdateUserProfileBody } from "@/types/profile";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { majors } from "@/constants/majors";
 
 interface ProfileFormState {
   major: string;
@@ -244,92 +245,14 @@ export default function Profile() {
                   value={major}
                   onChange={(e) => setMajor(e.target.value)}
                 >
-                  {/* IM MOVING THIS LIST SOMEWHERE ELSE GOOD LORD ITS SO MESSY */}
                   <option value="" disabled>
                     Select an option...
                   </option>
-                  <option value="biomedical-engineering">
-                    Biomedical Engineering
-                  </option>
-                  <option value="computer-engineering">
-                    Computer Engineering
-                  </option>
-                  <option value="computer-science">Computer Science</option>
-                  <option value="data-science">Data Science</option>
-                  <option value="electrical-engineering">
-                    Electrical Engineering
-                  </option>
-                  <option value="mechanical-engineering">
-                    Mechanical Engineering
-                  </option>
-                  <option value="software-engineering">
-                    Software Engineering
-                  </option>
-                  <option value="accounting">Accounting</option>
-                  <option value="business-administration">
-                    Business Administration
-                  </option>
-                  <option value="business-analytics">Business Analytics</option>
-                  <option value="finance">Finance</option>
-                  <option value="global-business">Global Business</option>
-                  <option value="healthcare-management">
-                    Healthcare Management
-                  </option>
-                  <option value="human-resource-management">
-                    Human Resource Management
-                  </option>
-                  <option value="information-technology-systems">
-                    Information Technology and Systems
-                  </option>
-                  <option value="marketing">Marketing</option>
-                  <option value="supply-chain-management">
-                    Supply Chain Management
-                  </option>
-                  <option value="animation-games">Animation and Games</option>
-                  <option value="arts-technology-emerging-communication">
-                    Arts, Technology, and Emerging Communication (ATEC)
-                  </option>
-                  <option value="art-history">Art History</option>
-                  <option value="history">History</option>
-                  <option value="interdisciplinary-studies">
-                    Interdisciplinary Studies
-                  </option>
-                  <option value="literature">Literature</option>
-                  <option value="philosophy">Philosophy</option>
-                  <option value="visual-performing-arts">
-                    Visual and Performing Arts
-                  </option>
-                  <option value="child-learning-development">
-                    Child Learning and Development
-                  </option>
-                  <option value="cognitive-science">Cognitive Science</option>
-                  <option value="neuroscience">Neuroscience</option>
-                  <option value="psychology">Psychology</option>
-                  <option value="speech-language-hearing">
-                    Speech, Language, and Hearing Sciences
-                  </option>
-                  <option value="criminology-criminal-justice">
-                    Criminology and Criminal Justice
-                  </option>
-                  <option value="economics">Economics</option>
-                  <option value="geospatial-information-sciences">
-                    Geospatial Information Sciences
-                  </option>
-                  <option value="international-political-economy">
-                    International Political Economy
-                  </option>
-                  <option value="political-science">Political Science</option>
-                  <option value="public-affairs">Public Affairs</option>
-                  <option value="public-policy">Public Policy</option>
-                  <option value="sociology">Sociology</option>
-                  <option value="actuarial-science">Actuarial Science</option>
-                  <option value="biochemistry">Biochemistry</option>
-                  <option value="biology">Biology</option>
-                  <option value="chemistry">Chemistry</option>
-                  <option value="geosciences">Geosciences</option>
-                  <option value="mathematics">Mathematics</option>
-                  <option value="molecular-biology">Molecular Biology</option>
-                  <option value="physics">Physics</option>
+                  {majors.map((majorOption) => (
+                    <option key={majorOption.value} value={majorOption.value}>
+                      {majorOption.label}
+                    </option>
+                  ))}
                 </select>
                 <svg
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
