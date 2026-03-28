@@ -22,6 +22,7 @@ interface LifestylePersonalityState {
 
 export default function LifestylePersonalityPage() {
   const { toast } = useToast();
+  const [surveyExists, setSurveyExists] = useState(false);
 
   const [selectedCookingPreference, setselectedCookingPreference] = useState<
     string | null
@@ -91,11 +92,13 @@ export default function LifestylePersonalityPage() {
             (survey.move_in_date as string | null | undefined) ??
             fallback.move_in_date,
         };
+        setSurveyExists(true);
       } catch (error) {
         console.warn(
           "Failed to load survey from backend, using local draft",
           error,
         );
+        setSurveyExists(false);
       }
 
       setselectedCookingPreference(normalized.cooking_frequency);
@@ -122,7 +125,7 @@ export default function LifestylePersonalityPage() {
         move_in_date: selectedMoveInDate,
       };
 
-      await upsertSurvey(payload);
+      await upsertSurvey(payload, surveyExists);
       updateOnboardingData(payload);
 
       setInitialValues(payload);

@@ -32,11 +32,18 @@ export async function getMySurvey(): Promise<SurveyResponse> {
     return response.data;
 }
 
-export async function upsertSurvey(payload: SurveyPayload): Promise<SurveyResponse> {
-    let response = await updateSurvey(payload as SurveyUpdateBody);
+export async function upsertSurvey(
+    payload: SurveyPayload,
+    surveyDone?: boolean,
+): Promise<SurveyResponse> {
+    let response = surveyDone
+        ? await updateSurvey(payload as SurveyUpdateBody)
+        : await submitSurvey(payload as SurveyCreateBody);
 
-    if (!response.ok && (response.code === "404")) {
-        response = await submitSurvey(payload as SurveyCreateBody);
+    if (!response.ok && response.code === "404") {
+        response = surveyDone
+            ? await submitSurvey(payload as SurveyCreateBody)
+            : await updateSurvey(payload as SurveyUpdateBody);
     }
 
     if (!response.ok) {

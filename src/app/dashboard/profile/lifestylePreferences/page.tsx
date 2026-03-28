@@ -34,6 +34,7 @@ export default function LifestylePreferencesPage() {
   });
 
   const [hydrated, setHydrated] = useState(false);
+  const [surveyExists, setSurveyExists] = useState(false);
   const { toast } = useToast();
 
   const isDirty =
@@ -69,11 +70,13 @@ export default function LifestylePreferencesPage() {
             (survey.noise_tolerance as string | null | undefined) ??
             fallback.noise_tolerance,
         };
+        setSurveyExists(true);
       } catch (error) {
         console.warn(
           "Failed to load survey from backend, using local draft",
           error,
         );
+        setSurveyExists(false);
       }
 
       setSelectedWakeupTime(normalized.wake_time);
@@ -96,7 +99,7 @@ export default function LifestylePreferencesPage() {
         noise_tolerance: selectedNoiseTolerance,
       };
 
-      await upsertSurvey(payload);
+      await upsertSurvey(payload, surveyExists);
       updateOnboardingData(payload);
 
       setInitialValues(payload);

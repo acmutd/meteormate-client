@@ -20,6 +20,7 @@ interface LifestyleHabitsState {
 
 export default function LifestyleHabitsPage() {
   const { toast } = useToast();
+  const [surveyExists, setSurveyExists] = useState(false);
 
   const [selectedCloseness, setSelectedCloseness] = useState<string | null>(
     null,
@@ -79,8 +80,10 @@ export default function LifestyleHabitsPage() {
             ? (survey.dealbreakers as string[])
             : fallback.dealbreakers,
         };
+        setSurveyExists(true);
       } catch (error) {
         console.warn("Failed to load survey from backend, using local draft", error);
+        setSurveyExists(false);
       }
 
       setSelectedCloseness(normalized.roommate_closeness);
@@ -105,7 +108,7 @@ export default function LifestyleHabitsPage() {
         dealbreakers: selectedDealbreakers,
       };
 
-      await upsertSurvey(payload);
+      await upsertSurvey(payload, surveyExists);
       updateOnboardingData(payload);
 
     setInitialValues(payload);

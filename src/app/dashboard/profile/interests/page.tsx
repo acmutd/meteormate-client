@@ -32,6 +32,7 @@ export default function InterestsPage() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [initialInterests, setInitialInterests] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [surveyExists, setSurveyExists] = useState(false);
   const { toast } = useToast();
 
   const isDirty =
@@ -55,11 +56,13 @@ export default function InterestsPage() {
         normalized = Array.isArray(survey.interests)
           ? (survey.interests as string[])
           : fallback;
+        setSurveyExists(true);
       } catch (error) {
         console.warn(
           "Failed to load survey from backend, using local draft",
           error,
         );
+        setSurveyExists(false);
       }
 
       setSelectedInterests(normalized);
@@ -76,7 +79,7 @@ export default function InterestsPage() {
     try {
       const payload = { interests: selectedInterests };
 
-      await upsertSurvey(payload);
+      await upsertSurvey(payload, surveyExists);
       updateOnboardingData(payload);
       setInitialInterests(selectedInterests);
       toast({

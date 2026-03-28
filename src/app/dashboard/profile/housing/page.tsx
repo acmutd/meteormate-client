@@ -28,6 +28,7 @@ const DEFAULT_BUDGET_MAX = 1400;
 
 export default function HousingPage() {
     const { toast } = useToast();
+    const [surveyExists] = useState(false);
     const [housingIntent, setHousingIntent] = useState<string | null>(null);
 
     const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
@@ -204,7 +205,7 @@ export default function HousingPage() {
                 payload.budget_max = null;
             }
 
-            await upsertSurvey(payload);
+            await upsertSurvey(payload, surveyExists);
             updateOnboardingData(payload);
 
             setSelectedLocation(payload.on_campus_locations);
