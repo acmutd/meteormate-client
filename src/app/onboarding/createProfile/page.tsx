@@ -7,6 +7,8 @@ import ProgressHeader from "../../../components/ProgressHeader";
 import { useRef, useState, useEffect } from "react"; // mostly only for the profile picture
 import { DatePicker } from "../../../components/DatePicker";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { createProfile, uploadProfilePicture } from "@/utils/api/profile";
+import { Gender, Classification } from "@/types/profile";
 
 export default function CreateProfilePage() {
 	const router = useRouter();
@@ -18,7 +20,11 @@ export default function CreateProfilePage() {
 	const [bio, setBio] = useState("");
 	const [email, setEmail] = useState("");
 
-	// get user email from firebase auth 
+	// API state
+	const [isLoading, setIsLoading] = useState(false);
+	const [apiError, setApiError] = useState<string | null>(null);
+
+	// get user email from firebase auth
 	useEffect(() => {
 		const auth = getAuth();
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -32,6 +38,7 @@ export default function CreateProfilePage() {
 	//for the profile picture
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [preview, setPreview] = useState<string | null>(null);
+	const [base64Image, setBase64Image] = useState<string | null>(null);
 
 	// Bio character limit
 	const BIO_CHAR_LIMIT = 250;
@@ -42,7 +49,8 @@ export default function CreateProfilePage() {
 		major !== "" &&
 		year !== "" &&
 		gender !== "" &&
-		birthday !== null;
+		birthday !== null &&
+		base64Image !== null;
 
 	const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setGender(e.target.value);
@@ -66,16 +74,54 @@ export default function CreateProfilePage() {
 		}
 	};
 
-	const handleNextStep = () => {
-		// Logic to handle the next step action
-		if (!isFormValid) {
-			alert("Please fill out all required fields.");
+	const handleNextStep = async () => {
+		if (!isFormValid) return;
+
+		setApiError(null);
+		setIsLoading(true);
+
+		// Require a last name (must have a space with content after it)
+		const spaceIdx = name.indexOf(" ");
+		const first_name = spaceIdx === -1 ? name.trim() : name.slice(0, spaceIdx).trim();
+		const last_name = spaceIdx === -1 ? "" : name.slice(spaceIdx + 1).trim();
+
+		if (!last_name) {
+			setApiError("Please enter both a first and last name.");
+			setIsLoading(false);
 			return;
 		}
-		console.log({ name, major, year, gender, birthday, bio });
+
+		// Create the profile
+		const createResult = await createProfile({
+			first_name,
+			last_name,
+			gender: gender as Gender,
+			major,
+			classification: year as Classification,
+			bio,
+			dob: birthday!,
+			profile_picture_url: [],
+		});
+
+		if (!createResult.ok) {
+			setApiError(createResult.error);
+			setIsLoading(false);
+			return;
+		}
+
+		// If a picture was selected, upload it
+		if (base64Image) {
+			const picResult = await uploadProfilePicture({ base64: base64Image });
+			if (!picResult.ok) {
+				setApiError(picResult.error);
+				setIsLoading(false);
+				return;
+			}
+		}
+
+		setIsLoading(false);
 		router.push("/onboarding/lifestylePreferences");
 	};
-
 
 	const handleImageClick = () => {
 		fileInputRef.current?.click();
@@ -87,7 +133,12 @@ export default function CreateProfilePage() {
 
 		// to preview the image in the icon 
 		const imageUrl = URL.createObjectURL(file);
-		setPreview(imageUrl);
+        setPreview(imageUrl);
+        
+        // Base64 data URL for the API
+		const reader = new FileReader();
+		reader.onload = () => setBase64Image(reader.result as string);
+		reader.readAsDataURL(file);
 	};
 
 	const inputStyle = "w-full px-4 py-3 border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white";
@@ -104,7 +155,9 @@ export default function CreateProfilePage() {
 			<div className="bg-white rounded-lg shadow-2xl py-8 px-15 mt-4 w-full flex flex-col">
 				{/* Profile Picture Section */}
 				<div className="mb-6">
-					<h1 className="text-black font-medium text-sm mb-3">Your Profile Picture</h1>
+					<h1 className="text-black font-medium text-sm mb-3">
+						Your Profile Picture <span className="text-red-500">*</span>
+					</h1>
 					<div
 						onClick={handleImageClick}
 						className="bg-surface-cream w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
@@ -132,6 +185,9 @@ export default function CreateProfilePage() {
 							</>
 						)}
 					</div>
+					{!base64Image && (
+						<p className="mt-2 text-xs text-gray-400">A profile photo is required.</p>
+					)}
 
 					{/* Hidden file input */}
 					<input
@@ -211,30 +267,30 @@ export default function CreateProfilePage() {
 								<option value="finance">Finance</option>
 								<option value="global-business">Global Business</option>
 								<option value="healthcare-management">Healthcare Management</option>
-							    <option value="human-resource-management">Human Resource Management</option>
-							    <option value="information-technology-systems">Information Technology and Systems</option>
+								<option value="human-resource-management">Human Resource Management</option>
+								<option value="information-technology-systems">Information Technology and Systems</option>
 								<option value="marketing">Marketing</option>
 								<option value="supply-chain-management">Supply Chain Management</option>
 
 								<option value="animation-games">Animation and Games</option>
-							    <option value="arts-technology-emerging-communication">Arts, Technology, and Emerging Communication (ATEC)</option>
+								<option value="arts-technology-emerging-communication">Arts, Technology, and Emerging Communication (ATEC)</option>
 								<option value="art-history">Art History</option>
 								<option value="history">History</option>
-							    <option value="interdisciplinary-studies">Interdisciplinary Studies</option>
+								<option value="interdisciplinary-studies">Interdisciplinary Studies</option>
 								<option value="literature">Literature</option>
 								<option value="philosophy">Philosophy</option>
 								<option value="visual-performing-arts">Visual and Performing Arts</option>
 
-							    <option value="child-learning-development">Child Learning and Development</option>
+								<option value="child-learning-development">Child Learning and Development</option>
 								<option value="cognitive-science">Cognitive Science</option>
 								<option value="neuroscience">Neuroscience</option>
 								<option value="psychology">Psychology</option>
-							    <option value="speech-language-hearing">Speech, Language, and Hearing Sciences</option>
+								<option value="speech-language-hearing">Speech, Language, and Hearing Sciences</option>
 
-							    <option value="criminology-criminal-justice">Criminology and Criminal Justice</option>
+								<option value="criminology-criminal-justice">Criminology and Criminal Justice</option>
 								<option value="economics">Economics</option>
-							    <option value="geospatial-information-sciences">Geospatial Information Sciences</option>
-							    <option value="international-political-economy">International Political Economy</option>
+								<option value="geospatial-information-sciences">Geospatial Information Sciences</option>
+								<option value="international-political-economy">International Political Economy</option>
 								<option value="political-science">Political Science</option>
 								<option value="public-affairs">Public Affairs</option>
 								<option value="public-policy">Public Policy</option>
@@ -273,10 +329,11 @@ export default function CreateProfilePage() {
 								<option value="" disabled>
 									Select an option...
 								</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Non-binary">Non-binary</option>
-								<option value="Other">Other</option>
+								<option value="male">Male</option>
+								<option value="female">Female</option>
+								<option value="non_binary">Non-binary</option>
+								<option value="prefer_not_to_say">Prefer not to say</option>
+								<option value="other">Other</option>
 							</select>
 							<svg
 								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
@@ -301,11 +358,11 @@ export default function CreateProfilePage() {
 								<option value="" disabled>
 									Select an option...
 								</option>
-								<option value="2030">Class of 2030</option>
-								<option value="2029">Class of 2029</option>
-								<option value="2028">Class of 2028</option>
-								<option value="2027">Class of 2027</option>
-								<option value="2026">Class of 2026</option>
+								<option value="freshman">Freshman (Class of 2030)</option>
+								<option value="sophomore">Sophomore (Class of 2029)</option>
+								<option value="junior">Junior (Class of 2028)</option>
+								<option value="senior">Senior (Class of 2027)</option>
+								<option value="graduate">Graduate Student</option>
 							</select>
 							<svg
 								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
@@ -317,7 +374,8 @@ export default function CreateProfilePage() {
 							</svg>
 						</div>
 					</div>
-					{/* age */}
+
+					{/* Birthday */}
 					<div>
 						<h1 className="text-black font-medium text-sm mb-2">Birthday</h1>
 						<div className="[&_input]:border-primary [&_input]:focus:ring-primary">
@@ -350,10 +408,13 @@ export default function CreateProfilePage() {
 				{/* Next Step Button */}
 				<div className="flex justify-center">
 					<NextStepButton
-						className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+						className={`mt-7 ${(!isFormValid || isLoading) ? "opacity-50 cursor-not-allowed" : ""}`}
 						onClick={handleNextStep}
-						disabled={!isFormValid}
+						disabled={!isFormValid || isLoading}
 					/>
+					{apiError && (
+						<p className="text-red-500 text-sm text-center mt-2">{apiError}</p>
+					)}
 				</div>
 			</div>
 		</div>
