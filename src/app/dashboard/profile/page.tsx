@@ -66,7 +66,10 @@ export default function Profile() {
           gender: data.data.profile?.gender || "",
           classification: data.data.profile?.classification || "",
           bio: data.data.profile?.bio || "",
-          age: data.data.profile?.age !== undefined ? String(data.data.profile.age) : "",
+          age:
+            data.data.profile?.age !== undefined
+              ? String(data.data.profile.age)
+              : "",
         };
 
         setMajor(normalized.major);
@@ -106,8 +109,8 @@ export default function Profile() {
         toast({
           type: "error",
           title: "Invalid age",
-          description: "Age must be between 16 and 80"
-        })
+          description: "Age must be between 16 and 80",
+        });
         return;
       }
       const parsedAge = numericAge;
@@ -124,10 +127,12 @@ export default function Profile() {
         method: "PUT",
         body: updatePayload,
       });
-      if (!updateResult.ok) throw new Error(updateResult.error || "Failed to update profile");
+      if (!updateResult.ok)
+        throw new Error(updateResult.error || "Failed to update profile");
 
       const updatedData = await fetchCurrentUser();
-      if (!updatedData.ok) throw new Error(updatedData.error || "Failed to refresh profile");
+      if (!updatedData.ok)
+        throw new Error(updatedData.error || "Failed to refresh profile");
       setUser(updatedData.data);
 
       const normalized: ProfileFormState = {
@@ -172,267 +177,303 @@ export default function Profile() {
       />
       <div className="flex flex-col justify-center items-center relative">
         <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl ">
-        <div className="mt-4 ml-6">
-          <ProfileGallery userId={userData.id} />
-        </div>
-        <div className="grid grid-cols-2 gap-4 w-full p-4">
-          <div className="text-md">
-            <p className="mb-2">Name</p>
-            <div
-              className={`${inputStyle} bg-gray-50 text-gray-500 relative pr-10`}
-            >
-              <p>
-                {userData.profile?.first_name
-                  ? userData.profile?.first_name
-                  : "(First Name Not Provided)"}{" "}
-                {userData.profile?.last_name
-                  ? userData.profile.last_name
-                  : "(Last Name Not Provided)"}
-              </p>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <div className="mt-4 ml-6">
+            <ProfileGallery userId={userData.id} />
+          </div>
+          <div className="grid grid-cols-2 gap-4 w-full p-4">
+            <div className="text-md">
+              <p className="mb-2">Name</p>
+              <div
+                className={`${inputStyle} bg-gray-50 text-gray-500 relative pr-10`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                <p>
+                  {userData.profile?.first_name
+                    ? userData.profile?.first_name
+                    : "(First Name Not Provided)"}{" "}
+                  {userData.profile?.last_name
+                    ? userData.profile.last_name
+                    : "(Last Name Not Provided)"}
+                </p>
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="text-md">
+              <p className="mb-2">UTD Email</p>
+              <div
+                className={`${inputStyle} bg-gray-50 text-gray-500 relative pr-10`}
+              >
+                <p>
+                  Your email is:{" "}
+                  {userData.email ? userData.email : "(Email Not Provided)"}
+                </p>
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="text-md">
+              <p className="mb-2">Major</p>
+              <div className="relative">
+                <select
+                  name="major"
+                  className={selectStyle}
+                  value={major}
+                  onChange={(e) => setMajor(e.target.value)}
+                >
+                  {/* IM MOVING THIS LIST SOMEWHERE ELSE GOOD LORD ITS SO MESSY */}
+                  <option value="" disabled>
+                    Select an option...
+                  </option>
+                  <option value="biomedical-engineering">
+                    Biomedical Engineering
+                  </option>
+                  <option value="computer-engineering">
+                    Computer Engineering
+                  </option>
+                  <option value="computer-science">Computer Science</option>
+                  <option value="data-science">Data Science</option>
+                  <option value="electrical-engineering">
+                    Electrical Engineering
+                  </option>
+                  <option value="mechanical-engineering">
+                    Mechanical Engineering
+                  </option>
+                  <option value="software-engineering">
+                    Software Engineering
+                  </option>
+                  <option value="accounting">Accounting</option>
+                  <option value="business-administration">
+                    Business Administration
+                  </option>
+                  <option value="business-analytics">Business Analytics</option>
+                  <option value="finance">Finance</option>
+                  <option value="global-business">Global Business</option>
+                  <option value="healthcare-management">
+                    Healthcare Management
+                  </option>
+                  <option value="human-resource-management">
+                    Human Resource Management
+                  </option>
+                  <option value="information-technology-systems">
+                    Information Technology and Systems
+                  </option>
+                  <option value="marketing">Marketing</option>
+                  <option value="supply-chain-management">
+                    Supply Chain Management
+                  </option>
+                  <option value="animation-games">Animation and Games</option>
+                  <option value="arts-technology-emerging-communication">
+                    Arts, Technology, and Emerging Communication (ATEC)
+                  </option>
+                  <option value="art-history">Art History</option>
+                  <option value="history">History</option>
+                  <option value="interdisciplinary-studies">
+                    Interdisciplinary Studies
+                  </option>
+                  <option value="literature">Literature</option>
+                  <option value="philosophy">Philosophy</option>
+                  <option value="visual-performing-arts">
+                    Visual and Performing Arts
+                  </option>
+                  <option value="child-learning-development">
+                    Child Learning and Development
+                  </option>
+                  <option value="cognitive-science">Cognitive Science</option>
+                  <option value="neuroscience">Neuroscience</option>
+                  <option value="psychology">Psychology</option>
+                  <option value="speech-language-hearing">
+                    Speech, Language, and Hearing Sciences
+                  </option>
+                  <option value="criminology-criminal-justice">
+                    Criminology and Criminal Justice
+                  </option>
+                  <option value="economics">Economics</option>
+                  <option value="geospatial-information-sciences">
+                    Geospatial Information Sciences
+                  </option>
+                  <option value="international-political-economy">
+                    International Political Economy
+                  </option>
+                  <option value="political-science">Political Science</option>
+                  <option value="public-affairs">Public Affairs</option>
+                  <option value="public-policy">Public Policy</option>
+                  <option value="sociology">Sociology</option>
+                  <option value="actuarial-science">Actuarial Science</option>
+                  <option value="biochemistry">Biochemistry</option>
+                  <option value="biology">Biology</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="geosciences">Geosciences</option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="molecular-biology">Molecular Biology</option>
+                  <option value="physics">Physics</option>
+                </select>
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="text-md">
+              <p className="mb-2">Gender</p>
+              <div className="relative">
+                <select
+                  name="gender"
+                  className={selectStyle}
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select an option...
+                  </option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="non_binary">Non-binary</option>
+                  <option value="other">Other</option>
+                </select>
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="text-md">
+              <p className="mb-2">Classification</p>
+              <div className="relative">
+                <select
+                  name="classification"
+                  className={selectStyle}
+                  value={classification}
+                  onChange={(e) => setClassification(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select an option...
+                  </option>
+                  <option value="freshman">Class of {currentYear + 4}</option>
+                  <option value="sophomore">Class of {currentYear + 3}</option>
+                  <option value="junior">Class of {currentYear + 2}</option>
+                  <option value="senior">Class of {currentYear + 1}</option>
+                  <option value="graduate">Class of {currentYear}</option>
+                </select>
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="text-md">
+              <p className="mb-2">Age</p>
+              <div className="relative">
+                <input
+                  type="number"
+                  className={`${inputStyle}`}
+                  value={age}
+                  onChange={(e) => {
+                    const nextAge = e.target.value;
+                    if (nextAge === "" || /^\d+$/.test(nextAge)) {
+                      setAge(nextAge);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  min={16}
+                  max={80}
+                  placeholder="Enter your age"
                 />
-              </svg>
+              </div>
             </div>
-          </div>
 
-          <div className="text-md">
-            <p className="mb-2">UTD Email</p>
-            <div
-              className={`${inputStyle} bg-gray-50 text-gray-500 relative pr-10`}
-            >
-              <p>
-                Your email is:{" "}
-                {userData.email ? userData.email : "(Email Not Provided)"}
-              </p>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            <div className="text-md col-span-2">
+              <p className="mb-2">Bio</p>
+              <div className="relative">
+                <textarea
+                  placeholder="Write your Bio here e.g your hobbies, interests ETC"
+                  className={`${inputStyle} resize-none h-28`}
+                  value={bio}
+                  onChange={(e) => {
+                    if (e.target.value.length <= BIO_CHAR_LIMIT) {
+                      setBio(e.target.value);
+                    }
+                  }}
+                  maxLength={BIO_CHAR_LIMIT}
                 />
-              </svg>
-            </div>
-          </div>
-
-          <div className="text-md">
-            <p className="mb-2">Major</p>
-            <div className="relative">
-              <select
-                name="major"
-                className={selectStyle}
-                value={major}
-                onChange={(e) => setMajor(e.target.value)}
-              >
-                {/* IM MOVING THIS LIST SOMEWHERE ELSE GOOD LORD ITS SO MESSY */}
-                <option value="" disabled>
-                  Select an option...
-                </option>
-                <option value="biomedical-engineering">Biomedical Engineering</option>
-                <option value="computer-engineering">Computer Engineering</option>
-                <option value="computer-science">Computer Science</option>
-                <option value="data-science">Data Science</option>
-                <option value="electrical-engineering">Electrical Engineering</option>
-                <option value="mechanical-engineering">Mechanical Engineering</option>
-                <option value="software-engineering">Software Engineering</option>
-                <option value="accounting">Accounting</option>
-                <option value="business-administration">Business Administration</option>
-                <option value="business-analytics">Business Analytics</option>
-                <option value="finance">Finance</option>
-                <option value="global-business">Global Business</option>
-                <option value="healthcare-management">Healthcare Management</option>
-                <option value="human-resource-management">Human Resource Management</option>
-                <option value="information-technology-systems">Information Technology and Systems</option>
-                <option value="marketing">Marketing</option>
-                <option value="supply-chain-management">Supply Chain Management</option>
-                <option value="animation-games">Animation and Games</option>
-                <option value="arts-technology-emerging-communication">Arts, Technology, and Emerging Communication (ATEC)</option>
-                <option value="art-history">Art History</option>
-                <option value="history">History</option>
-                <option value="interdisciplinary-studies">Interdisciplinary Studies</option>
-                <option value="literature">Literature</option>
-                <option value="philosophy">Philosophy</option>
-                <option value="visual-performing-arts">Visual and Performing Arts</option>
-                <option value="child-learning-development">Child Learning and Development</option>
-                <option value="cognitive-science">Cognitive Science</option>
-                <option value="neuroscience">Neuroscience</option>
-                <option value="psychology">Psychology</option>
-                <option value="speech-language-hearing">Speech, Language, and Hearing Sciences</option>
-                <option value="criminology-criminal-justice">Criminology and Criminal Justice</option>
-                <option value="economics">Economics</option>
-                <option value="geospatial-information-sciences">Geospatial Information Sciences</option>
-                <option value="international-political-economy">International Political Economy</option>
-                <option value="political-science">Political Science</option>
-                <option value="public-affairs">Public Affairs</option>
-                <option value="public-policy">Public Policy</option>
-                <option value="sociology">Sociology</option>
-                <option value="actuarial-science">Actuarial Science</option>
-                <option value="biochemistry">Biochemistry</option>
-                <option value="biology">Biology</option>
-                <option value="chemistry">Chemistry</option>
-                <option value="geosciences">Geosciences</option>
-                <option value="mathematics">Mathematics</option>
-                <option value="molecular-biology">Molecular Biology</option>
-                <option value="physics">Physics</option>
-              </select>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div className="text-md">
-            <p className="mb-2">Gender</p>
-            <div className="relative">
-              <select
-                name="gender"
-                className={selectStyle}
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-              >
-                <option value="" disabled>
-                  Select an option...
-                </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="non_binary">Non-binary</option>
-                <option value="other">Other</option>
-              </select>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div className="text-md">
-            <p className="mb-2">Classification</p>
-            <div className="relative">
-              <select
-                name="classification"
-                className={selectStyle}
-                value={classification}
-                onChange={(e) => setClassification(e.target.value)}
-              >
-                <option value="" disabled>
-                  Select an option...
-                </option>
-                <option value="freshman">Class of {currentYear + 4}</option>
-                <option value="sophomore">Class of {currentYear + 3}</option>
-                <option value="junior">Class of {currentYear + 2}</option>
-                <option value="senior">Class of {currentYear + 1}</option>
-                <option value="graduate">Class of {currentYear}</option>
-              </select>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div className="text-md">
-            <p className="mb-2">Age</p>
-            <div className="relative">
-              <input
-                type="number"
-                className={`${inputStyle}`}
-                value={age}
-                onChange={(e) => {
-                  const nextAge = e.target.value;
-                  if (nextAge === "" || /^\d+$/.test(nextAge)) {
-                    setAge(nextAge);
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (["e", "E", "+", "-", "."].includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                min={16}
-                max={80}
-                placeholder="Enter your age"
-              />
-            </div>
-          </div>
-
-          <div className="text-md col-span-2">
-            <p className="mb-2">Bio</p>
-            <div className="relative">
-              <textarea
-                placeholder="Write your Bio here e.g your hobbies, interests ETC"
-                className={`${inputStyle} resize-none h-28`}
-                value={bio}
-                onChange={(e) => {
-                  if (e.target.value.length <= BIO_CHAR_LIMIT) {
-                    setBio(e.target.value);
-                  }
-                }}
-                maxLength={BIO_CHAR_LIMIT}
-              />
-              <div className="absolute bottom-2 right-3 text-xs text-gray-400">
-                {bio.length}/{BIO_CHAR_LIMIT}
+                <div className="absolute bottom-2 right-3 text-xs text-gray-400">
+                  {bio.length}/{BIO_CHAR_LIMIT}
+                </div>
               </div>
             </div>
           </div>
-        </div>
           <div className="flex justify-center gap-6 mr-[1%]">
-          <button
-            type="button"
-            onClick={handleUpdateProfile}
-            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
-          >
-            Update Profile
-          </button>
-          <button
-            type="button"
-            title="NOT IMPLEMENTED YET" // delete later
-            className="px-6 py-2 rounded-lg bg-[#FBD7A8] text-black font-medium shadow cursor-not-allowed"
-          >
-            View Profile
-          </button>
+            <button
+              type="button"
+              onClick={handleUpdateProfile}
+              className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
+            >
+              Update Profile
+            </button>
+            <button
+              type="button"
+              title="NOT IMPLEMENTED YET" // delete later
+              className="px-6 py-2 rounded-lg bg-[#FBD7A8] text-black font-medium shadow cursor-not-allowed"
+            >
+              View Profile
+            </button>
           </div>
         </div>
       </div>
