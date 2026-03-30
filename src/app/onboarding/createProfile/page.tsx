@@ -12,7 +12,8 @@ import { Gender, Classification } from "@/types/profile";
 
 export default function CreateProfilePage() {
 	const router = useRouter();
-	const [name, setName] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
 	const [major, setMajor] = useState("");
 	const [year, setYear] = useState("");
 	const [gender, setGender] = useState("");
@@ -45,7 +46,8 @@ export default function CreateProfilePage() {
 
 	//to make sure before moving ahead that their whole thing is filled or not
 	const isFormValid =
-		name.trim() !== "" &&
+		firstName.trim() !== "" &&
+		lastName.trim() !== "" &&
 		major !== "" &&
 		year !== "" &&
 		gender !== "" &&
@@ -56,8 +58,12 @@ export default function CreateProfilePage() {
 		setGender(e.target.value);
 	};
 
-	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setName(e.target.value);
+	const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setFirstName(e.target.value);
+	};
+
+	const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setLastName(e.target.value);
 	};
 
 	const handleMajorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -80,21 +86,10 @@ export default function CreateProfilePage() {
 		setApiError(null);
 		setIsLoading(true);
 
-		// Require a last name (must have a space with content after it)
-		const spaceIdx = name.indexOf(" ");
-		const first_name = spaceIdx === -1 ? name.trim() : name.slice(0, spaceIdx).trim();
-		const last_name = spaceIdx === -1 ? "" : name.slice(spaceIdx + 1).trim();
-
-		if (!last_name) {
-			setApiError("Please enter both a first and last name.");
-			setIsLoading(false);
-			return;
-		}
-
 		// Create the profile
 		const createResult = await createProfile({
-			first_name,
-			last_name,
+			first_name: firstName.trim(),
+			last_name: lastName.trim(),
 			gender: gender as Gender,
 			major,
 			classification: year as Classification,
@@ -103,10 +98,13 @@ export default function CreateProfilePage() {
 			profile_picture_url: [],
 		});
 
-		if (!createResult.ok) {
-			setApiError(createResult.error);
-			setIsLoading(false);
-			return;
+        if (!createResult.ok) {
+            // if profile picture is the only thing that failed, we can ignore it and retry
+			if (createResult.code !== "409") {
+				setApiError(createResult.error);
+				setIsLoading(false);
+				return;
+			}
 		}
 
 		// If a picture was selected, upload it
@@ -201,15 +199,27 @@ export default function CreateProfilePage() {
 
 				<div className="grid grid-cols-2 gap-6">
 					{/* Name */}
-					<div>
-						<h1 className="text-black font-medium text-sm mb-2">Name</h1>
-						<input
-							type="text"
-							placeholder="Jane Kelper"
-							className={inputStyle}
-							value={name}
-							onChange={handleNameChange}
-						/>
+					<div className="flex gap-4">
+						<div className="w-1/2">
+							<h1 className="text-black font-medium text-sm mb-2">First Name</h1>
+							<input
+								type="text"
+								placeholder="Jane"
+								className={inputStyle}
+								value={firstName}
+								onChange={handleFirstNameChange}
+							/>
+						</div>
+						<div className="w-1/2">
+							<h1 className="text-black font-medium text-sm mb-2">Last Name</h1>
+							<input
+								type="text"
+								placeholder="Kelper"
+								className={inputStyle}
+								value={lastName}
+								onChange={handleLastNameChange}
+							/>
+						</div>
 					</div>
 
 					{/* UTD Email */}
