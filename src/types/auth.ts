@@ -1,7 +1,7 @@
 export interface RegisterUserBody {
     email: string;
     password: string;
-    utd_id: string;
+    net_id: string;
 }
 
 export interface VerifyEmailBody {

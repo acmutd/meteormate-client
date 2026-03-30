@@ -7,8 +7,8 @@ import {
 } from "@/types/auth";
 
 // register
-export async function RegisterUser(email: string, password: string, utd_id: string): Promise<Result<UserRegisterResponse>> {
-    const body: RegisterUserBody = { email, password, utd_id };
+export async function RegisterUser(email: string, password: string, net_id: string): Promise<Result<UserRegisterResponse>> {
+    const body: RegisterUserBody = { email, password, net_id };
     return apiFetch<UserRegisterResponse>("/api/auth/register", {
         method: "POST",
         body,

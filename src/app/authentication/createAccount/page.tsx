@@ -4,6 +4,8 @@ import React, {useEffect, useRef, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import {RegisterUser, SendVerificationCode} from "@/utils/api/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase/firebase";
 import {Check, X} from "lucide-react";
 import {
     validatePassword,
@@ -109,9 +111,8 @@ export default function CreateAccountPage() {
                     return;
                 }
 
-                // set email in local storage
-                localStorage.setItem("verificationEmail", email);
-                router.push("./verifyEmail");
+                // log user in after creating account
+                await signInWithEmailAndPassword(auth, email, password);
 
                 const verifyResult = await SendVerificationCode();
 
@@ -129,6 +130,8 @@ export default function CreateAccountPage() {
                     title: "Account created",
                     description: "We sent you a verification code. Check your email to continue.",
                 });
+
+                router.push("./verifyEmail");
             }
         } catch (err: unknown) {
             console.error("Signup error:", err);
