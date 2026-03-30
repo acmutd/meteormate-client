@@ -16,11 +16,11 @@ export default function LifestyleHabitsPage() {
     const [selectedCloseness, setSelectedCloseness] = useState<string | null>(
         null
     );
-    const [selectedSmokeVape, setSelectedSmokeVape] = useState<boolean | null>(
-        null
+    const [selectedSmokeVape, setSelectedSmokeVape] = useState<boolean>(
+        false
     );
-    const [selectedDrink, setSelectedDrink] = useState<boolean | null>(
-        null
+    const [selectedDrink, setSelectedDrink] = useState<boolean>(
+        false
     );
     const [selectedDealbreakers, setSelectedDealbreakers] = useState<string[]>([]);
 
@@ -29,8 +29,8 @@ export default function LifestyleHabitsPage() {
     useEffect(() => {
         const saved = loadOnboardingData();
         setSelectedCloseness(saved.roommate_closeness ?? null);
-        setSelectedSmokeVape(saved.smoke_vape ?? null);
-        setSelectedDrink(saved.drink ?? null);
+        setSelectedSmokeVape(saved.smoke_vape ?? false);
+        setSelectedDrink(saved.drink ?? false);
         if (Array.isArray(saved.dealbreakers)) {
             setSelectedDealbreakers(saved.dealbreakers);
         }
@@ -57,11 +57,11 @@ export default function LifestyleHabitsPage() {
         setValue(currentValue === newValue ? null : newValue);
     };
 
-    const toggleNullableTrue = (
-        current: boolean | null,
-        setValue: (val: boolean | null) => void
+    const toggleBoolean = (
+        current: boolean,
+        setValue: (val: boolean) => void
     ) => {
-        setValue(current === true ? null : true);
+        setValue(!current);
     };
 
     const handleDealbreakerToggle = (dealbreaker: string) => {
@@ -121,14 +121,14 @@ export default function LifestyleHabitsPage() {
                         title="Smoking/Vaping"
                         imageSrc="/smoking_vaping_card.svg"
                         isSelected={selectedSmokeVape === true}
-                        onClick={() => toggleNullableTrue(selectedSmokeVape, setSelectedSmokeVape)}
+                        onClick={() => toggleBoolean(selectedSmokeVape, setSelectedSmokeVape)}
                     />
 
                     <LifestylePreferencesCard
                         title="Drinking"
                         imageSrc="/drinking_card.svg"
                         isSelected={selectedDrink === true}
-                        onClick={() => toggleNullableTrue(selectedDrink, setSelectedDrink)}
+                        onClick={() => toggleBoolean(selectedDrink, setSelectedDrink)}
                     />
                 </div>
                 <h1 className="text-black text-xl font-bold">Dealbreakers</h1>

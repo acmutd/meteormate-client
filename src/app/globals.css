@@ -2,6 +2,14 @@
 
 @tailwind utilities;
 
+@theme {
+  --color-primary: #FF9100;
+  --color-primary-hover: #E68200;
+  --color-secondary: #FFC94C;
+  --color-secondary-hover: #E3B03C;
+  --color-surface-cream: #F6F3ED;
+}
+
 html,
 body {
   margin: 0;
@@ -39,4 +47,9 @@ body {
     font-size: 20px;
     padding: 15px;
   }
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #f28c00 #fff2df;
 }

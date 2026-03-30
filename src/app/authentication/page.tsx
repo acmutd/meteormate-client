@@ -10,26 +10,10 @@ import EmailInput from "@/components/forms/EmailInput";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {getAuthErrorMessage} from "@/utils/authErrors";
-import {callActivityPing} from "@/utils/api/auth";
+import { ActivityPing } from "@/utils/api/auth";
+import { getSurvey } from "@/utils/api/survey";
 
-async function hasSurvey(idToken: string): Promise<boolean> {
-    const res = await fetch(`api/survey/me`, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${idToken}`,
-            "Content-Type": "application/json",
-        },
-    });
 
-    if (res.status === 404) return false;
-    if (res.ok) return true;
-
-    if (res.status === 401) {
-        throw new Error("AUTH_EXPIRED");
-    }
-
-    throw new Error(`UNEXPECTED_${res.status}`);
-}
 
 export default function LoginPage() {
     const router = useRouter();
@@ -103,19 +87,16 @@ export default function LoginPage() {
         try {
             if (!isSigningIn) {
                 setIsSigningIn(true);
-                const userCredential = await doSignInWithEmailAndPassword(
-                    email,
-                    password
-                );
-                const idToken = await userCredential.user.getIdToken();
+                await doSignInWithEmailAndPassword(email, password);
 
-                const pingResponse = await callActivityPing();
+                const pingResponse = await ActivityPing();
                 if (!pingResponse.ok) {
                     console.log(
                         `Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`
                     );
                 }
-                const completed = await hasSurvey(idToken);
+                const surveyResult = await getSurvey();
+                const completed = surveyResult.ok;
 
                 toast({
                     type: "success",
@@ -145,7 +126,7 @@ export default function LoginPage() {
             {/* Back arrow */}
             <button
                 onClick={() => router.push("/")}
-                className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/5 border border-white/10 hover:border-orange-500/30 transition-colors"
+                className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/5 border border-white/10 hover:border-primary-hover/30 transition-colors"
                 aria-label="Back to landing page"
                 type="button"
             >
@@ -183,7 +164,7 @@ export default function LoginPage() {
                     className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 sm:p-8">
                     {created && (
                         <div
-                            className="mb-6 rounded-md border border-orange-500/20 bg-orange-500/10 p-3 text-sm text-orange-200 text-center"
+                            className="mb-6 rounded-md border border-primary/20 bg-primary/10 p-3 text-sm text-primary text-center"
                             role="status"
                             aria-live="polite"
                         >
@@ -194,7 +175,7 @@ export default function LoginPage() {
                     {/* Create Account Button */}
                     <button
                         onClick={() => router.push("/authentication/createAccount")}
-                        className="w-full mb-6 py-3 rounded-3xl border border-zinc-500 text-zinc-500 font-light text-sm md:text-[15px] hover:bg-white/5 hover:border-orange-400/90 hover:text-orange-400 transition-all duration-300"
+                        className="w-full mb-6 py-3 rounded-3xl border border-zinc-500 text-zinc-500 font-light text-sm md:text-[15px] hover:bg-white/5 hover:border-primary-hover/90 hover:text-primary-hover transition-all duration-300"
                     >
                         Create an account
                     </button>
@@ -240,8 +221,8 @@ export default function LoginPage() {
                                 "border font-medium",
                                 isSigningIn
                                     ? "bg-white/10 text-zinc-400 border-white/10 cursor-not-allowed"
-                                    : "bg-orange-500 text-white border-orange-500/30 hover:bg-orange-400 hover:border-orange-400/40 cursor-pointer shadow-lg shadow-orange-900/20",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 focus-visible:ring-offset-0",
+                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer shadow-lg shadow-primary/20",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                         >
                             {isSigningIn && <LoadingSpinner size="sm"/>}
@@ -253,7 +234,7 @@ export default function LoginPage() {
                     <div className="text-center mt-6 -mb-6">
                         <button
                             onClick={() => router.push("/authentication/forgotPassword")}
-                            className="text-zinc-400 text-sm hover:text-orange-400 hover:underline underline-offset-4 transition-colors cursor-pointer"
+                            className="text-zinc-400 text-sm hover:text-primary hover:underline underline-offset-4 transition-colors cursor-pointer"
                         >
                             Forgot password?
                         </button>

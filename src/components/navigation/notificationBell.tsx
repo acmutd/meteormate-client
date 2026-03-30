@@ -2,11 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+    loadNotifications,
+    saveNotifications,
+    unreadCount as getUnreadCount,
+    markAllReadLocal,
+    markOneReadLocal,
+    type LikeNotification,
+} from "@/lib/notifications";
+
 
 export default function NotificationBell() {
     const router = useRouter();
     const [open, setOpen] = useState(false);
-    const [unread, setUnread] = useState(3); // todo: to fetch from backend later - aastha notes
+    const [items, setItems] = useState<LikeNotification[]>([]); //TODO: connect with backend later - aastha
+    const unread = getUnreadCount(items);
+
     const ref = useRef<HTMLDivElement | null>(null);
 
   // close on outside click
@@ -19,12 +30,24 @@ export default function NotificationBell() {
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
     }, []);
+    useEffect(() => {
+        const refresh = () => setItems(loadNotifications());
+
+        refresh(); 
+
+        window.addEventListener("storage", refresh);
+        return () => window.removeEventListener("storage", refresh);
+    }, []);
+
+    useEffect(() => {
+        if (open) setItems(loadNotifications());
+    }, [open]);
 
     return (
         <div className="relative" ref={ref}>
             <button
                 onClick={() => setOpen((v) => !v)}
-                className="relative p-2 rounded-full hover:bg-gray-100 transition"
+                className=" cursor-pointer relative p-2 rounded-full hover:bg-gray-100 transition"
                 aria-label="Notifications"
             >
                 <svg
@@ -43,7 +66,7 @@ export default function NotificationBell() {
                 </svg>
 
                 {unread > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-400 text-white text-[10px] flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] flex items-center justify-center">
                     {unread > 9 ? "9+" : unread}
                 </span>
                 )}
@@ -54,33 +77,59 @@ export default function NotificationBell() {
                     <div className="px-4 py-3 flex items-center justify-between border-b border-[#F1EADA]">
                         <p className="font-semibold text-gray-900">Notifications</p>
                         <button
-                            onClick={() => setUnread(0)}
-                            className="text-xs text-gray-600 hover:text-gray-900"
+                            onClick={() => {
+                                setItems((prev) => {
+                                    const next = markAllReadLocal(prev);
+                                    saveNotifications(next);
+                                    return next;
+                                });
+                            }}
+                            className="cursor-pointer text-xs text-gray-600 hover:text-gray-900"
                         >
                             Mark all read
                         </button>
                     </div>
 
                     <div className="max-h-72 overflow-auto">
-                        <button className="w-full text-left px-4 py-3 hover:bg-gray-50 transition">
-                            <p className="text-sm font-medium">New match suggestion</p>
-                            <p className="text-xs text-gray-500">2 minutes ago</p>
-                        </button>
-                        <button className="w-full text-left px-4 py-3 hover:bg-gray-50 transition">
-                            <p className="text-sm font-medium">Someone messaged you</p>
-                            <p className="text-xs text-gray-500">1 hour ago</p>
-                        </button>
-
-                        {unread === 0 && (
+                        {items.length === 0 ? (
                             <div className="px-4 py-6 text-center text-sm text-gray-500">
-                                You’re all caught up 🎉
+                            You’re all caught up 🎉
                             </div>
+                        ) : (
+                            items
+                            .slice()
+                            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            .slice(0, 6)
+                            .map((n) => (
+                                <button
+                                key={n.id}
+                                onClick={() => {
+                                    const next = markOneReadLocal(items, n.id);
+                                    setItems(next);
+                                    saveNotifications(next);
+                                    setOpen(false);
+                                    router.push("/dashboard/matches");
+                                }}
+                                className="cursor-pointer w-full text-left px-4 py-3 hover:bg-gray-50 transition"
+                                >
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                    <span className="font-semibold">{n.liker.name}</span> liked your profile
+                                    {!n.isRead && (
+                                    <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
+                                    )}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                    {new Date(n.createdAt).toLocaleString()}
+                                </p>
+                                </button>
+                            ))
                         )}
                     </div>
 
+
                     <div className="px-4 py-3 border-t border-[#F1EADA]">
                         <button
-                            onClick={() => router.push("/dashboard/notifications")}
+                            onClick={() => router.push("/dashboard/notify")}
                             className="w-full text-sm font-medium text-gray-800 hover:text-black"
                         >
                             View all notifications

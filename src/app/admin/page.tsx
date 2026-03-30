@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     const auth = getAuth();
 
@@ -19,13 +21,14 @@ export default function Dashboard() {
                 setToken(idToken);
             } else {
                 setToken(null);
+                router.push("/authentication?toast=not-signed-in");
             }
 
             setLoading(false);
         });
 
         return () => unsubscribe();
-    }, [auth]);
+    }, [auth, router]);
 
     const refreshToken = async () => {
         if (!user) return;

@@ -18,7 +18,7 @@ function FeatureCard({
                      }: FeatureCardProps) {
     return (
         <div
-            className="flex flex-col items-start gap-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 hover:border-orange-500/30 hover:bg-white/10 transition-all duration-300 group">
+            className="flex flex-col items-start gap-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 hover:border-primary-hover/30 hover:bg-white/10 transition-all duration-300 group">
             {/* Icon Container - Fixed height, flex centered */}
             <div
                 className="relative h-16 w-16 md:h-20 md:w-20 flex-shrink-0 rounded-xl p-3 group-hover:scale-105 transition-transform">
@@ -32,7 +32,7 @@ function FeatureCard({
             </div>
 
             <div className="space-y-2">
-                <h3 className="text-lg font-bold text-white group-hover:text-orange-400 transition-colors">
+                <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">
                     {title}
                 </h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">
@@ -99,12 +99,12 @@ export default function HowItWorks() {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-16 space-y-4">
           <span
-              className="inline-block py-1 px-3 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-xs font-medium tracking-wider uppercase">
+              className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
             Features
           </span>
                     <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
                         Built for <span
-                        className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-200">Comets</span>
+                        className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Comets</span>
                     </h2>
                     <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
                         Everything you need to find your perfect match, verified and secure.

@@ -27,8 +27,8 @@ export default function Navbar() {
                         <div className="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
                     
-                    <div className="flex flex-col leading-tight">
-                        <h1 className="font-pavanam font-bold md:text-2xl text-lg tracking-tight bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">
+                    <div className="flex flex-col leading-tight items-start">
+                        <h1 className="font-pavanam font-bold md:text-2xl text-lg tracking-tight bg-gradient-to-r from-primary via-secondary to-primary-hover bg-clip-text text-transparent">
                             MeteorMate
                         </h1>
                         <span className="text-[10px] md:text-xs font-pavanam font-medium text-black/70 uppercase tracking-widest">
