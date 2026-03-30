@@ -138,7 +138,7 @@ class SurveyResponse(BaseModel):
 
     # off-campus
     have_lease: Optional[bool] = None
-    have_lease_length: HaveLeaseLengthEnum
+    have_lease_length: Optional[HaveLeaseLengthEnum] = None
 
     # catch all
     answers: Dict[str, Any] = {}
