@@ -18,7 +18,7 @@ type MatchUser = {
   hasLease: boolean;
   email: string;
   phone: string;
-  location: string;
+  //location: string;
   major?: string;
   bio?: string;
   interests?: Chip[];
@@ -35,7 +35,7 @@ const mockMatches: MatchUser[] = [
     hasLease: true,
     email: "usagi@example.com",
     phone: "(469) 555-2108",
-    location: "Northside, UTD",
+    //location: "Northside, UTD",
     major: "Biology - Junior",
     bio: "Friendly, clean, and loves a calm apartment vibe.",
     interests: [
@@ -59,7 +59,7 @@ const mockMatches: MatchUser[] = [
     hasLease: false,
     email: "aastha@example.com",
     phone: "(972) 555-8841",
-    location: "Richardson, TX",
+    //location: "Richardson, TX",
     major: "Computer Science - Senior",
     bio: "Organized, social, and loves a balanced study-life routine.",
     interests: [
@@ -83,7 +83,7 @@ const mockMatches: MatchUser[] = [
     hasLease: true,
     email: "maya@example.com",
     phone: "(214) 555-3190",
-    location: "Near Campus",
+    //location: "Near Campus",
     major: "Neuroscience - Sophomore",
     bio: "Calm, focused, and loves a peaceful home.",
     interests: [
@@ -106,7 +106,7 @@ const mockMatches: MatchUser[] = [
     hasLease: false,
     email: "zara@example.com",
     phone: "(945) 555-6722",
-    location: "Plano, TX",
+    //location: "Plano, TX",
     major: "Business - Senior",
     bio: "Outgoing, stylish, and likes a neat space.",
     interests: [
@@ -186,10 +186,10 @@ function MatchCard({
             <span>{user.phone}</span>
           </div>
 
-          <div className="flex items-center gap-3 text-sm text-gray-700">
+          {/* <div className="flex items-center gap-3 text-sm text-gray-700">
             <MapPin className="h-4 w-4 text-primary" />
             <span>{user.location}</span>
-          </div>
+          </div> */}
         </div>
 
         <div className="mt-4 flex gap-3">
@@ -248,10 +248,10 @@ export default function Matches() {
                   label: selectedUser.hasLease ? "Has a lease" : "No lease yet",
                   tone: "orange",
                 },
-                {
-                  label: selectedUser.location,
-                  tone: "gray",
-                },
+                // {
+                //   label: selectedUser.location,
+                //   tone: "gray",
+                // },
               ]}
               bio={selectedUser.bio}
               back={{
