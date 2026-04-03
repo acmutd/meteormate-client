@@ -113,6 +113,9 @@ export default function CreateAccountPage() {
 
                 // log user in after creating account
                 await signInWithEmailAndPassword(auth, email, password);
+                
+                // push to verify email page before sending code
+                router.push("./verifyEmail");
 
                 const verifyResult = await SendVerificationCode();
 
@@ -130,8 +133,6 @@ export default function CreateAccountPage() {
                     title: "Account created",
                     description: "We sent you a verification code. Check your email to continue.",
                 });
-
-                router.push("./verifyEmail");
             }
         } catch (err: unknown) {
             console.error("Signup error:", err);

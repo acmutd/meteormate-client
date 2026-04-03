@@ -83,8 +83,8 @@ export default function LifestyleHabitsPage() {
             <ProgressHeader
                 title="Lifestyle Preferences"
                 subtitle="Help us find your ideal roommate by selecting your preferences!"
-                currentStep={3}
-                progressImage="/peechi_progress_3.svg"
+                currentStep={4}
+                progressImage="/peechi_progress_4.svg"
             />
             <div className="py-8 px-15 w-full flex flex-col">
                 <h1 className="text-black text-xl font-bold">Closeness</h1>

@@ -94,8 +94,8 @@ export default function LifestylePersonalityPage() {
 			<ProgressHeader 
 				title="Lifestyle Personality"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
-				currentStep={5}
-                progressImage="/peechi_progress_5.svg"
+				currentStep={6}
+                progressImage="/peechi_progress_6.svg"
 			/>
 			<div className="py-8 px-15 w-full flex flex-col">
 				<p className="text-black text-sm mt-1 mb-2">

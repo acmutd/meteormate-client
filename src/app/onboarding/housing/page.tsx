@@ -186,7 +186,7 @@ function OnCampusUI() {
             <ProgressHeader 
 				title="On-Campus"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
-				currentStep={6}
+				currentStep={7}
                 progressImage="/peechi_progress_6.svg"
 			/>
 			<div className="py-8 px-15 w-full flex flex-col">
@@ -408,7 +408,7 @@ function OffCampusUI() {
             <ProgressHeader
                 title="Off Campus"
                 subtitle="Help us find your ideal roommate by selecting your preferences!"
-                currentStep={6}
+                currentStep={7}
                 progressImage="/peechi_progress_6.svg"
             />
             <div className="py-8 px-15 w-full flex flex-col">
