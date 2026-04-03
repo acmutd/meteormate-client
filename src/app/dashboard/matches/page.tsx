@@ -2,17 +2,28 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Mail, Phone, MapPin, Home, Search, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Search } from "lucide-react";
+import ProfileCard from "@/components/cardComponent/ProfileCard";
+
+type Chip = {
+  label: string;
+  selected?: boolean;
+};
 
 type MatchUser = {
   id: number;
   name: string;
   image: string;
+  images: string[];
   hasLease: boolean;
   email: string;
   phone: string;
   location: string;
   major?: string;
+  bio?: string;
+  interests?: Chip[];
+  habits?: Chip[];
+  expandedBio?: string;
 };
 
 const mockMatches: MatchUser[] = [
@@ -20,59 +31,115 @@ const mockMatches: MatchUser[] = [
     id: 1,
     name: "Usagi Tanaka",
     image: "/p3.jpg",
+    images: ["/p3.jpg", "/p2.png", "/p3.jpg"],
     hasLease: true,
     email: "usagi@example.com",
     phone: "(469) 555-2108",
     location: "Northside, UTD",
     major: "Biology - Junior",
+    bio: "Friendly, clean, and loves a calm apartment vibe.",
+    interests: [
+      { label: "Reading", selected: true },
+      { label: "Gym" },
+      { label: "Cooking", selected: true },
+    ],
+    habits: [
+      { label: "Early sleeper" },
+      { label: "Non-smoker", selected: true },
+      { label: "Clean kitchen", selected: true },
+    ],
+    expandedBio:
+      "I’m looking for a roommate who is respectful, tidy, and easy to communicate with. I enjoy quiet evenings, meal prepping, and a cozy shared space.",
   },
   {
     id: 2,
     name: "Aastha Sheth",
     image: "/p2.png",
+    images: ["/p2.png", "/p3.jpg", "/p2.png"],
     hasLease: false,
     email: "aastha@example.com",
     phone: "(972) 555-8841",
     location: "Richardson, TX",
     major: "Computer Science - Senior",
+    bio: "Organized, social, and loves a balanced study-life routine.",
+    interests: [
+      { label: "Tech", selected: true },
+      { label: "Coffee runs" },
+      { label: "Netflix", selected: true },
+    ],
+    habits: [
+      { label: "Night owl" },
+      { label: "Quiet study time", selected: true },
+      { label: "No smoking", selected: true },
+    ],
+    expandedBio:
+      "I like keeping the apartment clean and pretty while also making it feel warm and fun. Looking for someone respectful, chill, and communicative.",
   },
   {
     id: 3,
     name: "Maya Patel",
     image: "/p2.png",
+    images: ["/p2.png", "/p3.jpg"],
     hasLease: true,
     email: "maya@example.com",
     phone: "(214) 555-3190",
     location: "Near Campus",
     major: "Neuroscience - Sophomore",
+    bio: "Calm, focused, and loves a peaceful home.",
+    interests: [
+      { label: "Pilates" },
+      { label: "Music", selected: true },
+      { label: "Baking" },
+    ],
+    habits: [
+      { label: "Keeps shared areas clean", selected: true },
+      { label: "No parties" },
+    ],
+    expandedBio:
+      "I’m someone who values routine, cleanliness, and a peaceful environment. I’d love to live with someone considerate and easygoing.",
   },
   {
     id: 4,
     name: "Zara Ahmed",
     image: "/p3.jpg",
+    images: ["/p3.jpg", "/p2.png"],
     hasLease: false,
     email: "zara@example.com",
     phone: "(945) 555-6722",
     location: "Plano, TX",
     major: "Business - Senior",
+    bio: "Outgoing, stylish, and likes a neat space.",
+    interests: [
+      { label: "Fashion", selected: true },
+      { label: "Travel" },
+      { label: "Brunch", selected: true },
+    ],
+    habits: [
+      { label: "Organized", selected: true },
+      { label: "Late sleeper" },
+    ],
+    expandedBio:
+      "I enjoy a lively but still respectful home vibe. I’m clean, friendly, and would love a roommate who is mature and fun.",
   },
 ];
 
 function LeaseBadge({ hasLease }: { hasLease: boolean }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border ${
-        hasLease
-          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-          : "border-orange-200 bg-orange-50 text-orange-700"
-      }`}
+      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border border-primary text-primary `}
     >
       {hasLease ? "Has a lease" : "No lease yet"}
     </span>
   );
 }
 
-function MatchCard({ user }: { user: MatchUser }) {
+function MatchCard({
+  user,
+  onViewProfile,
+}: {
+  user: MatchUser;
+  onViewProfile: (user: MatchUser) => void;
+}) {
   return (
     <div className="group relative overflow-hidden rounded-3xl border border-orange-100 bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
@@ -100,9 +167,6 @@ function MatchCard({ user }: { user: MatchUser }) {
                 </p>
               </div>
 
-              <div className="rounded-full p-2 text-primary">
-                <Home className="h-4 w-4 fill-current" />
-              </div>
             </div>
 
             <div className="mt-3">
@@ -129,7 +193,10 @@ function MatchCard({ user }: { user: MatchUser }) {
         </div>
 
         <div className="mt-4 flex gap-3">
-          <button className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:scale-[1.01]">
+          <button
+            onClick={() => onViewProfile(user)}
+            className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:scale-[1.01]"
+          >
             View Profile
           </button>
           
@@ -141,7 +208,7 @@ function MatchCard({ user }: { user: MatchUser }) {
 
 export default function Matches() {
   const [search, setSearch] = useState("");
-
+  const [selectedUser, setSelectedUser] = useState<MatchUser | null>(null);
   const filteredMatches = useMemo(() => {
     return mockMatches.filter((user) =>
       user.name.toLowerCase().includes(search.toLowerCase())
@@ -149,38 +216,13 @@ export default function Matches() {
   }, [search]);
 
   return (
-    <div className="min-h-screen px-4 py-8 md:px-8">
+    <div className="min-h-screen px-4 md:px-8">
       <div className="mx-auto max-w-6xl">
         {/* header  */}
-        <div className="mb-8 overflow-hidden rounded-[28px] border border-orange-100 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary">
-                <Home className="h-3.5 w-3.5 fill-current" />
-                Your roommate matches
-              </div>
-
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                Matches
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-gray-600">
-                These are the people who matched with you. Browse their details,
-                check lease availability, and reach out to connect.
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50 to-white px-5 py-4 text-center shadow-sm">
-                <p className="text-2xl font-bold text-gray-900">
-                  {filteredMatches.length}
-                </p>
-                <p className="text-xs font-medium text-gray-500">Total Matches</p>
-              </div>
-            </div>
-          </div>
-
+        <div className="mb-8 overflow-hidden border flex border-none gap-4 justify-between">
+           
           {/* search thing here */}
-          <div className="mt-6 relative max-w-md">
+          <div className="relative w-full md:max-w-xl">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -190,20 +232,53 @@ export default function Matches() {
               className="w-full rounded-2xl border border-orange-100 bg-white px-11 py-3 text-sm outline-none transition focus:border-orange-300 focus:ring-4 focus:ring-orange-100"
             />
           </div>
+          <div className="inline-flex items-center justify-center rounded-2xl border border-orange-200 bg-orange-50 px-5 py-3 text-sm font-semibold text-primary md:min-w-[150px]">
+            {filteredMatches.length} Matches
+          </div>
+          
         </div>
+        {selectedUser && (
+          <div className="mb-8">
+            <ProfileCard
+              name={selectedUser.name}
+              subtitle={selectedUser.major}
+              images={selectedUser.images}
+              tags={[
+                {
+                  label: selectedUser.hasLease ? "Has a lease" : "No lease yet",
+                  tone: "orange",
+                },
+                {
+                  label: selectedUser.location,
+                  tone: "gray",
+                },
+              ]}
+              bio={selectedUser.bio}
+              back={{
+                interests: selectedUser.interests,
+                habits: selectedUser.habits,
+                expandedBio: selectedUser.expandedBio,
+              }}
+              showActions={false}
+              showSidebar={false}
+            />
+          </div>
+        )}
 
         {/* and matches grid */}
         {filteredMatches.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {filteredMatches.map((user) => (
-              <MatchCard key={user.id} user={user} />
+              <MatchCard
+                key={user.id}
+                user={user}
+                onViewProfile={setSelectedUser}
+              />
             ))}
           </div>
         ) : (
           <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[28px] border border-dashed border-orange-200 bg-white/70 p-10 text-center">
-            <div className="mb-4 rounded-full bg-linear-to-r from-primary to-secondary">
-              <Home className="h-7 w-7" />
-            </div>
+            
             <h2 className="text-xl font-semibold text-gray-900">No matches found</h2>
             <p className="mt-2 max-w-md text-sm text-gray-600">
               Try adjusting your search or keep swiping to find more roommate

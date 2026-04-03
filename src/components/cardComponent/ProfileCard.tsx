@@ -35,6 +35,9 @@ type ProfileCardProps = {
     onDislike?: () => void;
     onRewind?: () => void;
     onLike?: () => void;
+
+    showActions?: boolean;
+    showSidebar?: boolean;
 };
 
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -62,6 +65,8 @@ export default function ProfileCard({
     onDislike,
     onRewind,
     onLike,
+    showActions = true,
+    showSidebar = true,
     }: ProfileCardProps) {
     //const safeImages = useMemo(() => (images?.length ? images : [""]), [images]);
     //const [idx, setIdx] = useState(0);
@@ -104,7 +109,7 @@ export default function ProfileCard({
     };
 
     return (
-        <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row">
+        <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center">
             <div className="flex flex-col flex-1 min-w-0 lg:items-center">
                 {/* we don't need the old wrapper so here I made the new one just few changes  */}
                 <div className="w-full max-w-md sm:max-w-xl lg:max-w-195 relative">
@@ -133,6 +138,17 @@ export default function ProfileCard({
                                 <div className="relative h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
                                     <div className="relative rounded-[22px] overflow-hidden">
                                         <StackedCarousel images={images} altPrefix={name} />
+
+                                        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-5 py-4">
+                                            <h2 className="text-2xl font-bold text-white drop-shadow-sm">
+                                            {name}
+                                            </h2>
+                                            {subtitle && (
+                                            <p className="text-sm text-white/90 drop-shadow-sm">
+                                                {subtitle}
+                                            </p>
+                                            )}
+                                        </div>
                                     </div>
 
                                 {tags.length > 0 && (
@@ -268,7 +284,9 @@ export default function ProfileCard({
                         </div>
                     </div>
                 </div>
+
                 {/* Action buttonsssss */}
+                {showActions && (
                 <div className="mt-6 w-full flex items-center justify-center gap-8 sm:gap-10">
                     <button
                         type="button"
@@ -291,8 +309,11 @@ export default function ProfileCard({
 
                     </button>
                     </div> 
+                )}
                 </div>
+                
                 {/** right side here */}
+                {showSidebar && (
                 <div className="w-full lg:w-[380px] xl:w-105 shrink-0 flex flex-col gap-6 lg:ml-auto lg:items-end">
                     <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10">
                         <div className="flex items-center justify-start gap-2 mb-4">
@@ -364,6 +385,7 @@ export default function ProfileCard({
                         )}
                     </div>   
                 </div>
+        )}
         </div>
     );
 }
