@@ -174,7 +174,7 @@ export default function UploadPicturesPage() {
 	const displayBio = userProfile?.profile?.bio || "Your bio will appear here...";
 
 	return (
-		<div className="min-h-screen mb-10 w-screen overflow-x-hidden px-4 sm:px-6 lg:px-10">
+		<div className="min-h-screen w-screen overflow-x-hidden px-4 pb-10 sm:px-6 lg:px-10">
 			<ProgressHeader
 				title="Upload Your Photos"
 				subtitle="Show off your best self."
@@ -182,8 +182,8 @@ export default function UploadPicturesPage() {
 				progressImage="/peechi_progress_2.svg"
 			/>
 
-			<div className="mx-auto mt-6 grid w-full max-w-[1700px] grid-cols-1 gap-8 lg:grid-cols-[minmax(360px,0.9fr)_minmax(520px,1.25fr)] lg:items-start">
-				<div className="w-full lg:max-w-[540px] pt-15.5">
+			<div className="mx-auto mt-5 grid gap-8 w-full grid-cols-1 lg:grid-cols-2 lg:items-start">
+				<div className="w-full lg:max-w-135 justify-center ml-auto pt-4">
 					<ImageUpload
 						photos={photos}
 						primaryPhoto={primaryPhoto}
@@ -214,7 +214,7 @@ export default function UploadPicturesPage() {
 
 			<div className="mt-8 w-full flex flex-col items-center justify-center">
 				<NextStepButton
-					className={`w-full max-w-[420px] mb-3 ${
+					className={`mb-3 ${
 						photos.length < MIN_PHOTOS || isLoading || isCompressing ? "opacity-50 cursor-not-allowed" : ""
 					}`}
 					onClick={handleNextStep}

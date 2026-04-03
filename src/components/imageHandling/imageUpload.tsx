@@ -69,8 +69,10 @@ export default function ImageUpload({
 						</h2>
 
 						{primaryPhoto ? (
-							<div className="relative group w-full aspect-3/4 max-w-30 rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-gray-200">
-								<Image src={primaryPhoto} alt="Primary Profile Photo" fill className="object-cover" />
+							<div className="relative group w-full aspect-square max-w-30 rounded-full bg-gray-100 shadow-sm border border-gray-200">
+								<div className="w-full h-full rounded-full overflow-hidden relative">
+									<Image src={primaryPhoto} alt="Primary Profile Photo" fill sizes="100%" className="object-cover" />
+								</div>
 								<button
 									type="button"
 									onClick={() => onDeletePhoto(0)}
@@ -85,7 +87,7 @@ export default function ImageUpload({
 								onClick={onImageClick}
 								disabled={isCompressing}
 								className={cn(
-									"group w-full aspect-3/4 max-w-30 rounded-xl border-2 border-dashed transition-all shrink-0 relative overflow-hidden flex flex-col items-center justify-center",
+									"group w-full aspect-square max-w-30 rounded-full border-2 border-dashed transition-all shrink-0 relative overflow-hidden flex flex-col items-center justify-center",
 									isDragOver ? "border-primary bg-primary/5" : "border-gray-300 hover:border-primary hover:bg-orange-50/50 cursor-pointer"
 								)}
 							>
@@ -99,12 +101,11 @@ export default function ImageUpload({
 									</div>
 								) : (
 									<>
-										<div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-orange-100 transition-transform">
+										<div className="w-16 h-16 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-orange-100 transition-transform">
 											<svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
 											</svg>
 										</div>
-										<span className="text-gray-600 font-medium">Upload photo</span>
 									</>
 								)}
 							</button>
