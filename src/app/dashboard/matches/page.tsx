@@ -196,7 +196,7 @@ function MatchCard({
         <div className="mt-4 flex gap-3">
           <button
             onClick={() => onViewProfile(user)}
-            className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:scale-[1.01]"
+            className="cursor-pointer flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:scale-[1.01]"
           >
             View Profile
           </button>
