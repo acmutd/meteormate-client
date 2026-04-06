@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Mail, Phone, MapPin, Search } from "lucide-react";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Chip = {
   label: string;
@@ -237,7 +238,17 @@ export default function Matches() {
           </div>
           
         </div>
+        <AnimatePresence mode="wait">
         {selectedUser && (
+          <motion.div
+            key={selectedUser.id}
+            layout
+            initial={{ opacity: 0, y: -20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="mb-8 origin-top"
+          >
           <div className="mb-8">
             <ProfileCard
               name={selectedUser.name}
@@ -263,19 +274,27 @@ export default function Matches() {
               showSidebar={false}
             />
           </div>
+          </motion.div>
         )}
+        </AnimatePresence>
 
         {/* and matches grid */}
         {filteredMatches.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <motion.div
+            layout
+            transition={{ layout: { duration: 0.45, ease: "easeInOut" } }}
+            className="grid grid-cols-1 gap-6 md:grid-cols-2"
+          >
             {filteredMatches.map((user) => (
+              <motion.div key={user.id} layout>
               <MatchCard
                 key={user.id}
                 user={user}
                 onViewProfile={setSelectedUser}
               />
+              </motion.div>
             ))}
-          </div>
+            </motion.div>
         ) : (
           <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[28px] border border-dashed border-orange-200 bg-white/70 p-10 text-center">
             
