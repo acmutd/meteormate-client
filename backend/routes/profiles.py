@@ -9,8 +9,9 @@ import uuid
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from models.admin import Banlist
 from models.user import User
-from utils.exceptions import BadRequest, Conflict, NotFound
+from utils.exceptions import BadRequest, Conflict, Forbidden, NotFound
 from utils.firebase_storage import upload_profile_picture, delete_profile_picture
 
 from database import commit_or_raise, get_db
@@ -22,7 +23,7 @@ from schemas.user_profile import (
     UserProfileUpdate,
     UserUpdateNotifications,
 )
-from utils.firebase_auth import get_current_user
+from utils.firebase_auth import ensure_email_verified
 
 logger = logging.getLogger("meteormate." + __name__)
 
@@ -32,7 +33,7 @@ router = APIRouter()
 @router.post("/create", response_model=UserProfileResponse)
 async def create_user_profile(
     profile_data: UserProfileCreate,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(ensure_email_verified)],
     db: Annotated[Session, Depends(get_db)],
 ):
     if current_user.profile:
@@ -51,7 +52,7 @@ async def create_user_profile(
 @router.put("/update", response_model=UserProfileResponse)
 async def update_user_profile(
     profile_data: UserProfileUpdate,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(ensure_email_verified)],
     db: Annotated[Session, Depends(get_db)],
 ):
     profile = current_user.profile
@@ -73,10 +74,15 @@ async def update_user_profile(
 @router.get("/get/{uid}", response_model=UserProfileResponse)
 async def get_user_profile(uid: str, db: Annotated[Session, Depends(get_db)]):
     profile = db.query(UserProfile).filter(UserProfile.user_id == uid).first()
-
     if not profile:
         logger.warning(f"profile not found for User {uid}")
         raise NotFound("User profile")
+
+    if db.query(Banlist).filter(Banlist.net_id == uid).first():
+        logger.warning(f"User with Net ID {uid} attempted to access profile but is banned")
+        raise Forbidden(
+            "This user is banned from using this service. If you believe this is a mistake, please contact support."
+        )
 
     return profile
 
@@ -84,7 +90,7 @@ async def get_user_profile(uid: str, db: Annotated[Session, Depends(get_db)]):
 @router.post("/upload_picture", response_model=UserProfileResponse)
 async def upload_profile_pic(
     image_data: UserProfilePicture,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(ensure_email_verified)],
     db: Annotated[Session, Depends(get_db)],
 ):
     profile = current_user.profile
@@ -114,7 +120,7 @@ async def upload_profile_pic(
 @router.delete("/delete_picture/{index}", response_model=UserProfileResponse)
 async def delete_profile_pic(
     index: int,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(ensure_email_verified)],
     db: Annotated[Session, Depends(get_db)],
 ):
     uid = current_user.id
@@ -149,7 +155,7 @@ async def delete_profile_pic(
 @router.post("/update_notifications", response_model=UserProfileResponse)
 async def update_notifications(
     notification_updates: UserUpdateNotifications,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(ensure_email_verified)],
     db: Annotated[Session, Depends(get_db)],
 ):
     profile = current_user.profile

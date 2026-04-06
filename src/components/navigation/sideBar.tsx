@@ -39,7 +39,9 @@ export default function Sidebar() {
         <aside className="w-70 border-r border-[#F1EADA] px-5 py-5 mx-1 mt-3 mb-3 flex flex-col">
             <nav className="space-y-2 flex-1">
                 {items.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = item.href === "/dashboard/profile" 
+                    ? pathname.startsWith(item.href)
+                    : pathname === item.href;
                 const Icon = item.icon;
 
                 return (
