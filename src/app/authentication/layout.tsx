@@ -10,13 +10,13 @@ export default function AuthLayout({
             className="min-h-screen w-screen flex items-center justify-center relative overflow-hidden bg-black text-white">
             {/* Stars background */}
             <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-100"
                 style={{
                     backgroundImage: "url('/stars.webp')",
                 }}
             />
 
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"/>
+            <div className="absolute inset-0"/>
 
             <div
                 className="absolute inset-0 pointer-events-none"
