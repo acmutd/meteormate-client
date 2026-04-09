@@ -48,7 +48,7 @@ export default function ImageUpload({
 	return (
 		<div
 			className={cn(
-				"w-full bg-white rounded-[28px] shadow-sm border border-[#F1EADA] py-8 px-6 sm:px-10 flex flex-col h-fit transition-all duration-200",
+				"w-full bg-white rounded-[28px] shadow-sm border border-[#F1EADA] py-8 px-6 sm:px-10 flex flex-col flex-1 transition-all duration-200",
 				isDragOver ? "border-primary bg-orange-50/50" : ""
 			)}
 			onDragOver={onDragOver}

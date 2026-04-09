@@ -182,8 +182,8 @@ export default function UploadPicturesPage() {
 				progressImage="/peechi_progress_2.svg"
 			/>
 
-			<div className="mx-auto mt-5 grid gap-8 w-full grid-cols-1 lg:grid-cols-2 lg:items-start">
-				<div className="w-full lg:max-w-135 justify-center ml-auto pt-4">
+			<div className="mx-auto mt-5 flex flex-col lg:flex-row gap-8 w-full justify-center lg:items-stretch">
+				<div className="w-full lg:w-1/2 lg:max-w-135 flex flex-col pt-4">
 					<ImageUpload
 						photos={photos}
 						primaryPhoto={primaryPhoto}
@@ -202,7 +202,7 @@ export default function UploadPicturesPage() {
 					/>
 				</div>
 
-				<div className="w-full flex pt-4 justify-center lg:justify-start min-w-0">
+				<div className="w-full lg:w-1/2 lg:max-w-195 flex flex-col pt-4">
 					<ProfileCardPreview
 						name={displayName}
 						images={photos}

@@ -33,9 +33,9 @@ export default function ProfileCardPreview({
     const hasImages = safeImages.length > 0;
 
     return (
-        <div className="w-full h-fit max-w-md sm:max-w-xl lg:max-w-195 relative flex flex-col pb-10 cursor-default select-none">
-            <div className="perspective-distant relative w-full h-fit">
-                <div className="w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+        <div className="w-full flex-1 max-w-md sm:max-w-xl lg:max-w-195 relative flex flex-col cursor-default select-none">
+            <div className="perspective-distant relative w-full flex-1 flex flex-col">
+                <div className="w-full flex-1 flex flex-col rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
                     <div className="relative rounded-[22px] overflow-hidden bg-gray-100">
                         {hasImages ? (
                             <div className="w-full">
@@ -80,7 +80,7 @@ export default function ProfileCardPreview({
             </div>
 
             {/* Header / Preview indicator */}
-            <div className="flex items-center justify-between px-1 self-end">
+            <div className="absolute -bottom-7 right-1 flex items-center justify-between px-1">
                 <span className="text-gray-500 font-medium text-sm flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
