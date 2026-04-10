@@ -88,6 +88,40 @@ export interface SurveyUpdateBody {
     drink?: boolean;
 }
 
+// Shared payload used by upsert flows (POST first, then PUT fallback)
+export interface SurveyPayload {
+    housing_intent?: string | null;
+
+    budget_min?: number | null;
+    budget_max?: number | null;
+    move_in_date?: string | null;
+
+    wake_time?: string | null;
+    cleanliness?: string | null;
+    noise_tolerance?: string | null;
+
+    interests?: string[];
+    dealbreakers?: string[];
+
+    cooking_frequency?: string | null;
+    pet_preference?: string | null;
+    guests_frequency?: string | null;
+    roommate_closeness?: string | null;
+
+    on_campus_locations?: string[];
+    honors?: boolean | null;
+    llc_interest?: boolean | null;
+    num_roommates?: string | null;
+
+    have_lease?: boolean | null;
+    have_lease_length?: string | null;
+
+    answers?: Record<string, unknown>;
+
+    smoke_vape?: boolean;
+    drink?: boolean;
+}
+
 export interface SurveyResponse {
     user_id: string;
 

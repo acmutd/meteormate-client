@@ -27,6 +27,7 @@ class User(ORMBase):
     # behind-the-scenes stuff
     is_active = Column(Boolean, nullable=False, server_default='true', default=True)
     pending_deletion = Column(Boolean, nullable=False, server_default='false', default=False)
+    is_banned = Column(Boolean, nullable=False, server_default='false', default=False)
 
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(
@@ -48,20 +49,3 @@ class User(ORMBase):
     profile = relationship(
         "UserProfile", back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
-
-
-class UserRequestVerify(BaseModel):
-    email: EmailStr
-    uid: Optional[str] = None
-    purpose: Literal["verify", "reset"] = "verify"
-
-
-class UserCompleteVerify(BaseModel):
-    email: EmailStr
-    code: str
-
-
-class UserResetPassword(BaseModel):
-    email: EmailStr
-    code: str
-    new_password: str

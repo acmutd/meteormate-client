@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import ImageDisplay from "./ImageDisplay";
+import LoadingSpinner from "../LoadingSpinner";
+import { apiFetch } from "@/utils/api/client";
 
 // const MAX_IMAGES = 5;
 
 interface ProfileGalleryProps {
   userId: string;
 }
+
+type ProfileImagesResponse = {
+  profile_picture_url?: string[];
+};
 
 export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   const [images, setImages] = useState<string[]>([]);
@@ -15,11 +21,14 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     async function fetchProfileImages() {
       setLoading(true);
       try {
-        const res = await fetch(`/api/profiles/get/${userId}`, {
+        const res = await apiFetch<ProfileImagesResponse>(`/api/profiles/get/${userId}`, {
           method: "GET",
         });
-        if (!res.ok) throw new Error("Failed to recieve profile images");
-        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(res.error || "Failed to receive profile images");
+        }
+
+        const data = res.data;
         if (
           !data ||
           !Array.isArray(data.profile_picture_url) ||
@@ -29,6 +38,9 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
         } else {
           setImages(data.profile_picture_url);
         }
+      } catch (error) {
+        console.error("Failed to fetch profile images:", error);
+        setImages([]);
       } finally {
         setLoading(false);
       }
@@ -65,8 +77,6 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     });
   };
 
-  if (loading) return <div>Loading images...</div>;
-
   const profileImage = images[0];
   // const featuredImages = images.slice(1, MAX_IMAGES);
   // const nextFeaturedIndex = 1 + featuredImages.length;
@@ -78,7 +88,7 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
           <span className="mb-2 font-semibold text-sm self-start">
             Your Profile Picture
           </span>
-          {profileImage ? (
+          {profileImage && !loading ? (
             <ImageDisplay
               key={0}
               imageUrl={profileImage}
@@ -86,13 +96,17 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
               deleteIndex={images.length > 0 ? 0 : undefined}
               onDeleted={() => handleImageRemoved(0)}
             />
-          ) : (
+          ) : !loading ? (
             <ImageDisplay
               key={0}
               imageUrl=""
               variant="placeholder"
               onImageChange={(url) => handleImageChange(url, 0)}
             />
+          ) : (
+            <span className="w-32 h-32 rounded-xl object-cover bg-gray-300 cursor-pointer flex items-center justify-center">
+              <LoadingSpinner />
+            </span>
           )}
         </div>
         {/* Removing featured images to match figma design, but the code is still here */}

@@ -52,3 +52,10 @@ export interface ProfileUpdateNotificationsBody {
     match_notification?: boolean | null;
     promotional_notification?: boolean | null;
 }
+export interface UpdateUserProfileBody {
+    major: string;
+    gender: string;
+    classification: string;
+    bio: string;
+    age: number | null;
+}

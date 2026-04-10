@@ -48,3 +48,8 @@ body {
     padding: 15px;
   }
 }
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #f28c00 #fff2df;
+}
