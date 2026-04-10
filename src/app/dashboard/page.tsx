@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { fetchCurrentUser } from "@/utils/api/auth";
-import { UserProfile } from "@/types/userProfile";
-import LoadingSpinner from "@/components/LoadingSpinner";
+//commenting these out but we will be needing them later - just so I don't forget
+// import { useRouter } from "next/navigation";
+// import { fetchCurrentUser } from "@/utils/api/auth";
+// import { UserProfile } from "@/types/userProfile";
+// import LoadingSpinner from "@/components/LoadingSpinner"; 
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 import confetti from "canvas-confetti";
 import { useCallback, useRef } from "react";
@@ -11,7 +12,7 @@ import { ItsAMatchOverlay } from "@/components/itsAMatch";
 
 export default function Discover() {
   const [showMatch, setShowMatch] = useState(false);
-	const hideTimer = useRef<number | null>(null);
+	
 
 	const fireMatch = useCallback(() => {
     // A quick "for ~900ms keep firing" effect
@@ -54,10 +55,7 @@ export default function Discover() {
       }
     })();
 
-    // if (hideTimer.current) window.clearTimeout(hideTimer.current);
-    // hideTimer.current = window.setTimeout(() => {
-    //   setShowMatch(false);
-    // }, 2200);
+   
   }, []);
 
   return (

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type MatchOverlayProps = {
 	open: boolean;
@@ -15,9 +16,14 @@ type MatchOverlayProps = {
 
 function AvatarCircle({ src, alt }: { src: string; alt: string }) {
 	return (
-		<div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white mt-5">
-			
-			<img src={src} alt={alt} className="h-full w-full object-cover" />
+		<div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white mt-5">
+			<Image
+				src={src}
+				alt={alt}
+				fill
+				className="object-cover"
+				sizes="(max-width: 640px) 80px, 96px"
+			/>
 		</div>
 	);
 }

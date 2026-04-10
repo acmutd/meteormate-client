@@ -328,7 +328,7 @@ function OffCampusUI() {
 			return;
 		}
 
-		router.push("/dashboard"); // placeholder is fine for now
+		router.push("/dashboard"); 
 	};
 
 
@@ -509,29 +509,6 @@ export default function HousingPage() {
 
     const router = useRouter();
     const searchParams = useSearchParams();
-
-	//const auth = getAuth();
-	// const [user, setUser] = useState<User | null>(null);
-	// const [idToken, setIdToken] = useState<string | null>(null);
-
-	// useEffect(() => {
-	// 	const unsub = onAuthStateChanged(auth, async (u) => {
-	// 		setUser(u);
-
-	// 		if (u) {
-	// 			const token = await u.getIdToken(true);
-	// 			setIdToken(token);
-	// 			console.log(" Logged in user:", u);
-	// 			console.log(" UID:", u.uid);
-	// 			console.log(" Email:", u.email);
-	// 			console.log(" ID Token:", token);
-	// 		} else {
-	// 			console.log(" No user logged in");
-	// 		}
-	// 	});
-
-	// 	return () => unsub();
-	// }, [auth]);
 
     const living = useMemo(
         () => searchParams.get("living") ?? "",

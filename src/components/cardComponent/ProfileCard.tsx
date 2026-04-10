@@ -68,13 +68,9 @@ export default function ProfileCard({
     showActions = true,
     showSidebar = true,
     }: ProfileCardProps) {
-    //const safeImages = useMemo(() => (images?.length ? images : [""]), [images]);
-    //const [idx, setIdx] = useState(0);
+    
 
     const [flipped, setFlipped] = useState(false); 
-    //const flipToBack = () => setFlipped(true);
-    const flipToFront = () => setFlipped(false);
-    const toggleFlip = () => setFlipped((v) => !v);
     const [peek, setPeek] = useState(false);  
     const [peekDown, setPeekDown] = useState(false);
     const [showHint, setShowHint] = useState(true);
@@ -202,17 +198,11 @@ export default function ProfileCard({
                                     className={cn(
                                         "cursor-pointer absolute bottom-4 right-4 z-20",
                                         "h-12 w-12 rounded-2xl",
-                                        // "border border-[#F1EADA] bg-white/80 backdrop-blur",
-                                        // "shadow-sm hover:shadow-md transition",
+                                        
                                         "flex items-center justify-center",
                                         "group"
                                     )}
                                     >
-                                    
-                                    {/* <span className="text-lg text-gray-700 transition group-hover:translate-x-[1px] group-hover:-translate-y-[1px]">
-                                        ↻
-                                    </span> */}
-
                                     
                                     <span
                                         className={cn(
@@ -260,15 +250,11 @@ export default function ProfileCard({
                                         className={cn(
                                             "cursor-pointer absolute bottom-4 right-4 z-20",
                                             "h-12 w-12 rounded-2xl",
-                                            // "border border-[#F1EADA] bg-white/80 backdrop-blur",
-                                            // "shadow-sm hover:shadow-md transition",
                                             "flex items-center justify-center",
                                             "group"
                                         )}
                                         >
-                                        {/* <span className="text-lg text-gray-700 transition group-hover:-translate-x-[1px] group-hover:-translate-y-[1px]">
-                                            ↺
-                                        </span> */}
+                                     
 
                                         <span
                                             className={cn(

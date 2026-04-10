@@ -19,7 +19,6 @@ type MatchUser = {
   hasLease: boolean;
   email: string;
   phone: string;
-  //location: string;
   major?: string;
   bio?: string;
   interests?: Chip[];
@@ -187,10 +186,7 @@ function MatchCard({
             <span>{user.phone}</span>
           </div>
 
-          {/* <div className="flex items-center gap-3 text-sm text-gray-700">
-            <MapPin className="h-4 w-4 text-primary" />
-            <span>{user.location}</span>
-          </div> */}
+          
         </div>
 
         <div className="mt-4 flex gap-3">
@@ -259,10 +255,6 @@ export default function Matches() {
                   label: selectedUser.hasLease ? "Has a lease" : "No lease yet",
                   tone: "orange",
                 },
-                // {
-                //   label: selectedUser.location,
-                //   tone: "gray",
-                // },
               ]}
               bio={selectedUser.bio}
               back={{
