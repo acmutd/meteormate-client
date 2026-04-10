@@ -5,6 +5,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
 import { loadNotifications, type LikeNotification } from "@/lib/notifications";
 import ProfileCardBack from "@/components/cardComponent/ProfileCardBack";
+import { cn } from "@/utils/cn";
 
 type Chip = {
 	label: string;
@@ -36,10 +37,6 @@ type ProfileCardProps = {
     onRewind?: () => void;
     onLike?: () => void;
 };
-
-function cn(...classes: Array<string | false | null | undefined>) {
-    return classes.filter(Boolean).join(" ");
-}
 
 function Dot({ active }: { active: boolean }) {
     return (

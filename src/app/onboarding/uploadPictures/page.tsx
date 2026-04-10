@@ -187,18 +187,20 @@ export default function UploadPicturesPage() {
 					<ImageUpload
 						photos={photos}
 						primaryPhoto={primaryPhoto}
-						isDragOver={isDragOver}
 						isCompressing={isCompressing}
 						compressionError={compressionError}
 						dropWarning={dropWarning}
 						maxPhotos={MAX_PHOTOS}
 						fileInputRef={fileInputRef}
-						onDragOver={handleDragOver}
-						onDragLeave={handleDragLeave}
-						onDrop={handleDrop}
 						onImageClick={handleImageClick}
 						onDeletePhoto={handleDeletePhoto}
 						onFileChange={handleFileChange}
+						dragProps={{
+							isDragOver: isDragOver,
+							onDragOver: handleDragOver,
+							onDragLeave: handleDragLeave,
+							onDrop: handleDrop
+						}}
 					/>
 				</div>
 

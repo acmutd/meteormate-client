@@ -3,6 +3,7 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
+import { cn } from "@/utils/cn";
 
 type Tag = {
     label: string;
@@ -16,9 +17,6 @@ type ProfileCardPreviewProps = {
     bio?: string;
 };
 
-function cn(...classes: Array<string | false | null | undefined>) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function ProfileCardPreview({
     name,
