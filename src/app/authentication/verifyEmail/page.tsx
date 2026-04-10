@@ -4,6 +4,7 @@ import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { VerifyEmail, SendVerificationCode } from "@/utils/api/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
@@ -16,7 +17,15 @@ export default function VerifyEmailPage() {
     const [isResending, setIsResending] = useState(false);
 
     useEffect(() => {
-        setEmail(localStorage.getItem("verificationEmail"));
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user && user.email) {
+                setEmail(user.email);
+            } else {
+                setEmail(null);
+            }
+        });
+        return () => unsubscribe();
     }, []);
 
     useEffect(() => {
@@ -68,16 +77,21 @@ export default function VerifyEmailPage() {
 
         try {
             setIsVerifying(true);
-            const storedEmail = localStorage.getItem("verificationEmail");
 
-            if (!storedEmail) {
-                setError("No email found. Please sign up again.");
+            if (!email) {
+                setError("No session found. Please log in again.");
                 return;
             }
 
-            const response = await VerifyEmail(storedEmail, verificationCode);
+            const response = await VerifyEmail(email, verificationCode);
 
             if (!response.ok) {
+                if (response.code === "401") {
+                    localStorage.removeItem("verificationEmail");
+                    setError("Session expired. Please log in again.");
+                    setTimeout(() => router.push("/authentication"), 2000);
+                    return;
+                }
                 setError(response.error || "Invalid code. Please try again.");
                 return;
             }
@@ -92,11 +106,10 @@ export default function VerifyEmailPage() {
     };
 
     const resendCode = async () => {
-        const storedEmail = localStorage.getItem("verificationEmail");
         setError(null);
 
-        if (!storedEmail) {
-            setError("No email found. Please log in again.");
+        if (!email) {
+            setError("No session found. Please log in again.");
             return;
         }
 
@@ -104,10 +117,18 @@ export default function VerifyEmailPage() {
 
         try {
             setIsResending(true);
-            const response = await SendVerificationCode({ email: storedEmail, purpose: "verify" });
+            const response = await SendVerificationCode();
 
             if (!response.ok) {
+                if (response.code === "401") {
+                    localStorage.removeItem("verificationEmail");
+                    setError("Session expired. Please log in again.");
+                    setTimeout(() => router.push("/authentication"), 2000);
+                    return;
+                }
                 setError(response.error || "Failed to resend code.");
+            } else {
+                setError(null);
             }
         } catch {
             setError("Failed to resend code. Please try again.");

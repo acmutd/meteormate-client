@@ -34,6 +34,8 @@ export default function StackedCarousel({
     if (totalImages === 0) return null;
 
     const maxVisible = Math.min(totalImages, 5);
+    const stackDepth = 3;
+    const stackSpacing = 125;
 
     const getImageIndex = (offset: number) => {
         return (currentIndex + offset) % totalImages;
@@ -66,40 +68,37 @@ export default function StackedCarousel({
     }, [isAnimating, totalImages]);
 
     return (
-        <div className="relative flex items-center gap-4 select-none">
+        <div className="relative flex w-full items-center gap-4 select-none">
             {/* Stacked Cards */}
             <div className="relative h-[380px] w-full">
                 {Array.from({ length: maxVisible }).map((_, offset) => {
                 const imgIndex = getImageIndex(offset);
                 const isActive = offset === 0;
 
-                const translateX = offset * 125;
+                const translateX = Math.min(offset, stackDepth - 1) * stackSpacing;
                 const zIndex = maxVisible - offset;
-                const opacity = isActive ? 1 : Math.max(0.15, 1 - offset * 0.22);
+                const depthShade = isActive ? 0 : Math.min(0.45, 0.08 + offset * 0.12);
 
                 let animTranslateX = translateX;
-                let animOpacity = opacity;
+                let animOpacity = 1;
+                let animShade = depthShade;
 
                 if (isAnimating && direction === "left") {
                     if (isActive) {
                     animTranslateX = -600;
                     animOpacity = 0;
                     } else {
-                    animTranslateX = (offset - 1) * 125;
-                    animOpacity =
-                        offset - 1 === 0
-                        ? 1
-                        : Math.max(0.15, 1 - (offset - 1) * 0.22);
+                    animTranslateX = Math.min(Math.max(offset - 1, 0), stackDepth - 1) * stackSpacing;
+                    animShade = offset - 1 === 0 ? 0 : Math.min(0.45, 0.08 + (offset - 1) * 0.12);
                     }
                 }
 
                 if (isAnimating && direction === "right") {
                     if (isActive) {
-                    animTranslateX = 48;
-                    animOpacity = Math.max(0.15, 1 - 0.22);
+                    animTranslateX = stackSpacing;
                     } else {
-                    animTranslateX = (offset + 1) * 48;
-                    animOpacity = Math.max(0.15, 1 - (offset + 1) * 0.22);
+                    animTranslateX = Math.min(offset + 1, stackDepth - 1) * stackSpacing;
+                    animShade = Math.min(0.45, 0.08 + (offset + 1) * 0.12);
                     }
                 }
 
@@ -108,7 +107,10 @@ export default function StackedCarousel({
                 return (
                     <div
                     key={`${imgIndex}-${offset}`}
-                    className="absolute left-0 top-0 h-full overflow-hidden rounded-[22px] shadow-2xl border-1 border-white"
+                    className={cn(
+                        "absolute left-0 top-0 h-full overflow-hidden rounded-[22px]",
+                        isActive ? "shadow-2xl border border-white" : "shadow-none border-0"
+                    )}
                     style={{
                         width: "65%",
                         zIndex,
@@ -165,7 +167,12 @@ export default function StackedCarousel({
                         </button>
                     </>
 )}
-                    {!isActive && <div className="absolute inset-0 bg-black/10" />}
+                    {!isActive && (
+                        <div
+                            className="absolute inset-0"
+                            style={{ backgroundColor: `rgba(0, 0, 0, ${animShade})` }}
+                        />
+                    )}
                     </div>
                 );
                 })}

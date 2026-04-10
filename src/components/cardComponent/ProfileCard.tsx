@@ -5,6 +5,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
 import { loadNotifications, type LikeNotification } from "@/lib/notifications";
 import ProfileCardBack from "@/components/cardComponent/ProfileCardBack";
+import { cn } from "@/utils/cn";
 
 type Chip = {
 	label: string;
@@ -36,10 +37,6 @@ type ProfileCardProps = {
     onRewind?: () => void;
     onLike?: () => void;
 };
-
-function cn(...classes: Array<string | false | null | undefined>) {
-    return classes.filter(Boolean).join(" ");
-}
 
 function Dot({ active }: { active: boolean }) {
     return (
@@ -105,7 +102,7 @@ export default function ProfileCard({
             <div className="flex flex-col flex-1 min-w-0 lg:items-center">
                 {/* we don't need the old wrapper so here I made the new one just few changes  */}
                 <div className="w-full max-w-md sm:max-w-xl lg:max-w-195 relative">
-                    <div className="[perspective:1200px] relative w-full h-[67vh] max-h-[720px] min-h-[520px]">
+                    <div className="[perspective:1200px] relative w-full h-[560px] sm:h-[620px] lg:h-[720px]">
                         <div
                             className={cn(
                                 "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
@@ -144,11 +141,13 @@ export default function ProfileCard({
                                     </div>
                                 )}
 
-                                {bio && (
-                                    <p className="mt-5 text-[17px] leading-relaxed text-gray-600">
-                                    {bio}
-                                    </p>
-                                )}
+                                <div className="mt-5 h-[112px] overflow-hidden text-[17px] leading-relaxed text-gray-600">
+                                    {bio ? (
+                                        <p className="line-clamp-4">{bio}</p>
+                                    ) : (
+                                        <p className="opacity-50 italic">Your bio will appear here...</p>
+                                    )}
+                                </div>
                                 </div>
                             </div>
 
