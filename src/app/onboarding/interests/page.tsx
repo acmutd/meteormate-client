@@ -59,8 +59,8 @@ export default function InterestsPage() {
 			<ProgressHeader 
                 title="Select Your Interests"
                 subtitle="Pick a few interests to show who you are! You may pick up to 6."
-                currentStep={4}
-                progressImage="/peechi_progress_4.svg"
+                currentStep={5}
+                progressImage="/peechi_progress_5.svg"
             />
 			<div className="p-8">
 				<div className="max-w-4xl mx-auto">
