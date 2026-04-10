@@ -13,7 +13,8 @@ type ImageUploadProps = {
 	primaryPhoto?: string;
 	maxPhotos?: number;
 	// Status
-	isCompressing: boolean;
+	uploadingSlotIndex: number | null;
+	deletingSlotIndex: number | null;
 	compressionError: string | null;
 	dropWarning: string | null;
 	// File Input
@@ -35,7 +36,8 @@ export default function ImageUpload({
 	photos,
 	primaryPhoto,
 	maxPhotos = 5,
-	isCompressing,
+	uploadingSlotIndex,
+	deletingSlotIndex,
 	compressionError,
 	dropWarning,
 	fileInputRef,
@@ -72,14 +74,24 @@ export default function ImageUpload({
 
 						{primaryPhoto ? (
 							<div className="relative group w-full aspect-square max-w-30 rounded-full bg-gray-100 shadow-sm border border-gray-200">
-								<div className="w-full h-full rounded-full overflow-hidden relative">
+								<div className={cn("w-full h-full rounded-full overflow-hidden relative transition-opacity", deletingSlotIndex === 0 ? "opacity-50" : "opacity-100")}>
 									<Image src={primaryPhoto} alt="Primary Profile Photo" fill sizes="100%" className="object-cover" />
 								</div>
+								{deletingSlotIndex === 0 && (
+									<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+										<svg className="animate-spin h-6 w-6 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+											<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+											<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+										</svg>
+									</div>
+								)}
 								<button
 									type="button"
 									onClick={() => onDeletePhoto(0)}
+									disabled={deletingSlotIndex !== null}
                                     className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/40 hover:bg-red-500 transition-colors flex items-center justify-center text-white text-xs font-bold opacity-0 group-hover:opacity-100 backdrop-blur-sm"
 									title="Remove primary photo"
+									aria-label="Remove primary profile photo"
 								>
 									X
 								</button>
@@ -87,15 +99,16 @@ export default function ImageUpload({
 						) : (
 							<button
 								onClick={onImageClick}
-								disabled={isCompressing}
+								disabled={uploadingSlotIndex !== null}
+								aria-label="Upload primary profile photo"
 								className={cn(
 									"group w-full aspect-square max-w-30 rounded-full border-2 border-dashed transition-all shrink-0 relative overflow-hidden flex flex-col items-center justify-center",
 									dragProps.isDragOver ? "border-primary bg-primary/5" : "border-gray-300 hover:border-primary hover:bg-orange-50/50 cursor-pointer"
 								)}
 							>
-								{isCompressing && photos.length === 0 ? (
-									<div className="flex flex-col items-center justify-center">
-										<svg className="animate-spin h-8 w-8 text-primary mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								{uploadingSlotIndex === 0 ? (
+									<div className="flex flex-col items-center justify-center" aria-live="polite" aria-label="Uploading...">
+										<svg className="animate-spin h-8 w-8 text-primary mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
 											<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
 											<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 										</svg>
@@ -104,7 +117,7 @@ export default function ImageUpload({
 								) : (
 									<>
 										<div className="w-16 h-16 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-orange-100 transition-transform">
-											<svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
 											</svg>
 										</div>
@@ -133,7 +146,8 @@ export default function ImageUpload({
 										photo={photos[slotIndex]}
 										slotIndex={slotIndex}
 										photosLength={photos.length}
-										isCompressing={isCompressing}
+										uploadingSlotIndex={uploadingSlotIndex}
+										deletingSlotIndex={deletingSlotIndex}
 										primaryPhoto={primaryPhoto}
 										onDeletePhoto={onDeletePhoto}
 										onImageClick={onImageClick}

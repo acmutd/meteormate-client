@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { uploadProfilePicture } from "@/utils/api/profile";
+import { uploadProfilePicture, deleteProfilePicture } from "@/utils/api/profile";
 import { compressImage } from "@/utils/imageCompression";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
@@ -21,7 +21,8 @@ export default function UploadPicturesPage() {
 	const [photos, setPhotos] = useState<string[]>([]);
 	const [cropImage, setCropImage] = useState<string | null>(null);
 	const [isCropping, setIsCropping] = useState(false);
-	const [isCompressing, setIsCompressing] = useState(false);
+	const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
+	const [deletingSlotIndex, setDeletingSlotIndex] = useState<number | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const [compressionError, setCompressionError] = useState<string | null>(null);
@@ -37,6 +38,9 @@ export default function UploadPicturesPage() {
 				const res = await fetchCurrentUser();
 				if (res.ok && res.data) {
 					setUserProfile(res.data);
+					if (res.data.profile?.profile_picture_url) {
+						setPhotos(res.data.profile.profile_picture_url);
+					}
 				}
 			} catch (err) {
 				console.error("Failed to fetch user profile", err);
@@ -57,6 +61,7 @@ export default function UploadPicturesPage() {
 	const processSelectedFile = (file: File) => {
 		setCompressionError(null);
 		setDropWarning(null);
+		setApiError(null);
 		const reader = new FileReader();
 		reader.onload = () => {
 			setCropImage(reader.result as string);
@@ -106,7 +111,9 @@ export default function UploadPicturesPage() {
 	const handleCropDone = async (croppedDataUrl: string) => {
 		setIsCropping(false);
 		setCropImage(null);
-		setIsCompressing(true);
+		
+		const currentSlot = photos.length;
+		setUploadingSlotIndex(currentSlot);
 		setCompressionError(null);
 
 		try {
@@ -118,21 +125,51 @@ export default function UploadPicturesPage() {
 
 			const compressedFile = await compressImage(file);
 
+			// 1MB safety check
+			if (compressedFile.size > 1024 * 1024) {
+				setCompressionError("Image is too complex to compress under 1MB. Please try a simpler photo.");
+				return;
+			}
+
 			const reader = new FileReader();
-			reader.onload = () => {
-				setPhotos((prev) => [...prev, reader.result as string]);
-			};
-			reader.readAsDataURL(compressedFile);
+			const base64Promise = new Promise<string>((resolve, reject) => {
+				reader.onload = () => resolve(reader.result as string);
+				reader.onerror = reject;
+				reader.readAsDataURL(compressedFile);
+			});
+			
+			const base64 = await base64Promise;
+			const uploadRes = await uploadProfilePicture({ base64 });
+			
+			if (uploadRes.ok && uploadRes.data?.profile_picture_url) {
+				setPhotos(uploadRes.data.profile_picture_url);
+			} else {
+				setCompressionError("Failed to upload image. Please try again.");
+			}
 		} catch (error) {
-			console.error("Image compression failed:", error);
+			console.error("Image compression/upload failed:", error);
 			setCompressionError("Failed to process image. Please try a different photo.");
 		} finally {
-			setIsCompressing(false);
+			setUploadingSlotIndex(null);
 		}
 	};
 
-	const handleDeletePhoto = (index: number) => {
-		setPhotos((prev) => prev.filter((_, i) => i !== index));
+	const handleDeletePhoto = async (index: number) => {
+		setApiError(null);
+		try {
+			// Show specific loader over this slot while deleting
+			setDeletingSlotIndex(index);
+			const res = await deleteProfilePicture(index);
+			if (res.ok && res.data?.profile_picture_url) {
+				setPhotos(res.data.profile_picture_url);
+			} else if (res.ok && res.data) {
+				setPhotos(res.data.profile_picture_url || []);
+			}
+		} catch (e) {
+			console.error("Failed to delete photo", e);
+		} finally {
+			setDeletingSlotIndex(null);
+		}
 	};
 
 	const handleNextStep = async () => {
@@ -140,23 +177,6 @@ export default function UploadPicturesPage() {
 
 		setApiError(null);
 		setIsLoading(true);
-
-		const tempPhotos = [...photos];
-		const failedUploads: string[] = [];
-
-		for (const photoBase64 of tempPhotos) {
-			const picResult = await uploadProfilePicture({ base64: photoBase64 });
-			if (!picResult.ok) {
-				failedUploads.push(photoBase64);
-			}
-		}
-
-		if (failedUploads.length > 0) {
-			setPhotos(failedUploads);
-			setApiError(`Failed to upload ${failedUploads.length} photo(s). Please try again.`);
-			setIsLoading(false);
-			return;
-		}
 
 		setIsLoading(false);
 		router.push("/onboarding/lifestylePreferences");
@@ -171,7 +191,8 @@ export default function UploadPicturesPage() {
 	}
 
 	const displayName = userProfile?.profile?.first_name ? `${userProfile.profile.first_name}`.trim() : "Your Name";
-	const displayBio = userProfile?.profile?.bio || "Your bio will appear here...";
+	const DEFAULT_BIO = "Your bio will appear here...";
+	const displayBio = userProfile?.profile?.bio || DEFAULT_BIO;
 
 	return (
 		<div className="min-h-screen w-screen overflow-x-hidden px-4 pb-10 sm:px-6 lg:px-10">
@@ -187,7 +208,8 @@ export default function UploadPicturesPage() {
 					<ImageUpload
 						photos={photos}
 						primaryPhoto={primaryPhoto}
-						isCompressing={isCompressing}
+						uploadingSlotIndex={uploadingSlotIndex}
+						deletingSlotIndex={deletingSlotIndex}
 						compressionError={compressionError}
 						dropWarning={dropWarning}
 						maxPhotos={MAX_PHOTOS}
@@ -217,10 +239,10 @@ export default function UploadPicturesPage() {
 			<div className="mt-8 w-full flex flex-col items-center justify-center">
 				<NextStepButton
 					className={`mb-3 ${
-						photos.length < MIN_PHOTOS || isLoading || isCompressing ? "opacity-50 cursor-not-allowed" : ""
+						photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null ? "opacity-50 cursor-not-allowed" : ""
 					}`}
 					onClick={handleNextStep}
-					disabled={photos.length < MIN_PHOTOS || isLoading || isCompressing}
+					disabled={photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null}
 				/>
 				{photos.length < MIN_PHOTOS && (
 					<p className="text-[13px] text-gray-500 font-medium">A minimum of {MIN_PHOTOS} photos is required.</p>
