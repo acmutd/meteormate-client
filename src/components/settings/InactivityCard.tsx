@@ -21,7 +21,7 @@ export default function InactivityCard() {
         setShowInactiveModal(false);
         router.push("/");
       } else {
-        setError("Failed to mark account as inactive");
+        setError(result.error || "Failed to mark account as inactive");
       }
     } catch (err) {
       console.error("Error marking account as inactive:", err);

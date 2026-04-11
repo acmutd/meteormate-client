@@ -81,12 +81,6 @@ export default function EmailPreferencesCard() {
             </div>
           ) : (
             <>
-              {error && (
-                <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
-                  {error}
-                </div>
-              )}
-              
               <div className="flex items-center justify-between border-b border-gray-200 pb-6 mb-6">
                 <div>
                   <h4 className="font-medium text-gray-900 text-base">Marketing</h4>
@@ -94,12 +88,16 @@ export default function EmailPreferencesCard() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setMarketing(!marketing)}
+                  onClick={() => {
+                    setMarketing(!marketing);
+                    setError(null);
+                  }}
                   disabled={isSaving}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     marketing ? "bg-[#FF9100]" : "bg-gray-200"
                   } ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
+                  <span className="sr-only">Enable marketing updates</span>
                   <span
                     className={`${
                       marketing ? "translate-x-6" : "translate-x-1"
@@ -115,7 +113,10 @@ export default function EmailPreferencesCard() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setMatches(!matches)}
+                  onClick={() => {
+                    setMatches(!matches);
+                    setError(null);
+                  }}
                   disabled={isSaving}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     matches ? "bg-[#FF9100]" : "bg-gray-200"
@@ -133,7 +134,7 @@ export default function EmailPreferencesCard() {
           )}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end flex-col items-end">
           <button
             type="button"
             className={`relative flex items-center justify-center py-1 px-4 rounded-md text-white font-semibold text-md transition-all duration-200 ease-in-out ${
@@ -146,6 +147,12 @@ export default function EmailPreferencesCard() {
           >
             {isSaving ? "Saving..." : "Save"}
           </button>
+
+          {error && (
+            <div className="text-red-600 text-sm mt-2">
+              {error}
+            </div>
+          )}
         </div>
       </div>
     </div>
