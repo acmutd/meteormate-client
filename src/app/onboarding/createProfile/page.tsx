@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { Filter } from "bad-words";
 import NextStepButton from "../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../components/ProgressHeader";
@@ -10,6 +11,9 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { createProfile } from "@/utils/api/profile";
 import { Gender, Classification } from "@/types/profile";
 import { useOnboarding } from "@/contexts/onboardingContext";
+
+// profanity filter
+const filter = new Filter();
 
 export default function CreateProfilePage() {
 	const router = useRouter();
@@ -26,6 +30,7 @@ export default function CreateProfilePage() {
 	// API state
 	const [isLoading, setIsLoading] = useState(false);
 	const [apiError, setApiError] = useState<string | null>(null);
+	const [profanityError, setProfanityError] = useState<string | null>(null);
 
 	// get user email from firebase auth
 	useEffect(() => {
@@ -71,8 +76,20 @@ export default function CreateProfilePage() {
 	};
 
 	const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		if (e.target.value.length <= BIO_CHAR_LIMIT) {
-			setBio(e.target.value);
+		const value = e.target.value;
+		if (value.length <= BIO_CHAR_LIMIT) {
+			setBio(value);
+			
+			// check for profanity
+			if (filter.isProfane(value)) {
+				setProfanityError("Profanity is not allowed in your bio.");
+			} else {
+				setProfanityError(null);
+			}
+
+            // clean as well bc u can bypass it
+            // ex: poop gets caught but poopoo doesn't idk y poop is on there but now poop will turn to ****
+            setBio(filter.clean(value));
 		}
 	};
 
@@ -323,7 +340,7 @@ export default function CreateProfilePage() {
 					<h1 className="text-black font-medium text-sm mb-2">Bio</h1>
 					<div className="relative">
 						<textarea
-							placeholder="Write your Bio here e.g your hobbies, interests ETC"
+							placeholder="Write your Bio here e.g your hobbies, interests etc"
 							className={`${inputStyle} resize-none h-32`}
 							value={bio}
 							onChange={handleBioChange}
@@ -333,14 +350,17 @@ export default function CreateProfilePage() {
 							{bio.length}/{BIO_CHAR_LIMIT}
 						</div>
 					</div>
+					{profanityError && (
+						<p className="text-red-500 text-xs mt-1">{profanityError}</p>
+					)}
 				</div>
 
 				{/* Next Step Button */}
 				<div className="flex justify-center">
 					<NextStepButton
-						className={`mt-7 ${(!isFormValid || isLoading) ? "opacity-50 cursor-not-allowed" : ""}`}
+						className={`mt-7 ${(!isFormValid || isLoading || !!profanityError) ? "opacity-50 cursor-not-allowed" : ""}`}
 						onClick={handleNextStep}
-						disabled={!isFormValid || isLoading}
+						disabled={!isFormValid || isLoading || !!profanityError}
 					/>
 					{apiError && (
 						<p className="text-red-500 text-sm text-center mt-2">{apiError}</p>
