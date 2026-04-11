@@ -1,19 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/authContext";
+import { getProfile, updateNotifications } from "@/utils/api/profile";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function EmailPreferencesCard() {
+  const { currentUser } = useAuth();
   const [marketing, setMarketing] = useState(true);
   const [matches, setMatches] = useState(true);
   const [initialMarketing, setInitialMarketing] = useState(true);
   const [initialMatches, setInitialMatches] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSave = () => {
-    // TODO: Backend call to save preferences
-    console.log("Saving preferences:", { marketing, matches });
-    // update initial state to current state
-    setInitialMarketing(marketing);
-    setInitialMatches(matches);
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      if (!currentUser?.uid) return;
+      
+      setError(null);
+      try {
+        const result = await getProfile(currentUser.uid);
+        if (result.ok) {
+          const { promotional_notification, match_notification } = result.data;
+          setMarketing(promotional_notification);
+          setMatches(match_notification);
+          setInitialMarketing(promotional_notification);
+          setInitialMatches(match_notification);
+        } else {
+          setError(result.error || "Failed to load preferences");
+        }
+      } catch (err) {
+        console.error("Error fetching email preferences:", err);
+        setError("An unexpected error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPreferences();
+  }, [currentUser]);
+
+  const handleSave = async () => {
+    if (!currentUser) return;
+    
+    setIsSaving(true);
+    setError(null);
+    try {
+      const result = await updateNotifications({
+        promotional_notification: marketing,
+        match_notification: matches,
+      });
+
+      if (result.ok) {
+        // update initial state
+        setInitialMarketing(marketing);
+        setInitialMatches(matches);
+      } else {
+        setError(result.error || "Failed to save preferences");
+      }
+    } catch (err) {
+      console.error("Error updating notifications:", err);
+      setError("An unexpected error occurred while saving");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -22,60 +74,77 @@ export default function EmailPreferencesCard() {
 
       <div className="w-full">
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs relative mb-4">
-          <div className="flex items-center justify-between border-b border-gray-200 pb-6 mb-6">
-            <div>
-              <h4 className="font-medium text-gray-900 text-base">Marketing</h4>
-              <p className="text-gray-500 text-sm">Receive promotional content</p>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <LoadingSpinner size="md" />
+              <p className="mt-2 text-sm text-gray-500">Loading your preferences...</p>
             </div>
-            <button
-              type="button"
-              onClick={() => setMarketing(!marketing)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                marketing ? "bg-[#FF9100]" : "bg-gray-200"
-              }`}
-            >
-              <span
-                className={`${
-                  marketing ? "translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </button>
-          </div>
+          ) : (
+            <>
+              {error && (
+                <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <div className="flex items-center justify-between border-b border-gray-200 pb-6 mb-6">
+                <div>
+                  <h4 className="font-medium text-gray-900 text-base">Marketing</h4>
+                  <p className="text-gray-500 text-sm">Receive promotional content</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMarketing(!marketing)}
+                  disabled={isSaving}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    marketing ? "bg-[#FF9100]" : "bg-gray-200"
+                  } ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <span
+                    className={`${
+                      marketing ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />
+                </button>
+              </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-gray-900 text-base">Matches</h4>
-              <p className="text-gray-500 text-sm">Receive updates on matches</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setMatches(!matches)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                matches ? "bg-[#FF9100]" : "bg-gray-200"
-              }`}
-            >
-              <span className="sr-only">Enable match updates</span>
-              <span
-                className={`${
-                  matches ? "translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </button>
-          </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium text-gray-900 text-base">Matches</h4>
+                  <p className="text-gray-500 text-sm">Receive updates on matches</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMatches(!matches)}
+                  disabled={isSaving}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    matches ? "bg-[#FF9100]" : "bg-gray-200"
+                  } ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <span className="sr-only">Enable match updates</span>
+                  <span
+                    className={`${
+                      matches ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="flex justify-end">
           <button
             type="button"
             className={`relative flex items-center justify-center py-1 px-4 rounded-md text-white font-semibold text-md transition-all duration-200 ease-in-out ${
-              marketing === initialMarketing && matches === initialMatches
+              (marketing === initialMarketing && matches === initialMatches) || isSaving || isLoading
                 ? "bg-gray-300 cursor-not-allowed"
                 : "cursor-pointer hover:scale-105 bg-gradient-to-r from-[#FF9100] to-[#FFC94C] hover:from-[#E68200] hover:to-[#E3B03C]"
             }`}
             onClick={handleSave}
-            disabled={marketing === initialMarketing && matches === initialMatches}
+            disabled={(marketing === initialMarketing && matches === initialMatches) || isSaving || isLoading}
           >
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
