@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { Filter } from "bad-words";
+import { isProfane } from "@/utils/profanity";
 import NextStepButton from "../../../components/NextStepButton";
 import { useRouter } from "next/navigation";
 import ProgressHeader from "../../../components/ProgressHeader";
@@ -11,9 +11,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { createProfile } from "@/utils/api/profile";
 import { Gender, Classification } from "@/types/profile";
 import { useOnboarding } from "@/contexts/onboardingContext";
-
-// profanity filter
-const filter = new Filter();
 
 export default function CreateProfilePage() {
 	const router = useRouter();
@@ -30,7 +27,11 @@ export default function CreateProfilePage() {
 	// API state
 	const [isLoading, setIsLoading] = useState(false);
 	const [apiError, setApiError] = useState<string | null>(null);
-	const [profanityError, setProfanityError] = useState<string | null>(null);
+	const [profanityErrors, setProfanityErrors] = useState({
+		firstName: false,
+		lastName: false,
+		bio: false,
+	});
 
 	// get user email from firebase auth
 	useEffect(() => {
@@ -60,11 +61,21 @@ export default function CreateProfilePage() {
 	};
 
 	const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setFirstName(e.target.value);
+		const value = e.target.value;
+		setFirstName(value);
+		setProfanityErrors((prev) => ({
+			...prev,
+			firstName: isProfane(value),
+		}));
 	};
 
 	const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setLastName(e.target.value);
+		const value = e.target.value;
+		setLastName(value);
+		setProfanityErrors((prev) => ({
+			...prev,
+			lastName: isProfane(value),
+		}));
 	};
 
 	const handleMajorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -81,15 +92,10 @@ export default function CreateProfilePage() {
 			setBio(value);
 			
 			// check for profanity
-			if (filter.isProfane(value)) {
-				setProfanityError("Profanity is not allowed in your bio.");
-			} else {
-				setProfanityError(null);
-			}
-
-            // clean as well bc u can bypass it
-            // ex: poop gets caught but poopoo doesn't idk y poop is on there but now poop will turn to ****
-            setBio(filter.clean(value));
+			setProfanityErrors((prev) => ({
+				...prev,
+				bio: isProfane(value),
+			}));
 		}
 	};
 
@@ -142,20 +148,26 @@ export default function CreateProfilePage() {
 							<input
 								type="text"
 								placeholder="Jane"
-								className={inputStyle}
+								className={`${inputStyle} ${profanityErrors.firstName ? "border-red-500 focus:ring-red-500" : ""}`}
 								value={firstName}
 								onChange={handleFirstNameChange}
 							/>
+							{profanityErrors.firstName && (
+								<p className="text-red-500 text-[10px] mt-1">Profanity is not allowed.</p>
+							)}
 						</div>
 						<div className="w-1/2">
 							<h1 className="text-black font-medium text-sm mb-2">Last Name</h1>
 							<input
 								type="text"
 								placeholder="Kelper"
-								className={inputStyle}
+								className={`${inputStyle} ${profanityErrors.lastName ? "border-red-500 focus:ring-red-500" : ""}`}
 								value={lastName}
 								onChange={handleLastNameChange}
 							/>
+							{profanityErrors.lastName && (
+								<p className="text-red-500 text-[10px] mt-1">Profanity is not allowed.</p>
+							)}
 						</div>
 					</div>
 
@@ -341,7 +353,7 @@ export default function CreateProfilePage() {
 					<div className="relative">
 						<textarea
 							placeholder="Write your Bio here e.g your hobbies, interests etc"
-							className={`${inputStyle} resize-none h-32`}
+							className={`${inputStyle} resize-none h-32 ${profanityErrors.bio ? "border-red-500 focus:ring-red-500" : ""}`}
 							value={bio}
 							onChange={handleBioChange}
 							maxLength={BIO_CHAR_LIMIT}
@@ -350,17 +362,17 @@ export default function CreateProfilePage() {
 							{bio.length}/{BIO_CHAR_LIMIT}
 						</div>
 					</div>
-					{profanityError && (
-						<p className="text-red-500 text-xs mt-1">{profanityError}</p>
+					{profanityErrors.bio && (
+						<p className="text-red-500 text-xs mt-1">Profanity is not allowed in your bio.</p>
 					)}
 				</div>
 
 				{/* Next Step Button */}
 				<div className="flex justify-center">
 					<NextStepButton
-						className={`mt-7 ${(!isFormValid || isLoading || !!profanityError) ? "opacity-50 cursor-not-allowed" : ""}`}
+						className={`mt-7 ${(!isFormValid || isLoading || Object.values(profanityErrors).some(Boolean)) ? "opacity-50 cursor-not-allowed" : ""}`}
 						onClick={handleNextStep}
-						disabled={!isFormValid || isLoading || !!profanityError}
+						disabled={!isFormValid || isLoading || Object.values(profanityErrors).some(Boolean)}
 					/>
 					{apiError && (
 						<p className="text-red-500 text-sm text-center mt-2">{apiError}</p>
