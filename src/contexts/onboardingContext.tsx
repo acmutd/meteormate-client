@@ -1,13 +1,14 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "./authContext";
 import { getProfile } from "@/utils/api/profile";
 import { getSurvey } from "@/utils/api/survey";
-import { MIN_PHOTOS } from "@/app/onboarding/uploadPictures/page";
+import { MIN_PHOTOS } from "@/constants/onboarding";
 
 interface OnboardingContextType {
     isLoading: boolean;
+    isError: boolean;
     hasProfile: boolean;
     hasPicture: boolean;
     hasSurvey: boolean;
@@ -30,20 +31,32 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     const { currentUser, userLoggedIn } = useAuth();
   
     const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
     const [hasProfile, setHasProfile] = useState(false);
     const [hasPicture, setHasPicture] = useState(false);
     const [hasSurvey, setHasSurvey] = useState(false);
 
     useEffect(() => {
+        let active = true;
+
         async function checkOnboardingStatus() {
             // Only check if logged in and email is verified.
             if (userLoggedIn && currentUser?.emailVerified) {
                 setIsLoading(true);
+                setIsError(false);
                 try {
                     const [profileRes, surveyRes] = await Promise.all([
                         getProfile(currentUser.uid),
                         getSurvey()
                     ]);
+
+                    if (!active) return;
+
+                    // If either critical call failed at the API level (e.g. 500), consider it an error
+                    if (!profileRes.ok && profileRes.code !== "404") {
+                        setIsError(true);
+                        return;
+                    }
 
                     if (profileRes.ok && profileRes.data) {
                         setHasProfile(true);
@@ -58,45 +71,72 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
                     if (surveyRes.ok && surveyRes.data) {
                         setHasSurvey(true);
+                    } else if (!surveyRes.ok && surveyRes.code !== "404") {
+                        setIsError(true);
                     } else {
                         setHasSurvey(false);
                     }
                 } catch (error) {
-                    console.error("Failed to fetch onboarding status", error);
+                    if (active) {
+                        console.error("Failed to fetch onboarding status", error);
+                        setIsError(true);
+                    }
                 } finally {
-                    setIsLoading(false);
+                    if (active) {
+                        setIsLoading(false);
+                    }
                 }
             } else {
-                // If not logged in or email not verified, stop loading.
-                setIsLoading(false);
+                // If not logged in or email not verified stop loading and reset states
+                if (active) {
+                    setIsLoading(false);
+                    setIsError(false);
+                    setHasProfile(false);
+                    setHasPicture(false);
+                    setHasSurvey(false);
+                }
             }
         }
 
         checkOnboardingStatus();
+
+        return () => {
+            active = false;
+        };
     }, [userLoggedIn, currentUser]);
 
-    const markProfileCompleted = (hasPic: boolean) => {
+    const markProfileCompleted = useCallback((hasPic: boolean) => {
         setHasProfile(true);
         setHasPicture(hasPic);
-    };
+    }, []);
 
-    const markPictureUploaded = () => {
+    const markPictureUploaded = useCallback(() => {
         setHasPicture(true);
-    };
+    }, []);
 
-    const markSurveyCompleted = () => {
+    const markSurveyCompleted = useCallback(() => {
         setHasSurvey(true);
-    };
+    }, []);
 
-    const value: OnboardingContextType = {
+    const value: OnboardingContextType = useMemo(() => ({
         isLoading,
+        isError,
         hasProfile,
         hasPicture,
         hasSurvey,
         markProfileCompleted,
         markPictureUploaded,
         markSurveyCompleted,
-    };
+    }), [
+        isLoading,
+        isError,
+        hasProfile,
+        hasPicture,
+        hasSurvey,
+        markProfileCompleted,
+        markPictureUploaded,
+        markSurveyCompleted,
+    ]);
 
     return (
         <OnboardingContext.Provider value={value}>
