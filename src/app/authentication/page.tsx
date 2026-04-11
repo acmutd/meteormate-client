@@ -11,7 +11,6 @@ import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {getAuthErrorMessage} from "@/utils/authErrors";
 import { ActivityPing } from "@/utils/api/auth";
-import { getSurvey } from "@/utils/api/survey";
 
 
 
@@ -20,6 +19,7 @@ export default function LoginPage() {
     const {toast} = useToast();
     const auth = useAuth();
     const userLoggedIn = auth?.userLoggedIn;
+    const { reloadUser } = auth;
     const emailRef = useRef<HTMLInputElement | null>(null);
 
     const [email, setEmail] = useState("");
@@ -88,6 +88,7 @@ export default function LoginPage() {
             if (!isSigningIn) {
                 setIsSigningIn(true);
                 await doSignInWithEmailAndPassword(email, password);
+                await reloadUser();
 
                 const pingResponse = await ActivityPing();
                 if (!pingResponse.ok) {
@@ -95,15 +96,13 @@ export default function LoginPage() {
                         `Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`
                     );
                 }
-                const surveyResult = await getSurvey();
-                const completed = surveyResult.ok;
 
                 toast({
                     type: "success",
                     title: "Welcome back!",
                     description: "You’re now logged in.",
                 });
-                router.push(completed ? "/dashboard" : "../onboarding/createProfile");
+                router.push("/dashboard");
             }
         } catch (err: unknown) {
             console.error("Login error:", err);

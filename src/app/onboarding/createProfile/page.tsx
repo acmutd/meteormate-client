@@ -9,8 +9,11 @@ import { DatePicker } from "../../../components/DatePicker";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { createProfile } from "@/utils/api/profile";
 import { Gender, Classification } from "@/types/profile";
+import { useOnboarding } from "@/contexts/onboardingContext";
+
 export default function CreateProfilePage() {
 	const router = useRouter();
+	const { markProfileCompleted } = useOnboarding();
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [major, setMajor] = useState("");
@@ -98,6 +101,7 @@ export default function CreateProfilePage() {
 		}
 
 		setIsLoading(false);
+		markProfileCompleted(false);
 		router.push("/onboarding/uploadPictures");
 	};
 

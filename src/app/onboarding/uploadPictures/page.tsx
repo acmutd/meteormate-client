@@ -11,9 +11,14 @@ import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
 import { UserProfile } from "@/types/userProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useOnboarding } from "@/contexts/onboardingContext";
+
+export const MIN_PHOTOS = 3;
+export const MAX_PHOTOS = 5;
 
 export default function UploadPicturesPage() {
 	const router = useRouter();
+	const { markPictureUploaded } = useOnboarding();
 
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 	const [initialLoading, setInitialLoading] = useState(true);
@@ -28,9 +33,6 @@ export default function UploadPicturesPage() {
 	const [compressionError, setCompressionError] = useState<string | null>(null);
 	const [apiError, setApiError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
-
-	const MIN_PHOTOS = 3;
-	const MAX_PHOTOS = 5;
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -179,6 +181,7 @@ export default function UploadPicturesPage() {
 		setIsLoading(true);
 
 		setIsLoading(false);
+		markPictureUploaded();
 		router.push("/onboarding/lifestylePreferences");
 	};
 
