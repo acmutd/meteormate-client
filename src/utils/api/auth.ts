@@ -48,6 +48,6 @@ export async function fetchCurrentUser(): Promise<Result<UserProfile>> {
 }
 
 // mark user as inactive
-export async function markInactive(): Promise<Result<void>> {
-    return apiFetch<void>("/api/auth/mark-inactive", { method: "POST" });
+export async function markInactive(): Promise<Result<{ message: string }>> {
+    return apiFetch<{ message: string }>("/api/auth/mark-inactive", { method: "POST" });
 }
