@@ -9,6 +9,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
 
   const profileSections = [
     { path: "/dashboard/profile", label: "Profile" },
+    { path: "/dashboard/profile/uploadPictures", label: "Pictures" },
     { path: "/dashboard/profile/lifestylePreferences", label: "Preferences" },
     { path: "/dashboard/profile/lifestyleHabits", label: "Habits" },
     { path: "/dashboard/profile/interests", label: "Interests" },
