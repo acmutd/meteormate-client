@@ -9,6 +9,7 @@ import {useSearchParams, useRouter} from "next/navigation";
 import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
 import {submitSurvey, updateSurvey} from "@/utils/api/survey";
+import { useOnboarding } from "@/contexts/onboardingContext";
 
 function buildSurveyPayload(raw: any) {
   // 1) Start with backend-friendly defaults
@@ -73,6 +74,7 @@ const sendOnboardingData = async () => {
 
 function OnCampusUI() {
 	const router = useRouter();
+	const { markSurveyCompleted } = useOnboarding();
 	const handleNextStep = async () => {
 		const result = await sendOnboardingData();
 
@@ -81,6 +83,7 @@ function OnCampusUI() {
 			return;
 		}
 
+		markSurveyCompleted();
 		router.push("/dashboard"); // placeholder is fine for now
 	};
 
@@ -318,6 +321,7 @@ function OnCampusUI() {
 
 function OffCampusUI() {
 	const router = useRouter();
+	const { markSurveyCompleted } = useOnboarding();
 	const handleNextStep = async () => {
 		const result = await sendOnboardingData();
 
@@ -326,6 +330,7 @@ function OffCampusUI() {
 			return;
 		}
 
+		markSurveyCompleted();
 		router.push("/dashboard"); // placeholder is fine for now
 	};
 
