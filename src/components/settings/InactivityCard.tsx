@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
 import { markInactive } from "@/utils/api/auth";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { doSignOut } from "@/firebase/auth";
 
 export default function InactivityCard() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function InactivityCard() {
       const result = await markInactive();
       if (result.ok) {
         setShowInactiveModal(false);
-        router.push("/");
+        await doSignOut();
       } else {
         setError(result.error || "Failed to mark account as inactive");
       }

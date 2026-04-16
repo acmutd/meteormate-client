@@ -14,32 +14,48 @@ export default function EmailPreferencesCard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
+    let ignore = false;
+
     const fetchPreferences = async () => {
-      if (!currentUser?.uid) return;
+      if (!currentUser?.uid) {
+        if (!ignore) setIsLoading(false);
+        return;
+      }
       
-      setError(null);
+      if (!ignore) setError(null);
+      
       try {
         const result = await getProfile(currentUser.uid);
+        
+        if (ignore) return;
+
         if (result.ok) {
           const { promotional_notification, match_notification } = result.data;
           setMarketing(promotional_notification);
           setMatches(match_notification);
           setInitialMarketing(promotional_notification);
           setInitialMatches(match_notification);
+          setHasLoaded(true);
         } else {
           setError(result.error || "Failed to load preferences");
         }
       } catch (err) {
+        if (ignore) return;
         console.error("Error fetching email preferences:", err);
         setError("An unexpected error occurred");
       } finally {
-        setIsLoading(false);
+        if (!ignore) setIsLoading(false);
       }
     };
 
     fetchPreferences();
+    
+    return () => {
+      ignore = true;
+    };
   }, [currentUser]);
 
   const handleSave = async () => {
@@ -78,6 +94,11 @@ export default function EmailPreferencesCard() {
             <div className="flex flex-col items-center justify-center py-8">
               <LoadingSpinner size="md" />
               <p className="mt-2 text-sm text-gray-500">Loading your preferences...</p>
+            </div>
+          ) : !hasLoaded ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <p className="text-sm text-red-500">Failed to load preferences.</p>
+              <p className="text-xs text-gray-500 mt-1">Please refresh the page to try again.</p>
             </div>
           ) : (
             <>
@@ -138,17 +159,17 @@ export default function EmailPreferencesCard() {
           <button
             type="button"
             className={`relative flex items-center justify-center py-1 px-4 rounded-md text-white font-semibold text-md transition-all duration-200 ease-in-out ${
-              (marketing === initialMarketing && matches === initialMatches) || isSaving || isLoading
+              !hasLoaded || (marketing === initialMarketing && matches === initialMatches) || isSaving || isLoading
                 ? "bg-gray-300 cursor-not-allowed"
                 : "cursor-pointer hover:scale-105 bg-gradient-to-r from-[#FF9100] to-[#FFC94C] hover:from-[#E68200] hover:to-[#E3B03C]"
             }`}
             onClick={handleSave}
-            disabled={(marketing === initialMarketing && matches === initialMatches) || isSaving || isLoading}
+            disabled={!hasLoaded || (marketing === initialMarketing && matches === initialMatches) || isSaving || isLoading}
           >
             {isSaving ? "Saving..." : "Save"}
           </button>
 
-          {error && (
+          {hasLoaded && error && (
             <div className="text-red-600 text-sm mt-2">
               {error}
             </div>
