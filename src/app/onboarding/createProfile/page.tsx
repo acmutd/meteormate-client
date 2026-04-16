@@ -116,7 +116,7 @@ export default function CreateProfilePage() {
 	};
 
 	const handleNextStep = async () => {
-		if (!isFormValid) return;
+		if (!isFormValid || Object.values(profanityErrors).some(Boolean)) return;
 
 		setApiError(null);
 		setIsLoading(true);

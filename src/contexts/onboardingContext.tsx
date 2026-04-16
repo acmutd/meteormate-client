@@ -36,6 +36,12 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     const [hasPicture, setHasPicture] = useState(false);
     const [hasSurvey, setHasSurvey] = useState(false);
 
+    const resetOnboardingState = useCallback(() => {
+        setHasProfile(false);
+        setHasPicture(false);
+        setHasSurvey(false);
+    }, []);
+
     useEffect(() => {
         let active = true;
 
@@ -54,6 +60,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
                     // If either critical call failed at the API level (e.g. 500), consider it an error
                     if (!profileRes.ok && profileRes.code !== "404") {
+                        resetOnboardingState();
                         setIsError(true);
                         return;
                     }
@@ -72,6 +79,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
                     if (surveyRes.ok && surveyRes.data) {
                         setHasSurvey(true);
                     } else if (!surveyRes.ok && surveyRes.code !== "404") {
+                        resetOnboardingState();
                         setIsError(true);
                     } else {
                         setHasSurvey(false);
@@ -79,6 +87,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
                 } catch (error) {
                     if (active) {
                         console.error("Failed to fetch onboarding status", error);
+                        resetOnboardingState();
                         setIsError(true);
                     }
                 } finally {
@@ -91,9 +100,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
                 if (active) {
                     setIsLoading(false);
                     setIsError(false);
-                    setHasProfile(false);
-                    setHasPicture(false);
-                    setHasSurvey(false);
+                    resetOnboardingState();
                 }
             }
         }

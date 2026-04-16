@@ -20,9 +20,9 @@ export default function AppLayout({
 
   useEffect(() => {
     if (!loading && !userLoggedIn) {
-      router.push("/authentication?toast=not-signed-in");
+      router.replace("/authentication?toast=not-signed-in");
     } else if (!loading && userLoggedIn && isReady && requiredRoute) {
-      router.push(requiredRoute);
+      router.replace(requiredRoute);
     }
   }, [loading, userLoggedIn, isReady, requiredRoute, router]);
 

@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function initializeUser(user: User | null) {
     if (user) {
-      setCurrentUser({ ...user });
+      setCurrentUser(user);
       setUserLoggedIn(true);
     } else {
       setCurrentUser(null);
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (auth.currentUser) {
       await auth.currentUser.reload();
       const refreshedUser = auth.currentUser;
-      setCurrentUser(refreshedUser ? { ...refreshedUser } : null);
+      setCurrentUser(refreshedUser);
       setUserLoggedIn(!!refreshedUser);
     }
   }, []);

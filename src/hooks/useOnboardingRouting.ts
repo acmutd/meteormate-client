@@ -3,7 +3,7 @@ import { useOnboarding } from "@/contexts/onboardingContext";
 
 export function useOnboardingRouting() {
     const { currentUser, userLoggedIn } = useAuth();
-    const { isLoading: onboardingLoading, hasProfile, hasPicture, hasSurvey } = useOnboarding();
+    const { isLoading: onboardingLoading, isError, hasProfile, hasPicture, hasSurvey } = useOnboarding();
 
     // determines what page the user should be on
     const getRequiredRoute = (): string | null => {
@@ -12,6 +12,7 @@ export function useOnboardingRouting() {
         if (!currentUser.emailVerified) return "/authentication/verifyEmail";
 
         if (onboardingLoading) return null;
+        if (isError) throw new Error("Failed to load onboarding status. Please try refreshing.");
         if (!hasProfile) return "/onboarding/createProfile?toast=needs-profile";
         if (!hasPicture) return "/onboarding/uploadPictures?toast=needs-pictures";
         if (!hasSurvey) return "/onboarding/lifestylePreferences?toast=needs-survey";
@@ -35,6 +36,7 @@ export function useOnboardingRouting() {
     return {
         requiredRoute,
         isLoading: onboardingLoading,
+        isError,
         isReady: !onboardingLoading,
         isVerificationRequired,
         isOnboardingComplete
