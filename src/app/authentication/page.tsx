@@ -44,17 +44,29 @@ export default function LoginPage() {
     }, []);
 
     useEffect(() => {
-        if (
-            !toastShownRef.current &&
-            searchParams.get("toast") === "not-signed-in"
-        ) {
-            toast({
-                type: "error",
-                title: "Not Signed In",
-                description:
-                    "You must be signed in to access your profile. Please log in to continue.",
-            });
-            toastShownRef.current = true;
+        if (!toastShownRef.current) {
+            // check sessions storage for inactive toast
+            if (typeof window !== "undefined" && sessionStorage.getItem("showInactiveToast") === "true") {
+                sessionStorage.removeItem("showInactiveToast");
+                toast({
+                    type: "info",
+                    title: "Account Deactivated",
+                    description: "Your account is now inactive. Log back in anytime to reactivate it.",
+                });
+                toastShownRef.current = true;
+                return;
+            }
+
+            // fallback
+            if (searchParams.get("toast") === "not-signed-in") {
+                toast({
+                    type: "error",
+                    title: "Not Signed In",
+                    description:
+                        "You must be signed in to access your profile. Please log in to continue.",
+                });
+                toastShownRef.current = true;
+            }
         }
     }, [searchParams, toast]);
 

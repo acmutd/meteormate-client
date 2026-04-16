@@ -1,15 +1,42 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
+import { markInactive } from "@/utils/api/auth";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { doSignOut } from "@/firebase/auth";
 
 export default function InactivityCard() {
+  const router = useRouter();
   const [showInactiveModal, setShowInactiveModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDeactivate = () => {
-    // TODO: Backend call to set account inactive
-    console.log("Setting account as inactive...");
+  const handleDeactivate = async () => {
+    setIsSaving(true);
+    setError(null);
+    try {
+      const result = await markInactive();
+      if (result.ok) {
+        setShowInactiveModal(false);
+        sessionStorage.setItem("showInactiveToast", "true");
+        await doSignOut();
+      } else {
+        setError(result.error || "Failed to mark account as inactive");
+      }
+    } catch (err) {
+      console.error("Error marking account as inactive:", err);
+      setError("An unexpected error occurred");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const closeModal = () => {
+    if (isSaving) return;
     setShowInactiveModal(false);
+    setError(null);
   };
 
   return (
@@ -39,7 +66,7 @@ export default function InactivityCard() {
 
       <Modal
         isOpen={showInactiveModal}
-        onClose={() => setShowInactiveModal(false)}
+        onClose={closeModal}
         title="Set account as inactive?"
       >
         <p className="mb-6">
@@ -50,19 +77,34 @@ export default function InactivityCard() {
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            onClick={() => setShowInactiveModal(false)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            onClick={closeModal}
+            disabled={isSaving}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleDeactivate}
-            className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:opacity-80"
+            disabled={isSaving}
+            className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:opacity-80 disabled:opacity-50 flex items-center gap-2 min-w-[140px] justify-center"
           >
-            Confirm Deactivation
+            {isSaving ? (
+              <>
+                <LoadingSpinner size="sm" className="border-white" />
+                Processing...
+              </>
+            ) : (
+              "Confirm Deactivation"
+            )}
           </button>
         </div>
+
+        {error && (
+          <div className="text-red-600 text-sm mt-2 text-right">
+            {error}
+          </div>
+        )}
       </Modal>
     </div>
   );

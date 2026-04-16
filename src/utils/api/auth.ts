@@ -46,3 +46,8 @@ export async function VerifyEmail(email: string, code: string): Promise<Result<{
 export async function fetchCurrentUser(): Promise<Result<UserProfile>> {
     return apiFetch<UserProfile>("/api/auth/me", { method: "GET" });
 }
+
+// mark user as inactive
+export async function markInactive(): Promise<Result<{ message: string }>> {
+    return apiFetch<{ message: string }>("/api/auth/mark-inactive", { method: "POST" });
+}
