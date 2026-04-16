@@ -20,6 +20,7 @@ export default function InactivityCard() {
       const result = await markInactive();
       if (result.ok) {
         setShowInactiveModal(false);
+        sessionStorage.setItem("showInactiveToast", "true");
         await doSignOut();
       } else {
         setError(result.error || "Failed to mark account as inactive");
