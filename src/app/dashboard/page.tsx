@@ -1,41 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { fetchCurrentUser } from "@/utils/api/auth";
-import { UserProfile } from "@/types/userProfile";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import React from "react";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 
 export default function Discover() {
-    const [user, setUser] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
-
-    useEffect(() => {
-        const fetchUser = async () => {
-        try {
-            const res = await fetchCurrentUser();
-            if (!res.ok) throw new Error(res.error || "Failed to fetch user");
-            setUser(res.data);
-        } catch (err) {
-            console.error("Dashboard auth error:", err);
-            router.push("/authentication?toast=not-signed-in");
-        } finally {
-            setLoading(false);
-        }
-        };
-        fetchUser();
-    }, [router]);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <LoadingSpinner size="lg" />
-            </div>
-        );
-    }
-
-    if (!user) return null;
     return (
         <div className="flex justify-center py-7">
             <ProfileCard
