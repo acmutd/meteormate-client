@@ -44,7 +44,6 @@ export default function UploadPicturesPage() {
     const [cropImage, setCropImage] = useState<string | null>(null);
     const [isCropping, setIsCropping] = useState(false);
     const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
-    const [deletingSlotIndex, setDeletingSlotIndex] = useState<number | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [hasLoadedProfileData, setHasLoadedProfileData] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +63,6 @@ export default function UploadPicturesPage() {
         hasLoadedProfileData &&
         (isCropping ||
             uploadingSlotIndex !== null ||
-            deletingSlotIndex !== null ||
             isSaving ||
             getEntriesSignature(photoEntries) !== initialEntriesSignature);
 
@@ -239,9 +237,7 @@ export default function UploadPicturesPage() {
     const handleDeletePhoto = (index: number) => {
         setCompressionError(null);
         setDropWarning(null);
-        setDeletingSlotIndex(index);
         setPhotoEntries((prev) => prev.filter((_, entryIndex) => entryIndex !== index));
-        setDeletingSlotIndex(null);
     };
 
     const handleUpdateProfile = async () => {
@@ -367,7 +363,6 @@ export default function UploadPicturesPage() {
                             disabled={
                                 photos.length < MIN_PHOTOS ||
                                 uploadingSlotIndex !== null ||
-                                deletingSlotIndex !== null ||
                                 isSaving || !isDirty
                             }
                             className="absolute right-8 top-4 px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
@@ -386,7 +381,7 @@ export default function UploadPicturesPage() {
                                 photos={photos}
                                 primaryPhoto={primaryPhoto}
                                 uploadingSlotIndex={uploadingSlotIndex}
-                                deletingSlotIndex={deletingSlotIndex}
+                                deletingSlotIndex={null}
                                 compressionError={compressionError}
                                 dropWarning={dropWarning}
                                 maxPhotos={MAX_PHOTOS}
