@@ -146,7 +146,14 @@ export default function UploadPicturesPage() {
         setIsDragOver(false);
         setDropWarning(null);
 
-        if (photos.length >= MAX_PHOTOS) return;
+        if (photos.length >= MAX_PHOTOS) {
+            toast({
+                type: "error",
+                title: "Upload failed",
+                description: "The max photos is " + MAX_PHOTOS,
+            });
+            return;
+        }
 
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             const file = e.dataTransfer.files[0];
