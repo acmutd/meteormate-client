@@ -349,7 +349,7 @@ export default function UploadPicturesPage() {
                                 photos.length < MIN_PHOTOS ||
                                 uploadingSlotIndex !== null ||
                                 deletingSlotIndex !== null ||
-                                isSaving
+                                isSaving || !isDirty
                             }
                             className="absolute right-8 top-4 px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                         >
