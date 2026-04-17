@@ -248,6 +248,8 @@ export default function UploadPicturesPage() {
         if (!hasLoadedProfileData) return;
 
         setIsSaving(true);
+        let failedOperation: string | null = null;
+        let appliedAnyOperation = false;
         try {
             const keptRemoteIndexes = new Set(
                 photoEntries
@@ -269,24 +271,25 @@ export default function UploadPicturesPage() {
 
             remoteIndexesToDelete.sort((a, b) => b - a);
             for (const remoteIndex of remoteIndexesToDelete) {
+                failedOperation = `delete image #${remoteIndex + 1}`;
                 const deleteRes = await deleteProfilePicture(remoteIndex);
                 if (!deleteRes.ok) {
-                    throw new Error(deleteRes.error || "Failed to delete one or more photos.");
+                    throw new Error(deleteRes.error || `Failed to ${failedOperation}.`);
                 }
+                appliedAnyOperation = true;
             }
 
-            const localEntries = photoEntries.filter(
-                (
-                    entry,
-                ): entry is Extract<PhotoEntry, { kind: "local" }> =>
-                    entry.kind === "local",
+            const localEntries = photoEntries.flatMap((entry, entryIndex) =>
+                entry.kind === "local" ? [{ entry, entryIndex }] : [],
             );
 
             for (const localEntry of localEntries) {
-                const uploadRes = await uploadProfilePicture({ base64: localEntry.base64 });
+                failedOperation = `upload image #${localEntry.entryIndex + 1}`;
+                const uploadRes = await uploadProfilePicture({ base64: localEntry.entry.base64 });
                 if (!uploadRes.ok) {
-                    throw new Error(uploadRes.error || "Failed to upload one or more photos.");
+                    throw new Error(uploadRes.error || `Failed to ${failedOperation}.`);
                 }
+                appliedAnyOperation = true;
             }
 
             const refreshedUser = await fetchCurrentUser();
@@ -318,10 +321,17 @@ export default function UploadPicturesPage() {
             });
         } catch (error) {
             console.error("Failed to update profile pictures", error);
+            const defaultDescription = failedOperation
+                ? `We could not ${failedOperation}.`
+                : "Could not save your photo changes.";
+            const refreshPrompt = appliedAnyOperation
+                ? "Some changes may have been applied. Please refresh this page to sync your latest photos."
+                : "Please refresh this page before trying again.";
+
             toast({
                 type: "error",
                 title: "Save failed",
-                description: "Could not save your photo changes. Please try again.",
+                description: `${defaultDescription} ${refreshPrompt}`,
             });
         } finally {
             setIsSaving(false);
