@@ -11,6 +11,7 @@ import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
 import { UserProfile } from "@/types/userProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { PROFILE_PHOTO_CONSTRAINTS } from "@/constants/profileConstraints";
 
 export default function UploadPicturesPage() {
 	const router = useRouter();
@@ -29,8 +30,8 @@ export default function UploadPicturesPage() {
 	const [apiError, setApiError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const MIN_PHOTOS = 3;
-	const MAX_PHOTOS = 5;
+	const MIN_PHOTOS = PROFILE_PHOTO_CONSTRAINTS.minPhotos;
+	const MAX_PHOTOS = PROFILE_PHOTO_CONSTRAINTS.maxPhotos;
 
 	useEffect(() => {
 		const fetchUser = async () => {

@@ -13,6 +13,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { PROFILE_PHOTO_CONSTRAINTS } from "@/constants/profileConstraints";
 
 type PhotoEntry =
     | { kind: "remote"; url: string; remoteIndex: number }
@@ -52,8 +53,8 @@ export default function UploadPicturesPage() {
     const [dropWarning, setDropWarning] = useState<string | null>(null);
     const [isDragOver, setIsDragOver] = useState(false);
 
-    const MIN_PHOTOS = 3;
-    const MAX_PHOTOS = 5;
+    const MIN_PHOTOS = PROFILE_PHOTO_CONSTRAINTS.minPhotos;
+    const MAX_PHOTOS = PROFILE_PHOTO_CONSTRAINTS.maxPhotos;
 
     const photos = photoEntries.map((entry) =>
         entry.kind === "remote" ? entry.url : entry.previewUrl,
