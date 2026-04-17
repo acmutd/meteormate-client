@@ -15,6 +15,8 @@ import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
 import { PROFILE_PHOTO_CONSTRAINTS } from "@/constants/profileConstraints";
 
+const DEFAULT_BIO = "Your bio will appear here...";
+
 type PhotoEntry =
     | { kind: "remote"; url: string; remoteIndex: number }
     | { kind: "local"; previewUrl: string; base64: string };
@@ -345,7 +347,6 @@ export default function UploadPicturesPage() {
     const displayName = userProfile?.profile?.first_name
         ? `${userProfile.profile.first_name}`.trim()
         : "Your Name";
-    const DEFAULT_BIO = "Your bio will appear here...";
     const displayBio = userProfile?.profile?.bio || DEFAULT_BIO;
 
     return (
