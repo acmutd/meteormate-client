@@ -3,8 +3,10 @@ import React from "react";
 import { useState, useEffect} from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import NextStepButton from "@/components/NextStepButton";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
+import { useToast } from "@/components/ui/ToastProvider";
+import { useRef } from "react";
 import {
   loadOnboardingData,
   updateOnboardingData,
@@ -12,6 +14,9 @@ import {
 
 export default function LifestylePreferencesPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const { toast } = useToast();
+	const toastShownRef = useRef(false);
 
 	const [selectedWakeupTime, setSelectedWakeupTime] = useState<string | null>(
 		null
@@ -32,6 +37,17 @@ export default function LifestylePreferencesPage() {
       setSelectedNoiseTolerance(saved.noise_tolerance ?? null);
     setHydrated(true);
   }, []);
+
+	useEffect(() => {
+		if (!toastShownRef.current && searchParams.get("toast") === "needs-survey") {
+			toast({
+				type: "info",
+				title: "Survey Required",
+				description: "Please complete the survey to finish your onboarding.",
+			});
+			toastShownRef.current = true;
+		}
+	}, [searchParams, toast]);
 
 	
 	useEffect(() => {

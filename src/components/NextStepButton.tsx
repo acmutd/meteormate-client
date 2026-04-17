@@ -22,7 +22,6 @@ const NextStepButton: React.FC<NextStepButtonProps> = ({
 				py-3 px-6 rounded-full text-white font-semibold text-lg
 				h-12 w-100
 				shadow-lg
-				cursor-pointer
 				transition-all duration-200 ease-in-out
         		overflow-visible
 					${

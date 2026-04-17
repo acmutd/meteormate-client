@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
@@ -11,10 +11,17 @@ import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
 import { UserProfile } from "@/types/userProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { PROFILE_PHOTO_CONSTRAINTS } from "@/constants/profileConstraints";
+import { useOnboarding } from "@/contexts/onboardingContext";
+import { useToast } from "@/components/ui/ToastProvider";
+
+import { MIN_PHOTOS, MAX_PHOTOS } from "@/constants/onboarding";
 
 export default function UploadPicturesPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const { toast } = useToast();
+	const toastShownRef = useRef(false);
+	const { markPictureUploaded } = useOnboarding();
 
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 	const [initialLoading, setInitialLoading] = useState(true);
@@ -29,9 +36,6 @@ export default function UploadPicturesPage() {
 	const [compressionError, setCompressionError] = useState<string | null>(null);
 	const [apiError, setApiError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
-
-	const MIN_PHOTOS = PROFILE_PHOTO_CONSTRAINTS.minPhotos;
-	const MAX_PHOTOS = PROFILE_PHOTO_CONSTRAINTS.maxPhotos;
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -51,6 +55,17 @@ export default function UploadPicturesPage() {
 		};
 		fetchUser();
 	}, []);
+
+	useEffect(() => {
+		if (!toastShownRef.current && searchParams.get("toast") === "needs-pictures") {
+			toast({
+				type: "info",
+				title: "Photos Required",
+				description: `Please upload at least ${MIN_PHOTOS} photos to continue to the dashboard.`,
+			});
+			toastShownRef.current = true;
+		}
+	}, [searchParams, toast]);
 
 	const [dropWarning, setDropWarning] = useState<string | null>(null);
 	const [isDragOver, setIsDragOver] = useState(false);
@@ -180,6 +195,7 @@ export default function UploadPicturesPage() {
 		setIsLoading(true);
 
 		setIsLoading(false);
+		markPictureUploaded();
 		router.push("/onboarding/lifestylePreferences");
 	};
 
