@@ -43,7 +43,7 @@ export default function UploadPicturesPage() {
 
     const [cropImage, setCropImage] = useState<string | null>(null);
     const [isCropping, setIsCropping] = useState(false);
-    const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [hasLoadedProfileData, setHasLoadedProfileData] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +58,7 @@ export default function UploadPicturesPage() {
     const photos = photoEntries.map((entry) =>
         entry.kind === "remote" ? entry.url : entry.previewUrl,
     );
+    const uploadingSlotIndex = isUploading ? photos.length : null;
 
     const isDirty =
         hasLoadedProfileData &&
@@ -187,7 +188,7 @@ export default function UploadPicturesPage() {
     const handleCropDone = async (croppedDataUrl: string) => {
         setIsCropping(false);
         setCropImage(null);
-        setUploadingSlotIndex(photos.length);
+        setIsUploading(true);
         setCompressionError(null);
 
         try {
@@ -230,7 +231,7 @@ export default function UploadPicturesPage() {
                 description: "We could not process that image.",
             });
         } finally {
-            setUploadingSlotIndex(null);
+            setIsUploading(false);
         }
     };
 
