@@ -77,6 +77,7 @@ export default function UploadPicturesPage() {
             try {
                 const res = await fetchCurrentUser();
                 if (!isMounted) return;
+
                 if (res.ok && res.data) {
                     setUserProfile(res.data);
                     const profilePhotos = Array.isArray(
@@ -97,12 +98,22 @@ export default function UploadPicturesPage() {
                     return;
                 }
 
-                throw new Error("Failed to fetch user profile");
+                if (!res.ok) {
+                    if (res.code === "401") {
+                        router.push("/authentication?toast=not-signed-in");
+                        return;
+                    }
+
+                    setLoadError(
+                        "Failed to load profile pictures. Please try again in a moment.",
+                    );
+                }
             } catch (error) {
                 if (!isMounted) return;
                 console.error("Failed to fetch user profile", error);
-                setLoadError("Failed to load profile pictures.");
-                router.push("/authentication?toast=not-signed-in");
+                setLoadError(
+                    "Failed to load profile pictures. Please check your connection and try again.",
+                );
             } finally {
                 if (isMounted) {
                     setInitialLoading(false);
