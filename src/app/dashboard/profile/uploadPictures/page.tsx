@@ -72,9 +72,11 @@ export default function UploadPicturesPage() {
         useUnsavedChangesGuard({ isDirty });
 
     useEffect(() => {
+        let isMounted = true;
         const fetchUser = async () => {
             try {
                 const res = await fetchCurrentUser();
+                if (!isMounted) return;
                 if (res.ok && res.data) {
                     setUserProfile(res.data);
                     const profilePhotos = Array.isArray(
@@ -97,15 +99,20 @@ export default function UploadPicturesPage() {
 
                 throw new Error("Failed to fetch user profile");
             } catch (error) {
+                if (!isMounted) return;
                 console.error("Failed to fetch user profile", error);
                 setLoadError("Failed to load profile pictures.");
                 router.push("/authentication?toast=not-signed-in");
             } finally {
-                setInitialLoading(false);
+                if (isMounted) {
+                    setInitialLoading(false);
+                }
             }
         };
-
         void fetchUser();
+        return () => {
+            isMounted = false;
+        };
     }, [router]);
 
     const handleImageClick = () => {
