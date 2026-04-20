@@ -1,16 +1,27 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { isProfane } from "@/utils/profanity";
 import NextStepButton from "../../../components/NextStepButton";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "../../../components/ProgressHeader";
 import { useRef, useState, useEffect } from "react"; // mostly only for the profile picture
 import { DatePicker } from "../../../components/DatePicker";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { createProfile } from "@/utils/api/profile";
+import { Gender, Classification } from "@/types/profile";
+import { useOnboarding } from "@/contexts/onboardingContext";
+import { majors } from "@/constants/majors";
+import { useToast } from "@/components/ui/ToastProvider";
 
 export default function CreateProfilePage() {
 	const router = useRouter();
-	const [name, setName] = useState("");
+    const searchParams = useSearchParams();
+    const { toast } = useToast();
+    const toastShownRef = useRef(false);
+	const { markProfileCompleted } = useOnboarding();
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
 	const [major, setMajor] = useState("");
 	const [year, setYear] = useState("");
 	const [gender, setGender] = useState("");
@@ -18,7 +29,16 @@ export default function CreateProfilePage() {
 	const [bio, setBio] = useState("");
 	const [email, setEmail] = useState("");
 
-	// get user email from firebase auth 
+	// API state
+	const [isLoading, setIsLoading] = useState(false);
+	const [apiError, setApiError] = useState<string | null>(null);
+	const [profanityErrors, setProfanityErrors] = useState({
+		firstName: false,
+		lastName: false,
+		bio: false,
+	});
+
+	// get user email from firebase auth
 	useEffect(() => {
 		const auth = getAuth();
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -29,16 +49,24 @@ export default function CreateProfilePage() {
 		return () => unsubscribe();
 	}, []);
 
-	//for the profile picture
-	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [preview, setPreview] = useState<string | null>(null);
+	useEffect(() => {
+		if (!toastShownRef.current && searchParams.get("toast") === "needs-profile") {
+			toast({
+				type: "info",
+				title: "Profile Required",
+				description: "Please complete your profile details.",
+			});
+			toastShownRef.current = true;
+		}
+	}, [searchParams, toast]);
 
 	// Bio character limit
 	const BIO_CHAR_LIMIT = 250;
 
 	//to make sure before moving ahead that their whole thing is filled or not
 	const isFormValid =
-		name.trim() !== "" &&
+		firstName.trim() !== "" &&
+		lastName.trim() !== "" &&
 		major !== "" &&
 		year !== "" &&
 		gender !== "" &&
@@ -48,8 +76,22 @@ export default function CreateProfilePage() {
 		setGender(e.target.value);
 	};
 
-	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setName(e.target.value);
+	const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setFirstName(value);
+		setProfanityErrors((prev) => ({
+			...prev,
+			firstName: isProfane(value),
+		}));
+	};
+
+	const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setLastName(value);
+		setProfanityErrors((prev) => ({
+			...prev,
+			lastName: isProfane(value),
+		}));
 	};
 
 	const handleMajorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -61,33 +103,45 @@ export default function CreateProfilePage() {
 	};
 
 	const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		if (e.target.value.length <= BIO_CHAR_LIMIT) {
-			setBio(e.target.value);
+		const value = e.target.value;
+		if (value.length <= BIO_CHAR_LIMIT) {
+			setBio(value);
+			
+			// check for profanity
+			setProfanityErrors((prev) => ({
+				...prev,
+				bio: isProfane(value),
+			}));
 		}
 	};
 
-	const handleNextStep = () => {
-		// Logic to handle the next step action
-		if (!isFormValid) {
-			alert("Please fill out all required fields.");
-			return;
+	const handleNextStep = async () => {
+		if (!isFormValid || Object.values(profanityErrors).some(Boolean)) return;
+
+		setApiError(null);
+		setIsLoading(true);
+
+		// Create the profile
+		const createResult = await createProfile({
+			first_name: firstName.trim(),
+			last_name: lastName.trim(),
+			gender: gender as Gender,
+			major,
+			classification: year as Classification,
+			bio,
+			dob: birthday!,
+			profile_picture_url: [],
+		});
+
+        if (!createResult.ok) {
+            setApiError(createResult.error);
+            setIsLoading(false);
+            return;
 		}
-		console.log({ name, major, year, gender, birthday, bio });
-		router.push("/onboarding/lifestylePreferences");
-	};
 
-
-	const handleImageClick = () => {
-		fileInputRef.current?.click();
-	};
-
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) return;
-
-		// to preview the image in the icon 
-		const imageUrl = URL.createObjectURL(file);
-		setPreview(imageUrl);
+		setIsLoading(false);
+		markProfileCompleted(false);
+		router.push("/onboarding/uploadPictures");
 	};
 
 	const inputStyle = "w-full px-4 py-3 border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white";
@@ -101,59 +155,36 @@ export default function CreateProfilePage() {
 				currentStep={1}
 				progressImage="/peechi_progress_1.svg"
 			/>
-			<div className="bg-white rounded-lg shadow-2xl py-8 px-15 mt-4 w-full flex flex-col">
-				{/* Profile Picture Section */}
-				<div className="mb-6">
-					<h1 className="text-black font-medium text-sm mb-3">Your Profile Picture</h1>
-					<div
-						onClick={handleImageClick}
-						className="bg-surface-cream w-32 h-32 rounded-xl border-2 border-dashed border-black cursor-pointer overflow-hidden flex flex-col items-center justify-center hover:opacity-80"
-					>
-						{preview ? (
-							<Image
-								src={preview}
-								alt="Profile"
-								width={128}
-								height={128}
-								className="w-full h-full object-cover"
-							/>
-						) : (
-							<>
-								<Image
-									src="/upload_photo_picture.svg"
-									alt="Upload Photo"
-									width={128}
-									height={128}
-									className="size-12 mb-3"
-								/>
-								<span className="text-black text-[10px] text-center leading-tight">
-									Upload your<br />photo
-								</span>
-							</>
-						)}
-					</div>
-
-					{/* Hidden file input */}
-					<input
-						ref={fileInputRef}
-						type="file"
-						accept="image/*"
-						onChange={handleFileChange}
-						className="hidden"
-					/>
-				</div>
-
+            <div className="bg-white rounded-lg shadow-2xl py-8 px-15 mt-4 w-full flex flex-col">
 				<div className="grid grid-cols-2 gap-6">
 					{/* Name */}
-					<div>
-						<h1 className="text-black font-medium text-sm mb-2">Name</h1>
-						<input
-							type="text"
-							placeholder="Jane Kelper"
-							className={inputStyle}
-							value={name}
-							onChange={handleNameChange}
-						/>
+					<div className="flex gap-4">
+						<div className="w-1/2">
+							<h1 className="text-black font-medium text-sm mb-2">First Name</h1>
+							<input
+								type="text"
+								placeholder="Jane"
+								className={`${inputStyle} ${profanityErrors.firstName ? "border-red-500 focus:ring-red-500" : ""}`}
+								value={firstName}
+								onChange={handleFirstNameChange}
+							/>
+							{profanityErrors.firstName && (
+								<p className="text-red-500 text-[10px] mt-1">Profanity is not allowed.</p>
+							)}
+						</div>
+						<div className="w-1/2">
+							<h1 className="text-black font-medium text-sm mb-2">Last Name</h1>
+							<input
+								type="text"
+								placeholder="Kelper"
+								className={`${inputStyle} ${profanityErrors.lastName ? "border-red-500 focus:ring-red-500" : ""}`}
+								value={lastName}
+								onChange={handleLastNameChange}
+							/>
+							{profanityErrors.lastName && (
+								<p className="text-red-500 text-[10px] mt-1">Profanity is not allowed.</p>
+							)}
+						</div>
 					</div>
 
 					{/* UTD Email */}
@@ -196,58 +227,12 @@ export default function CreateProfilePage() {
 								<option value="" disabled>
 									Select an option...
 								</option>
-
-								<option value="biomedical-engineering">Biomedical Engineering</option>
-								<option value="computer-engineering">Computer Engineering</option>
-								<option value="computer-science">Computer Science</option>
-								<option value="data-science">Data Science</option>
-								<option value="electrical-engineering">Electrical Engineering</option>
-								<option value="mechanical-engineering">Mechanical Engineering</option>
-								<option value="software-engineering">Software Engineering</option>
-
-								<option value="accounting">Accounting</option>
-								<option value="business-administration">Business Administration</option>
-								<option value="business-analytics">Business Analytics</option>
-								<option value="finance">Finance</option>
-								<option value="global-business">Global Business</option>
-								<option value="healthcare-management">Healthcare Management</option>
-							    <option value="human-resource-management">Human Resource Management</option>
-							    <option value="information-technology-systems">Information Technology and Systems</option>
-								<option value="marketing">Marketing</option>
-								<option value="supply-chain-management">Supply Chain Management</option>
-
-								<option value="animation-games">Animation and Games</option>
-							    <option value="arts-technology-emerging-communication">Arts, Technology, and Emerging Communication (ATEC)</option>
-								<option value="art-history">Art History</option>
-								<option value="history">History</option>
-							    <option value="interdisciplinary-studies">Interdisciplinary Studies</option>
-								<option value="literature">Literature</option>
-								<option value="philosophy">Philosophy</option>
-								<option value="visual-performing-arts">Visual and Performing Arts</option>
-
-							    <option value="child-learning-development">Child Learning and Development</option>
-								<option value="cognitive-science">Cognitive Science</option>
-								<option value="neuroscience">Neuroscience</option>
-								<option value="psychology">Psychology</option>
-							    <option value="speech-language-hearing">Speech, Language, and Hearing Sciences</option>
-
-							    <option value="criminology-criminal-justice">Criminology and Criminal Justice</option>
-								<option value="economics">Economics</option>
-							    <option value="geospatial-information-sciences">Geospatial Information Sciences</option>
-							    <option value="international-political-economy">International Political Economy</option>
-								<option value="political-science">Political Science</option>
-								<option value="public-affairs">Public Affairs</option>
-								<option value="public-policy">Public Policy</option>
-								<option value="sociology">Sociology</option>
-
-								<option value="actuarial-science">Actuarial Science</option>
-								<option value="biochemistry">Biochemistry</option>
-								<option value="biology">Biology</option>
-								<option value="chemistry">Chemistry</option>
-								<option value="geosciences">Geosciences</option>
-								<option value="mathematics">Mathematics</option>
-								<option value="molecular-biology">Molecular Biology</option>
-								<option value="physics">Physics</option>
+                                
+								{majors.map((majorOption) => (
+									<option key={majorOption.value} value={majorOption.value}>
+										{majorOption.label}
+									</option>
+								))}
 							</select>
 							<svg
 								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
@@ -273,10 +258,11 @@ export default function CreateProfilePage() {
 								<option value="" disabled>
 									Select an option...
 								</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Non-binary">Non-binary</option>
-								<option value="Other">Other</option>
+								<option value="male">Male</option>
+								<option value="female">Female</option>
+								<option value="non_binary">Non-binary</option>
+								<option value="prefer_not_to_say">Prefer not to say</option>
+								<option value="other">Other</option>
 							</select>
 							<svg
 								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
@@ -301,11 +287,11 @@ export default function CreateProfilePage() {
 								<option value="" disabled>
 									Select an option...
 								</option>
-								<option value="2030">Class of 2030</option>
-								<option value="2029">Class of 2029</option>
-								<option value="2028">Class of 2028</option>
-								<option value="2027">Class of 2027</option>
-								<option value="2026">Class of 2026</option>
+								<option value="freshman">Freshman (Class of 2030)</option>
+								<option value="sophomore">Sophomore (Class of 2029)</option>
+								<option value="junior">Junior (Class of 2028)</option>
+								<option value="senior">Senior (Class of 2027)</option>
+								<option value="graduate">Graduate Student</option>
 							</select>
 							<svg
 								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
@@ -317,7 +303,8 @@ export default function CreateProfilePage() {
 							</svg>
 						</div>
 					</div>
-					{/* age */}
+
+					{/* Birthday */}
 					<div>
 						<h1 className="text-black font-medium text-sm mb-2">Birthday</h1>
 						<div className="[&_input]:border-primary [&_input]:focus:ring-primary">
@@ -335,8 +322,8 @@ export default function CreateProfilePage() {
 					<h1 className="text-black font-medium text-sm mb-2">Bio</h1>
 					<div className="relative">
 						<textarea
-							placeholder="Write your Bio here e.g your hobbies, interests ETC"
-							className={`${inputStyle} resize-none h-32`}
+							placeholder="Write your Bio here e.g your hobbies, interests etc"
+							className={`${inputStyle} resize-none h-32 ${profanityErrors.bio ? "border-red-500 focus:ring-red-500" : ""}`}
 							value={bio}
 							onChange={handleBioChange}
 							maxLength={BIO_CHAR_LIMIT}
@@ -345,15 +332,21 @@ export default function CreateProfilePage() {
 							{bio.length}/{BIO_CHAR_LIMIT}
 						</div>
 					</div>
+					{profanityErrors.bio && (
+						<p className="text-red-500 text-xs mt-1">Profanity is not allowed in your bio.</p>
+					)}
 				</div>
 
 				{/* Next Step Button */}
 				<div className="flex justify-center">
 					<NextStepButton
-						className={`mt-7 ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+						className={`mt-7 ${(!isFormValid || isLoading || Object.values(profanityErrors).some(Boolean)) ? "opacity-50 cursor-not-allowed" : ""}`}
 						onClick={handleNextStep}
-						disabled={!isFormValid}
+						disabled={!isFormValid || isLoading || Object.values(profanityErrors).some(Boolean)}
 					/>
+					{apiError && (
+						<p className="text-red-500 text-sm text-center mt-2">{apiError}</p>
+					)}
 				</div>
 			</div>
 		</div>

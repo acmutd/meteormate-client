@@ -4,6 +4,7 @@
 import Navbar from "@/components/navigation/navBar";
 import Sidebar from "@/components/navigation/sideBar";
 import { useAuth } from "@/contexts/authContext";
+import { useOnboardingRouting } from "@/hooks/useOnboardingRouting";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -14,15 +15,18 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   const { userLoggedIn, loading } = useAuth();
+  const { requiredRoute, isLoading, isReady } = useOnboardingRouting();
   const router = useRouter();
 
   useEffect(() => {
     if (!loading && !userLoggedIn) {
-      router.push("/authentication?toast=not-signed-in");
+      router.replace("/authentication?toast=not-signed-in");
+    } else if (!loading && userLoggedIn && isReady && requiredRoute) {
+      router.replace(requiredRoute);
     }
-  }, [loading, userLoggedIn, router]);
+  }, [loading, userLoggedIn, isReady, requiredRoute, router]);
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <LoadingSpinner size="lg" />
@@ -30,7 +34,7 @@ export default function AppLayout({
     );
   }
 
-  if (!userLoggedIn) {
+  if (!userLoggedIn || requiredRoute) {
     return null;
   }
 

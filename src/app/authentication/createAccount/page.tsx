@@ -4,6 +4,8 @@ import React, {useEffect, useRef, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import {RegisterUser, SendVerificationCode} from "@/utils/api/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase/firebase";
 import {Check, X} from "lucide-react";
 import {
     validatePassword,
@@ -109,13 +111,13 @@ export default function CreateAccountPage() {
                     return;
                 }
 
-                const userCredentials = authResponse.data;
-
-                // set email in local storage
-                localStorage.setItem("verificationEmail", email);
+                // log user in after creating account
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                // push to verify email page before sending code
                 router.push("./verifyEmail");
 
-                const verifyResult = await SendVerificationCode({ email, uid: userCredentials.id });
+                const verifyResult = await SendVerificationCode();
 
                 if (!verifyResult.ok) {
                     toast({
@@ -131,10 +133,6 @@ export default function CreateAccountPage() {
                     title: "Account created",
                     description: "We sent you a verification code. Check your email to continue.",
                 });
-
-                // navigate only after everything is set up
-                router.push("./verifyEmail");
-
             }
         } catch (err: unknown) {
             console.error("Signup error:", err);

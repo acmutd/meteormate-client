@@ -9,6 +9,7 @@ import {useSearchParams, useRouter} from "next/navigation";
 import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
 import {submitSurvey, updateSurvey} from "@/utils/api/survey";
+import { useOnboarding } from "@/contexts/onboardingContext";
 
 function buildSurveyPayload(raw: any) {
   // 1) Start with backend-friendly defaults
@@ -73,6 +74,7 @@ const sendOnboardingData = async () => {
 
 function OnCampusUI() {
 	const router = useRouter();
+	const { markSurveyCompleted } = useOnboarding();
 	const handleNextStep = async () => {
 		const result = await sendOnboardingData();
 
@@ -81,6 +83,7 @@ function OnCampusUI() {
 			return;
 		}
 
+		markSurveyCompleted();
 		router.push("/dashboard"); // placeholder is fine for now
 	};
 
@@ -186,8 +189,8 @@ function OnCampusUI() {
             <ProgressHeader 
 				title="On-Campus"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
-				currentStep={6}
-                progressImage="/peechi_progress_6.svg"
+				currentStep={7}
+                progressImage="/peechi_progress_7.svg"
 			/>
 			<div className="py-8 px-15 w-full flex flex-col">
 				<p className="text-black text-sm font-bold mt-1 mb-2">
@@ -318,6 +321,7 @@ function OnCampusUI() {
 
 function OffCampusUI() {
 	const router = useRouter();
+	const { markSurveyCompleted } = useOnboarding();
 	const handleNextStep = async () => {
 		const result = await sendOnboardingData();
 
@@ -326,6 +330,7 @@ function OffCampusUI() {
 			return;
 		}
 
+		markSurveyCompleted();
 		router.push("/dashboard"); // placeholder is fine for now
 	};
 
@@ -408,7 +413,7 @@ function OffCampusUI() {
             <ProgressHeader
                 title="Off Campus"
                 subtitle="Help us find your ideal roommate by selecting your preferences!"
-                currentStep={6}
+                currentStep={7}
                 progressImage="/peechi_progress_6.svg"
             />
             <div className="py-8 px-15 w-full flex flex-col">

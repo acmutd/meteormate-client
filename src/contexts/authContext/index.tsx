@@ -1,13 +1,14 @@
 "use client";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
-import React, { useContext, useState, useEffect, createContext } from "react";
+import React, { useContext, useState, useEffect, createContext, useCallback } from "react";
 
 // Define what your AuthContext provides
 interface AuthContextType {
   currentUser: User | null;
   userLoggedIn: boolean;
   loading: boolean;
+  reloadUser: () => Promise<void>;
 }
 
 // Create context with correct type
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function initializeUser(user: User | null) {
     if (user) {
-      setCurrentUser({ ...user });
+      setCurrentUser(user);
       setUserLoggedIn(true);
     } else {
       setCurrentUser(null);
@@ -42,10 +43,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }
 
+  // login page can call after sign in so user context is fresh
+  const reloadUser = useCallback(async () => {
+    if (auth.currentUser) {
+      await auth.currentUser.reload();
+      const refreshedUser = auth.currentUser;
+      setCurrentUser(refreshedUser);
+      setUserLoggedIn(!!refreshedUser);
+    }
+  }, []);
+
   const value: AuthContextType = {
     currentUser,
     userLoggedIn,
     loading,
+    reloadUser,
   };
 
   return (

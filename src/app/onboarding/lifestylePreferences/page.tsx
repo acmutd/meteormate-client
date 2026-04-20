@@ -3,8 +3,10 @@ import React from "react";
 import { useState, useEffect} from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import NextStepButton from "@/components/NextStepButton";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
+import { useToast } from "@/components/ui/ToastProvider";
+import { useRef } from "react";
 import {
   loadOnboardingData,
   updateOnboardingData,
@@ -12,6 +14,9 @@ import {
 
 export default function LifestylePreferencesPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const { toast } = useToast();
+	const toastShownRef = useRef(false);
 
 	const [selectedWakeupTime, setSelectedWakeupTime] = useState<string | null>(
 		null
@@ -32,6 +37,17 @@ export default function LifestylePreferencesPage() {
       setSelectedNoiseTolerance(saved.noise_tolerance ?? null);
     setHydrated(true);
   }, []);
+
+	useEffect(() => {
+		if (!toastShownRef.current && searchParams.get("toast") === "needs-survey") {
+			toast({
+				type: "info",
+				title: "Survey Required",
+				description: "Please complete the survey to finish your onboarding.",
+			});
+			toastShownRef.current = true;
+		}
+	}, [searchParams, toast]);
 
 	
 	useEffect(() => {
@@ -61,8 +77,8 @@ export default function LifestylePreferencesPage() {
 			<ProgressHeader 
 				title="Lifestyle Preferences"
 				subtitle="Help us find your ideal roommate by selecting your preferences!"
-				currentStep={2}
-                progressImage="/peechi_progress_2.svg"
+				currentStep={3}
+                progressImage="/peechi_progress_3.svg"
 			/>
 			<div className="py-8 px-15 w-full flex flex-col">
 				<h1 className="text-black text-xl font-bold">Wake-up Time</h1>
