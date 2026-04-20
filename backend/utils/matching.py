@@ -1,3 +1,5 @@
+from schemas.survey import SurveyCreate
+
 GENDER_INDEX = {
     "female": 0,
     "male": 1,
@@ -198,7 +200,7 @@ def get_major_category(major: str) -> int:
     return -1
 
 
-def encode_answers(survey: Survey) -> list[int]:
+def encode_answers(survey: SurveyCreate, profile) -> list[int]:
     answers = [
         GENDER_INDEX.get(profile.gender, -1),
         get_major_category(profile.major),
@@ -211,7 +213,7 @@ def encode_answers(survey: Survey) -> list[int]:
         PET_PREFERENCE_INDEX.get(survey.pet_preference, -1),
         GUESTS_FREQUENCY_INDEX.get(survey.guests_frequency, -1),
         ROOMMATE_CLOSENESS_INDEX.get(survey.roommate_closeness, -1),
-        ON_CAMPUS_LOCATION_INDEX.get(profile.on_campus_location, -1),
+        ON_CAMPUS_LOCATION_INDEX.get(profile.on_campus_locations, -1),
     ]
 
     for interest in POSSIBLE_INTERESTS:
