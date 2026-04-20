@@ -6,6 +6,7 @@ import React from "react";
 import Image from "next/image";
 
 import { cn } from "@/utils/cn";
+import { MAX_PHOTOS } from "@/constants/onboarding";
 import PhotoSlot from "./PhotoSlot";
 
 type ImageUploadProps = {
@@ -35,7 +36,7 @@ type ImageUploadProps = {
 export default function ImageUpload({
 	photos,
 	primaryPhoto,
-	maxPhotos = 5,
+	maxPhotos = MAX_PHOTOS,
 	uploadingSlotIndex,
 	deletingSlotIndex,
 	compressionError,
