@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MeteorMate Backend
 
-## Getting Started
+Roommate matching platform for college students. Find your perfect living situation through AI-powered compatibility matching.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **FastAPI** - Modern Python web framework
+- **SQLAlchemy** - Database ORM
+- **PostgreSQL** - Database (via Supabase)
+- **Firebase Auth** - User authentication
+- **Alembic** - Database migrations
+
+## Setup
+
+1. **Clone the repo**
+   ```bash
+   git clone <repo-url>
+   cd meteormate_backend
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Install pre-commit hooks**
+   ```bash
+   pre-commit install
+   ```
+
+5. **Environment setup**
+   ```bash
+   cp .env.example .env
+   # Fill in your actual values
+   ```
+
+6. **Database setup**
+   ```bash
+   alembic upgrade head
+   ```
+
+## Environment Variables
+
+Create a `.env` file with:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost/meteormate
+SECRET_KEY=your-super-secret-key-here
+FIREBASE_CREDENTIALS_PATH=path/to/firebase-key.json
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+DEBUG=true
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Run the server:**
+```bash
+python main.py
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Formatting:**
+- Code is auto-formatted on commit using YAPF
+- Manual format: `yapf --in-place --recursive .`
 
-## Learn More
+**Database migrations:**
+```bash
+# Create new migration
+alembic revision --autogenerate -m "description"
 
-To learn more about Next.js, take a look at the following resources:
+# Apply migrations
+alembic upgrade head
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `GET /api/auth/me` - Get current user
 
-## Deploy on Vercel
+### Survey
+- `POST /api/survey/` - Create roommate preference survey
+- `GET /api/survey/me` - Get user's survey
+- `PUT /api/survey/` - Update survey
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Matches
+- `GET /api/matches/potential` - Get potential roommate matches
+- `POST /api/matches/like/{user_id}` - Like a potential match
+- `POST /api/matches/pass/{user_id}` - Pass on a match
+- `GET /api/matches/mutual` - Get mutual matches
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+app/
+├── api/          # Route handlers
+├── models/       # Database models
+├── schemas/      # Pydantic schemas
+├── services/     # Business logic
+├── utils/        # Utility functions
+└── main.py       # FastAPI app
+```
+
+## Contributing
+
+1. Create feature branch
+2. Make changes
+3. Pre-commit hooks will format code
+4. Submit PR
+
+The matching algorithm considers budget overlap, lifestyle compatibility, and shared interests to find the best roommate fits.
+This will be re-done by the AI dev(s), this is just an interim solution.
