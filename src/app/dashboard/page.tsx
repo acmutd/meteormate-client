@@ -14,7 +14,7 @@ export default function Discover() {
     useEffect(() => {
         const fetchUser = async () => {
         try {
-            const res = await fetchCurrentUser();
+            const res = await fetchCurrentUser({ preferCache: true, maxAgeMs: 5 * 60 * 1000 });
             if (!res.ok) throw new Error(res.error || "Failed to fetch user");
             setUser(res.data);
         } catch (err) {
