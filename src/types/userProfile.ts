@@ -5,6 +5,7 @@ export type UserProfile = {
     created_at: Date;
     survey_done: boolean;
     profile_created: boolean;
+    survey?: import("@/types/survey").SurveyResponse; // importing since SurveyResponse is so large
     profile?: {
         user_id: string;
         gender: "female" | "male" | "non_binary" | "prefer_not_to_say" | "other";
