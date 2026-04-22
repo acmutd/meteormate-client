@@ -58,7 +58,10 @@ export default function Profile() {
   useEffect(() => {
     const fetchuser = async () => {
       try {
-        const data = await fetchCurrentUser();
+        const data = await fetchCurrentUser({
+          preferCache: true,
+          maxAgeMs: 5 * 60 * 1000,
+        });
         if (!data.ok) throw new Error(data.error || "Failed to fetch profile");
 
         setUser(data.data);
@@ -131,7 +134,7 @@ export default function Profile() {
       if (!updateResult.ok)
         throw new Error(updateResult.error || "Failed to update profile");
 
-      const updatedData = await fetchCurrentUser();
+      const updatedData = await fetchCurrentUser({ forceRefresh: true });
       if (!updatedData.ok)
         throw new Error(updatedData.error || "Failed to refresh profile");
       setUser(updatedData.data);
