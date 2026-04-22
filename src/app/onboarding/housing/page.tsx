@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import DoneButton from "@/components/DoneButton";
 import ProgressHeader from "@/components/ProgressHeader";
-import React, {useMemo} from "react";
+import {useMemo} from "react";
 import {useSearchParams, useRouter} from "next/navigation";
 import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
@@ -12,6 +12,8 @@ import {submitSurvey, updateSurvey} from "@/utils/api/survey";
 import { useOnboarding } from "@/contexts/onboardingContext";
 
 function buildSurveyPayload(raw: any) {
+	
+
   // 1) Start with backend-friendly defaults
 	const payload: any = {
 		interests: raw.interests ?? [],
