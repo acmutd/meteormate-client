@@ -12,6 +12,7 @@ import { createProfile } from "@/utils/api/profile";
 import { Gender, Classification } from "@/types/profile";
 import { useOnboarding } from "@/contexts/onboardingContext";
 import { majors } from "@/constants/majors";
+import { schools } from "@/constants/schools";
 import { useToast } from "@/components/ui/ToastProvider";
 
 export default function CreateProfilePage() {
@@ -23,6 +24,7 @@ export default function CreateProfilePage() {
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [major, setMajor] = useState("");
+	const [school, setSchool] = useState("");
 	const [year, setYear] = useState("");
 	const [gender, setGender] = useState("");
 	const [birthday, setBirthday] = useState<string | null>(null);
@@ -68,6 +70,7 @@ export default function CreateProfilePage() {
 		firstName.trim() !== "" &&
 		lastName.trim() !== "" &&
 		major !== "" &&
+		school !== "" &&
 		year !== "" &&
 		gender !== "" &&
 		birthday !== null;
@@ -96,6 +99,10 @@ export default function CreateProfilePage() {
 
 	const handleMajorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setMajor(e.target.value);
+	};
+
+	const handleSchoolChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setSchool(e.target.value);
 	};
 
 	const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -127,6 +134,7 @@ export default function CreateProfilePage() {
 			last_name: lastName.trim(),
 			gender: gender as Gender,
 			major,
+			school,
 			classification: year as Classification,
 			bio,
 			dob: birthday!,
@@ -274,33 +282,63 @@ export default function CreateProfilePage() {
 							</svg>
 						</div>
 					</div>
-					{/* year */}
-					<div>
-						<h1 className="text-black font-medium text-sm mb-2">Classification</h1>
-						<div className="relative">
-							<select
-								name="classification"
-								className={selectStyle}
-								value={year}
-								onChange={handleYearChange}
-							>
-								<option value="" disabled>
-									Select an option...
-								</option>
-								<option value="freshman">Freshman (Class of 2030)</option>
-								<option value="sophomore">Sophomore (Class of 2029)</option>
-								<option value="junior">Junior (Class of 2028)</option>
-								<option value="senior">Senior (Class of 2027)</option>
-								<option value="graduate">Graduate Student</option>
-							</select>
-							<svg
-								className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-							</svg>
+					{/* school and year */}
+					<div className="flex gap-4">
+						<div className="w-1/2">
+							<h1 className="text-black font-medium text-sm mb-2">School</h1>
+							<div className="relative">
+								<select
+									name="school"
+									className={selectStyle}
+									value={school}
+									onChange={handleSchoolChange}
+								>
+									<option value="" disabled>
+										Select an option...
+									</option>
+									{schools.map((schoolOption) => (
+										<option key={schoolOption.value} value={schoolOption.value}>
+											{schoolOption.label}
+										</option>
+									))}
+								</select>
+								<svg
+									className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
+						</div>
+						<div className="w-1/2">
+							<h1 className="text-black font-medium text-sm mb-2">Classification</h1>
+							<div className="relative">
+								<select
+									name="classification"
+									className={selectStyle}
+									value={year}
+									onChange={handleYearChange}
+								>
+									<option value="" disabled>
+										Select an option...
+									</option>
+									<option value="freshman">Freshman</option>
+									<option value="sophomore">Sophomore</option>
+									<option value="junior">Junior</option>
+									<option value="senior">Senior</option>
+									<option value="graduate">Graduate Student</option>
+								</select>
+								<svg
+									className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+								</svg>
+							</div>
 						</div>
 					</div>
 
