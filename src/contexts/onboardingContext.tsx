@@ -59,18 +59,15 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
                     if (!active) return;
 
-                    if (!res.ok) {
+                    if (!res.ok || !res.data) {
                         resetOnboardingState();
                         setIsError(true);
                         return;
                     }
 
-                    const userData = res.data!;
+                    const userData = res.data;
                     const profileDone = userData.profile_created;
-                    const picturesDone =
-                        profileDone &&
-                        Array.isArray(userData.profile?.profile_picture_url) &&
-                        userData.profile!.profile_picture_url.length >= MIN_PHOTOS;
+                    const picturesDone = profileDone && (userData.profile?.profile_picture_url?.length ?? 0) >= MIN_PHOTOS;
 
                     setHasProfile(profileDone);
                     setHasPicture(picturesDone);
@@ -87,7 +84,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
                     }
                 }
             } else {
-                // not logged in or email verified, reset
+                // not logged in or email not verified, reset
                 if (active) {
                     setIsLoading(false);
                     setIsError(false);
