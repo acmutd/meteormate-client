@@ -37,8 +37,8 @@ type ProfileCardProps = {
     onRewind?: () => void;
     onLike?: () => void;
 
-    // showActions?: boolean;
-    // showSidebar?: boolean;
+    showActions?: boolean;
+    //showSidebar?: boolean;
 };
 
 function Dot({ active }: { active: boolean }) {
@@ -62,6 +62,7 @@ export default function ProfileCard({
     onDislike,
     onRewind,
     onLike,
+    showActions = true,
     }: ProfileCardProps) {
     
 
@@ -69,7 +70,7 @@ export default function ProfileCard({
     const [peek, setPeek] = useState(false);  
     const [peekDown, setPeekDown] = useState(false);
     const [showHint, setShowHint] = useState(true);
-
+    const [showReportMenu, setShowReportMenu] = useState(false);
     const [notifications, setNotifications] = useState<LikeNotification[]>([]);
     const [loadingNotifications, setLoadingNotifications] = useState(true);
     useEffect(() => {
@@ -127,6 +128,36 @@ export default function ProfileCard({
                             >
                                 {/* use ONE shared outer card shell */}
                                 <div className="relative h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                    
+                                    <div className="absolute top-8 right-8 z-30">
+                                        <button
+                                        onClick={() => setShowReportMenu((v) => !v)}
+                                        className="cursor-pointer h-10 w-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur border border-[#F1EADA] shadow-sm hover:bg-gray-100 transition"
+                                        >
+                                        {/* the dots hehe */}
+                                        <div className="flex flex-col gap-[3px]">
+                                            <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                            <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                            <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                        </div>
+                                        </button>
+
+                                        {/* the actualy menu  */}
+                                        {showReportMenu && (
+                                        <div className="absolute right-0 mt-2 w-30 rounded-xl border border-[#F1EADA] bg-white shadow-lg p-1">
+                                            <button
+                                            onClick={() => {
+                                                console.log("Report user");
+                                                setShowReportMenu(false);
+                                            }}
+                                            className="cursor-pointer w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            >
+                                            Report user
+                                            </button>
+                                        </div>
+                                        )}
+                                    </div>
+
                                     <div className="relative rounded-[22px] overflow-hidden">
                                         <StackedCarousel images={images} altPrefix={name} />
 
@@ -267,7 +298,7 @@ export default function ProfileCard({
                 </div>
 
                 {/* Action buttonsssss */}
-            
+                {showActions && (
                 <div className="mt-6 w-full flex items-center justify-center gap-8 sm:gap-10">
                     <button
                         type="button"
@@ -290,6 +321,7 @@ export default function ProfileCard({
 
                     </button>
                     </div> 
+                )}
                 </div>
                 
        

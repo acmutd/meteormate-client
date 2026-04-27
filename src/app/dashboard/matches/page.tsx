@@ -262,6 +262,8 @@ export default function Matches() {
                 habits: selectedUser.habits,
                 expandedBio: selectedUser.expandedBio,
               }}
+              showActions={false}
+              //showSidebar={false}
             />
           </div>
           </motion.div>
