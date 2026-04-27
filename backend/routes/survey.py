@@ -33,7 +33,7 @@ async def create_survey(
         raise BadRequest("Survey already exists")
 
     survey = Survey(user_id=uid, **survey_data.model_dump())
-    survey.answers = encode_answers(survey)
+    survey.encoded_answers = encode_answers(survey, current_user)
     db.add(survey)
 
     commit_or_raise(db, logger, resource="survey", uid=uid, action="create")
@@ -77,7 +77,7 @@ async def update_survey(
     for field, value in update_data.items():
         setattr(survey, field, value)
     
-    survey.answers = encode_answers(survey)
+    survey.encoded_answers = encode_answers(survey, current_user)
 
     commit_or_raise(db, logger, resource="survey", uid=uid, action="update")
 
