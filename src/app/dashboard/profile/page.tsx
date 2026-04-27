@@ -10,9 +10,11 @@ import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
 import { majors } from "@/constants/majors";
+import { schools } from "@/constants/schools";
 
 interface ProfileFormState {
   major: string;
+  school: string;
   gender: string;
   classification: string;
   bio: string;
@@ -26,12 +28,14 @@ export default function Profile() {
   const router = useRouter();
 
   const [major, setMajor] = useState("");
+  const [school, setSchool] = useState("");
   const [gender, setGender] = useState("");
   const [classification, setClassification] = useState("");
   const [bio, setBio] = useState("");
   const [age, setAge] = useState("");
   const [initialValues, setInitialValues] = useState<ProfileFormState>({
     major: "",
+    school: "",
     gender: "",
     classification: "",
     bio: "",
@@ -47,6 +51,7 @@ export default function Profile() {
   const isDirty =
     hasLoadedProfileData &&
     (major !== initialValues.major ||
+      school !== initialValues.school ||
       gender !== initialValues.gender ||
       classification !== initialValues.classification ||
       bio !== initialValues.bio ||
@@ -64,6 +69,7 @@ export default function Profile() {
         setUser(data.data);
         const normalized: ProfileFormState = {
           major: data.data.profile?.major || "",
+          school: data.data.profile?.school || "",
           gender: data.data.profile?.gender || "",
           classification: data.data.profile?.classification || "",
           bio: data.data.profile?.bio || "",
@@ -74,6 +80,7 @@ export default function Profile() {
         };
 
         setMajor(normalized.major);
+        setSchool(normalized.school);
         setGender(normalized.gender);
         setClassification(normalized.classification);
         setBio(normalized.bio);
@@ -118,6 +125,7 @@ export default function Profile() {
 
       const updatePayload: UpdateUserProfileBody = {
         major,
+        school,
         gender,
         classification,
         bio,
@@ -138,6 +146,7 @@ export default function Profile() {
 
       const normalized: ProfileFormState = {
         major,
+        school,
         gender,
         classification,
         bio,
@@ -304,36 +313,73 @@ export default function Profile() {
             </div>
 
             <div className="text-md">
-              <p className="mb-2">Classification</p>
-              <div className="relative">
-                <select
-                  name="classification"
-                  className={selectStyle}
-                  value={classification}
-                  onChange={(e) => setClassification(e.target.value)}
-                >
-                  <option value="" disabled>
-                    Select an option...
-                  </option>
+              <div className="flex gap-4">
+                <div className="w-1/2">
+                  <p className="mb-2">School</p>
+                  <div className="relative">
+                    <select
+                      name="school"
+                      className={selectStyle}
+                      value={school}
+                      onChange={(e) => setSchool(e.target.value)}
+                    >
+                      <option value="" disabled>
+                        Select an option...
+                      </option>
+                      {schools.map((schoolOption) => (
+                        <option key={schoolOption.value} value={schoolOption.value}>
+                          {schoolOption.label}
+                        </option>
+                      ))}
+                    </select>
+                    <svg
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div className="w-1/2">
+                  <p className="mb-2">Classification</p>
+                  <div className="relative">
+                    <select
+                      name="classification"
+                      className={selectStyle}
+                      value={classification}
+                      onChange={(e) => setClassification(e.target.value)}
+                    >
+                      <option value="" disabled>
+                        Select an option...
+                      </option>
                   <option value="freshman">Class of {currentYear + 4}</option>
                   <option value="sophomore">Class of {currentYear + 3}</option>
                   <option value="junior">Class of {currentYear + 2}</option>
                   <option value="senior">Class of {currentYear + 1}</option>
                   <option value="graduate">Class of {currentYear}</option>
-                </select>
-                <svg
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                    </select>
+                    <svg
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
 
