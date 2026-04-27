@@ -63,7 +63,9 @@ export default function CreateProfilePage() {
 	}, [searchParams, toast]);
 
 	// Bio character limit
-	const BIO_CHAR_LIMIT = 250;
+    const BIO_CHAR_LIMIT = 250;
+    
+    const currentYear = new Date().getFullYear();
 
 	//to make sure before moving ahead that their whole thing is filled or not
 	const isFormValid =
@@ -324,11 +326,11 @@ export default function CreateProfilePage() {
 									<option value="" disabled>
 										Select an option...
 									</option>
-									<option value="freshman">Freshman</option>
-									<option value="sophomore">Sophomore</option>
-									<option value="junior">Junior</option>
-									<option value="senior">Senior</option>
-									<option value="graduate">Graduate Student</option>
+									<option value="freshman">Class of {currentYear + 4}</option>
+									<option value="sophomore">Class of {currentYear + 3}</option>
+									<option value="junior">Class of {currentYear + 2}</option>
+									<option value="senior">Class of {currentYear + 1}</option>
+									<option value="graduate">Class of {currentYear}</option>
 								</select>
 								<svg
 									className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
