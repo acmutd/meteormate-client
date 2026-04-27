@@ -37,8 +37,8 @@ type ProfileCardProps = {
     onRewind?: () => void;
     onLike?: () => void;
 
-    showActions?: boolean;
-    showSidebar?: boolean;
+    // showActions?: boolean;
+    // showSidebar?: boolean;
 };
 
 function Dot({ active }: { active: boolean }) {
@@ -62,8 +62,6 @@ export default function ProfileCard({
     onDislike,
     onRewind,
     onLike,
-    showActions = true,
-    showSidebar = true,
     }: ProfileCardProps) {
     
 
@@ -269,7 +267,7 @@ export default function ProfileCard({
                 </div>
 
                 {/* Action buttonsssss */}
-                {showActions && (
+            
                 <div className="mt-6 w-full flex items-center justify-center gap-8 sm:gap-10">
                     <button
                         type="button"
@@ -292,83 +290,9 @@ export default function ProfileCard({
 
                     </button>
                     </div> 
-                )}
                 </div>
                 
-                {/** right side here */}
-                {showSidebar && (
-                <div className="w-full lg:w-[380px] xl:w-105 shrink-0 flex flex-col gap-6 lg:ml-auto lg:items-end">
-                    <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10">
-                        <div className="flex items-center justify-start gap-2 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
-                            </svg>
-                            <p className="text-sm font-semibold text-gray-900">
-                                Filters
-                            </p>
-                        </div>
-                        <p className="mb-2">Dealbreakers - Location</p>
-                        <div className="flex justify-between mb-2">
-                            <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">On Campus</button>
-                            <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">Off Campus</button>
-                        </div>
-                        <p className="mb-2">Dealbreakers - Pets</p>
-                        <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">No Pets</button>
-                            
-                        
-                    </div>
-                    {/* Here's the filter's and recent activity */}
-                    <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10 max-h-90 overflow-auto">
-                        <div className="flex items-center justify-start gap-2 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                            <p className="text-sm font-semibold text-gray-900">
-                                Recent activity
-                            </p>
-                        </div>
-                        
-
-                        {loadingNotifications && (
-                            <p className="text-sm text-gray-500">
-                                Loading…
-                            </p>
-                        )}
-
-                        {!loadingNotifications && top3.length === 0 && (
-                            <p className="text-sm text-gray-500">
-                                No notifications yet.
-                            </p>
-                        )}
-
-                        {!loadingNotifications && top3.length > 0 && (
-                            <div className="space-y-3">
-                                {top3.map((n) => (
-                                    <div
-                                        key={n.id}
-                                        className={[
-                                            "flex items-centerpx-4",
-                                            n.isRead ? "bg-white" : "bg-[#FFF7ED]",
-                                        ].join(" ")}
-                                    >
-
-                                        <p className="text-sm text-gray-900 truncate">
-                                            <span className="font-semibold">
-                                                {n.liker.name}
-                                            </span>{" "}
-                                            liked your profile
-                                            {!n.isRead && (
-                                                <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
-                                            )}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>   
-                </div>
-        )}
+       
         </div>
     );
 }

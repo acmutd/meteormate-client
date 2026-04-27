@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo} from "react";
 //commenting these out but we will be needing them later - just so I don't forget
 // import { useRouter } from "next/navigation";
 // import { fetchCurrentUser } from "@/utils/api/auth";
@@ -9,9 +9,44 @@ import ProfileCard from "@/components/cardComponent/ProfileCard";
 import confetti from "canvas-confetti";
 import { useCallback, useRef } from "react";
 import { ItsAMatchOverlay } from "@/components/itsAMatch";
+import FilterSidebar from "@/components/cardComponent/FilterSideBar";
+import { loadNotifications, type LikeNotification } from "@/lib/notifications";
 
 export default function Discover() {
   const [showMatch, setShowMatch] = useState(false);
+
+  const [notifications, setNotifications] = useState<LikeNotification[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    try {
+      setLoadingNotifications(true);
+      const data = loadNotifications();
+
+      if (mounted) {
+        setNotifications(data);
+      }
+    } finally {
+      if (mounted) {
+        setLoadingNotifications(false);
+      }
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const top3 = useMemo(() => {
+    return [...notifications]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      .slice(0, 3);
+  }, [notifications]);
 	
 
 	const fireMatch = useCallback(() => {
@@ -106,7 +141,12 @@ export default function Discover() {
               "Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe. To do for mm: nuke atharva. WOHOOOOOOOOOOOOOOOOOOOOOOOOo",
           }}
         />
+        <FilterSidebar
+          loadingNotifications={loadingNotifications}
+          top3={top3}
+        />
       </div>
+      
     </div>
   );
     
