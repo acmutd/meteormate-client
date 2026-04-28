@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Mail, Phone, MapPin, Search } from "lucide-react";
+import { Mail, Phone, Search } from "lucide-react";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 import { AnimatePresence, motion } from "framer-motion";
 

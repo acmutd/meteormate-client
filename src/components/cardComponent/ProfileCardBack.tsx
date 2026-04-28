@@ -38,8 +38,6 @@ function ChipPill({ chip }: { chip: Chip }) {
 }
 
 export default function ProfileCardBack({
-	name,
-	onFlipBack,
 	interests = [],
 	habits = [],
 	expandedBio,

@@ -37,8 +37,8 @@ export function ItsAMatchOverlay({
 	rightName = "them",
 
 }: MatchOverlayProps) {
-	if (!open) return null;
     const router = useRouter();
+	if (!open) return null;
 
 	return (
 		<div className="fixed inset-0 z-[2000]">
@@ -134,7 +134,7 @@ export function ItsAMatchOverlay({
 							onClick={() => {
                                 if (onConfirm) onConfirm();
                                 else onClose();
-                                router.push("./dashboard/matches");
+                                router.push("/dashboard/matches");
                             }}
 							className="cursor-pointer rounded-2xl bg-[#FF9100] px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition"
 						>

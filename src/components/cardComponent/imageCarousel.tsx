@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -30,8 +30,6 @@ export default function StackedCarousel({
     React.useEffect(() => {
         if (currentIndex >= totalImages) setCurrentIndex(0);
     }, [totalImages, currentIndex]);
-
-    if (totalImages === 0) return null;
 
     const maxVisible = Math.min(totalImages, 5);
     const stackDepth = 3;

@@ -69,14 +69,6 @@ export default function LifestylePersonalityPage() {
 
 	const handleNextStep = () => {
 		// really to check if we got the stuff needed or not and debugging later
-		console.log("handling next step");
-		console.log({
-			selectedCookingPreference,
-			selectedPetPreferences,
-			selectedLivingPreference,
-            selectedMoveInDate
-		});
-
 		router.push(`/onboarding/housing?living=${encodeURIComponent(selectedLivingPreference ?? "")}`);
 	};
 

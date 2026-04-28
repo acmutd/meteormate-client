@@ -19,7 +19,6 @@ export default function PhotoSlot({
     photosLength,
     uploadingSlotIndex,
     deletingSlotIndex,
-    primaryPhoto,
     onDeletePhoto,
     onImageClick
 }: PhotoSlotProps) {

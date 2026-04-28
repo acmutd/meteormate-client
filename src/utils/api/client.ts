@@ -53,7 +53,8 @@ export async function apiFetch<T>(
             return { ok: true, data: undefined as T };
         }
 
-        const data = (await response.json()) as T;
+        const text = await response.text();
+        const data = text ? (JSON.parse(text) as T) : (undefined as T);
         return { ok: true, data };
 
     } catch (error) {
