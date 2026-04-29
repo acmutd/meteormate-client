@@ -16,6 +16,7 @@ export type UserProfile = {
         first_name?: string;
         last_name?: string;
         age: number;
+        dob: string;
         profile_picture_url?: string[];
         bio: string;
     }

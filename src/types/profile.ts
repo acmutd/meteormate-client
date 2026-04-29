@@ -57,5 +57,5 @@ export interface UpdateUserProfileBody {
     gender: string;
     classification: string;
     bio: string;
-    age: number | null;
+    dob: string | null;
 }
