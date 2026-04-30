@@ -26,8 +26,8 @@ export default function NewPasswordPage() {
 
     // Load email + code saved earlier
     useEffect(() => {
-        const storedEmail = localStorage.getItem("resetEmail");
-        const storedCode = localStorage.getItem("resetCode");
+        const storedEmail = sessionStorage.getItem("resetEmail");
+        const storedCode = sessionStorage.getItem("resetCode");
 
         if (storedEmail) setEmail(storedEmail);
         if (storedCode) setCode(storedCode);
@@ -100,8 +100,8 @@ export default function NewPasswordPage() {
                 throw new Error(data.detail || "Failed to reset password.");
             }
 
-            localStorage.removeItem("resetEmail");
-            localStorage.removeItem("resetCode");
+            sessionStorage.removeItem("resetEmail");
+            sessionStorage.removeItem("resetCode");
 
             toast({
                 type: "success",
@@ -111,14 +111,8 @@ export default function NewPasswordPage() {
 
             router.push("../authentication");
         } catch (err: unknown) {
-            console.error("Reset password error:", err);
             const errorMessage =
-                err &&
-                typeof err === "object" &&
-                "message" in err &&
-                typeof (err as any).message === "string"
-                    ? (err as any).message
-                    : "Something went wrong.";
+                err instanceof Error ? err.message : "Something went wrong.";
             setErrorMsg(errorMessage);
             toast({
                 type: "error",
