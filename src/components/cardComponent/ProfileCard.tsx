@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next"
 import React, { useMemo, useState, useEffect } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
 import { loadNotifications, type LikeNotification } from "@/lib/notifications";
@@ -36,18 +35,10 @@ type ProfileCardProps = {
     onDislike?: () => void;
     onRewind?: () => void;
     onLike?: () => void;
-};
 
-function Dot({ active }: { active: boolean }) {
-    return (
-        <span
-        className={cn(
-            "h-2 w-2 rounded-full transition",
-            active ? "bg-white" : "bg-white/40"
-        )}
-        />
-    );
-    }
+    showActions?: boolean;
+    showSidebar?: boolean;
+};
 
 export default function ProfileCard({
     name,
@@ -57,16 +48,16 @@ export default function ProfileCard({
     bio,
     back,
     onDislike,
-    onRewind,
     onLike,
+    showActions = true,
+    showSidebar = true,
     }: ProfileCardProps) {
-    const safeImages = useMemo(() => (images?.length ? images : [""]), [images]);
-    const [idx, setIdx] = useState(0);
+    
 
     const [flipped, setFlipped] = useState(false); 
-    const flipToBack = () => setFlipped(true);
-    const flipToFront = () => setFlipped(false);
-    const toggleFlip = () => setFlipped((v) => !v);
+    const [peek, setPeek] = useState(false);  
+    const [peekDown, setPeekDown] = useState(false);
+    const [showHint, setShowHint] = useState(true);
 
     const [notifications, setNotifications] = useState<LikeNotification[]>([]);
     const [loadingNotifications, setLoadingNotifications] = useState(true);
@@ -92,13 +83,8 @@ export default function ProfileCard({
         .slice(0, 3);
     }, [notifications]);
 
-    const handleFlip = () => {
-        setFlipped((v) => !v);
-        onRewind?.();
-    };
-
     return (
-        <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row">
+        <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center">
             <div className="flex flex-col flex-1 min-w-0 lg:items-center">
                 {/* we don't need the old wrapper so here I made the new one just few changes  */}
                 <div className="w-full max-w-md sm:max-w-xl lg:max-w-195 relative">
@@ -106,7 +92,13 @@ export default function ProfileCard({
                         <div
                             className={cn(
                                 "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
-                                flipped ? "[transform:rotateY(180deg)]" : "[transform:rotateY(0deg)]"
+                                flipped
+                                    ? "[transform:rotateY(-180deg)]"
+                                    : peek
+                                    ? (peekDown
+                                        ? "[transform:rotateY(-10deg)]"
+                                        : "[transform:rotateY(-7deg)]")
+                                    : "[transform:rotateY(0deg)]"
                             )}
                         >
                             {/* FRONT FACE */}
@@ -118,10 +110,21 @@ export default function ProfileCard({
                                 )}
                             >
                                 {/* use ONE shared outer card shell */}
-                                <div className="h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
-                                <div className="relative rounded-[22px] overflow-hidden">
-                                    <StackedCarousel images={images} altPrefix={name} />
-                                </div>
+                                <div className="relative h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                    <div className="relative rounded-[22px] overflow-hidden">
+                                        <StackedCarousel images={images} altPrefix={name} />
+
+                                        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-5 py-4">
+                                            <h2 className="text-2xl font-bold text-white drop-shadow-sm">
+                                            {name}
+                                            </h2>
+                                            {subtitle && (
+                                            <p className="text-sm text-white/90 drop-shadow-sm">
+                                                {subtitle}
+                                            </p>
+                                            )}
+                                        </div>
+                                    </div>
 
                                 {tags.length > 0 && (
                                     <div className="mt-5 flex flex-wrap gap-3">
@@ -141,13 +144,54 @@ export default function ProfileCard({
                                     </div>
                                 )}
 
-                                <div className="mt-5 h-[112px] overflow-hidden text-[17px] leading-relaxed text-gray-600">
-                                    {bio ? (
-                                        <p className="line-clamp-4">{bio}</p>
-                                    ) : (
-                                        <p className="opacity-50 italic">Your bio will appear here...</p>
+                                {bio && (
+                                    <p className="mt-5 text-[17px] leading-relaxed text-gray-600">
+                                    {bio}
+                                    </p>
+                                )}
+                                {showHint && !flipped && (
+                                    <div className="absolute bottom-16 right-4 z-30 animate-fade-in">
+                                        <div className="relative bg-white border border-[#F1EADA] shadow-md rounded-xl px-4 py-2 text-sm text-gray-700">
+                                        Flip over to see more details!
+
+                                        {/* little triangle */}
+                                        <div className="absolute -bottom-2 right-4 w-3 h-3 bg-white border-l border-b border-[#F1EADA] rotate-45" />
+                                        </div>
+                                    </div>
+                                )}
+                                {/* Bottom-right peek + flip hotspot */}
+                                <button
+                                    type="button"
+                                    aria-label="Flip card"
+                                    onMouseEnter={() => setPeek(true)}
+                                    onMouseLeave={() => {
+                                        setPeek(false);
+                                        setPeekDown(false);
+                                    }}
+                                    onMouseDown={() => setPeekDown(true)}
+                                    onMouseUp={() => setPeekDown(false)}
+                                    onClick={() => {
+                                        setFlipped(true);
+                                        setShowHint(false);
+                                    }}
+                                    className={cn(
+                                        "cursor-pointer absolute bottom-4 right-4 z-20",
+                                        "h-12 w-12 rounded-2xl",
+                                        
+                                        "flex items-center justify-center",
+                                        "group"
                                     )}
-                                </div>
+                                    >
+                                    
+                                    <span
+                                        className={cn(
+                                        "pointer-events-none absolute bottom-0 right-0",
+                                        "h-5 w-5 rounded-tl-2xl",
+                                        "border-l border-t border-[#F1EADA]",
+                                        "bg-white/60"
+                                        )}
+                                    />
+                                </button>
                                 </div>
                             </div>
 
@@ -160,23 +204,54 @@ export default function ProfileCard({
                                 )}
                             >
                                 {/* SAME shared outer card shell to preserve exact shape */}
-                                <div className="h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                <div className="relative h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
                                 {/* if back content is taller, allow scrolling INSIDE without changing card height */}
                                     <div className="h-full overflow-auto">
                                         <ProfileCardBack
                                             name={name}
-                                            onFlipBack={flipToFront}
                                             interests={back?.interests}
                                             habits={back?.habits}
                                             expandedBio={back?.expandedBio}
                                         />
                                     </div>
+                                    {/* Bottom-right flip-back hotspot */}
+                                    <button
+                                        type="button"
+                                        aria-label="Flip back"
+                                        onMouseEnter={() => setPeek(true)}
+                                        onMouseLeave={() => {
+                                            setPeek(false);
+                                            setPeekDown(false);
+                                        }}
+                                        onMouseDown={() => setPeekDown(true)}
+                                        onMouseUp={() => setPeekDown(false)}
+                                        onClick={() => setFlipped(false)}
+                                        className={cn(
+                                            "cursor-pointer absolute bottom-4 right-4 z-20",
+                                            "h-12 w-12 rounded-2xl",
+                                            "flex items-center justify-center",
+                                            "group"
+                                        )}
+                                        >
+                                     
+
+                                        <span
+                                            className={cn(
+                                            "pointer-events-none absolute bottom-0 right-0",
+                                            "h-5 w-5 rounded-tl-2xl",
+                                            "border-l border-t border-[#F1EADA]",
+                                            "bg-white/60"
+                                            )}
+                                        />
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 {/* Action buttonsssss */}
+                {showActions && (
                 <div className="mt-6 w-full flex items-center justify-center gap-8 sm:gap-10">
                     <button
                         type="button"
@@ -189,14 +264,6 @@ export default function ProfileCard({
                     
                     <button
                         type="button"
-                        onClick={toggleFlip}
-                        className="cursor-pointer h-16 w-16 rounded-full border border-[#F1EADA] bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center"
-                        aria-label="Rewind"
-                    >
-                        <span className="text-2xl text-gray-700">↺</span>
-                    </button>
-                    <button
-                        type="button"
                         onClick={onLike}
                         className="cursor-pointer h-16 w-16 rounded-full bg-[#FF9100] shadow-sm hover:shadow-md transition flex items-center justify-center"
                         aria-label="Like"
@@ -207,8 +274,11 @@ export default function ProfileCard({
 
                     </button>
                     </div> 
+                )}
                 </div>
+                
                 {/** right side here */}
+                {showSidebar && (
                 <div className="w-full lg:w-[380px] xl:w-105 shrink-0 flex flex-col gap-6 lg:ml-auto lg:items-end">
                     <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10">
                         <div className="flex items-center justify-start gap-2 mb-4">
@@ -280,6 +350,7 @@ export default function ProfileCard({
                         )}
                     </div>   
                 </div>
+        )}
         </div>
     );
 }

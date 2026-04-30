@@ -47,7 +47,6 @@ export const doSendEmailVerification = async (email, uid) => {
             throw new Error('Failed to send verification code');
         }
 
-        console.log("Verification code sent successfully!");
         return response.json();
     } catch (error) {
         console.error("Error sending verification code:", error);

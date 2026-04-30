@@ -92,19 +92,13 @@ export default function VerifyPassword() {
             }
 
             // Store for next page (so /newPassword can use it)
-            localStorage.setItem("resetEmail", email);
-            localStorage.setItem("resetCode", verificationCode);
+            sessionStorage.setItem("resetEmail", email);
+            sessionStorage.setItem("resetCode", verificationCode);
 
             router.push("/authentication/newPassword");
         } catch (err: unknown) {
-            console.error("Error verifying reset code:", err);
             const errorMessage =
-                err &&
-                typeof err === "object" &&
-                "message" in err &&
-                typeof (err as any).message === "string"
-                    ? (err as any).message
-                    : "Verification failed. Please try again.";
+                err instanceof Error ? err.message : "Verification failed. Please try again.";
             setError(errorMessage);
         } finally {
             setIsVerifying(false);

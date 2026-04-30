@@ -147,8 +147,8 @@ export default function NotificationPage() {
             }
 
             if (mounted) setItems(data);
-            } catch (e: any) {
-            if (mounted) setError(e?.message ?? "Something went wrong");
+            } catch (e: unknown) {
+            if (mounted) setError(e instanceof Error ? e.message : "Something went wrong");
             } finally {
             if (mounted) setLoading(false);
             }
@@ -166,6 +166,7 @@ export default function NotificationPage() {
 
     const handleMarkAllRead = async () => {
         if (unreadCount === 0) return;
+        await markAllRead();
 
         setItems((prev) => {
             const next = markAllReadLocal(prev);
@@ -179,13 +180,13 @@ export default function NotificationPage() {
     const router = useRouter();
 
     const handleOpen = async (n: LikeNotification) => {
+        await markOneRead(n.id);
+
         setItems((prev) => {
             const next = markOneReadLocal(prev, n.id);
             saveNotifications(next);
             return next;
         });
-
-        // later: await markOneRead(n.id);
 
         router.push(MATCHES_URL);
     };

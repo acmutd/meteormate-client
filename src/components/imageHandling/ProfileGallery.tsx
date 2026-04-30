@@ -45,11 +45,6 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     if (userId) fetchProfileImages();
   }, [userId]);
 
-  // debug
-  useEffect(() => {
-    console.log("images:", images);
-  }, [images]);
-
   const handleImageChange = (newImageUrl: string, index?: number) => {
     setImages((prev) => {
       if (typeof index !== "number") {
