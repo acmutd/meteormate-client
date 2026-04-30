@@ -110,7 +110,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         return () => {
             active = false;
         };
-    }, [userLoggedIn, currentUser]);
+    }, [userLoggedIn, currentUser, resetOnboardingState]);
 
     const markProfileCompleted = useCallback((hasPic: boolean) => {
         setHasProfile(true);

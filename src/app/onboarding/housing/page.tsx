@@ -1,25 +1,25 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import LifestylePreferencesCard from "@/components/LifestylePreferencesCard";
 import DoneButton from "@/components/DoneButton";
 import ProgressHeader from "@/components/ProgressHeader";
-import {useMemo} from "react";
 import {useSearchParams, useRouter} from "next/navigation";
-import {loadOnboardingData, updateOnboardingData, clearOnboardingData} from "@/utils/onboardingStorage";
+import {loadOnboardingData, updateOnboardingData, clearOnboardingData, OnboardingData} from "@/utils/onboardingStorage";
 import PriceRangeSlider from "@/components/PriceRangeSlider";
 import {submitSurvey, updateSurvey} from "@/utils/api/survey";
 import { useOnboarding } from "@/contexts/onboardingContext";
+import { SurveyCreateBody, SurveyPayload, SurveyUpdateBody } from "@/types/survey";
 
-function buildSurveyPayload(raw: any) {
+function buildSurveyPayload(raw: OnboardingData): SurveyPayload {
 	
 
   // 1) Start with backend-friendly defaults
-	const payload: any = {
+	const payload: SurveyPayload = {
 		interests: raw.interests ?? [],
 		dealbreakers: raw.dealbreakers ?? [],
 		on_campus_locations: raw.on_campus_locations ?? [],
-		answers: raw.answers ?? {},
+		answers: {},
 		smoke_vape: raw.smoke_vape ?? false,
 		drink: raw.drink ?? false,
 
@@ -28,7 +28,7 @@ function buildSurveyPayload(raw: any) {
 	};
 
   // 2) Copy over optional fields ONLY if they are not null/undefined
-	const optionalKeys = [
+	const optionalKeys: Array<keyof OnboardingData & keyof SurveyPayload> = [
 		"housing_intent",
 		"budget_min",
 		"budget_max",
@@ -48,7 +48,10 @@ function buildSurveyPayload(raw: any) {
 
 	for (const k of optionalKeys) {
 		const v = raw[k];
-		if (v !== null && v !== undefined) payload[k] = v;
+		if (v !== null && v !== undefined) {
+			const assignablePayload = payload as Record<keyof SurveyPayload, SurveyPayload[keyof SurveyPayload]>;
+			assignablePayload[k] = v;
+		}
 	}
 
   	return payload;
@@ -59,11 +62,11 @@ const sendOnboardingData = async () => {
 	const body = buildSurveyPayload(raw);
 
 	// try post first
-	let result = await submitSurvey(body);
+	let result = await submitSurvey(body as SurveyCreateBody);
 
 	// if survey already exists, fallback to put
 	if (!result.ok && result.code === "400" && result.error.toLowerCase().includes("already exists")) {
-		result = await updateSurvey(body);
+		result = await updateSurvey(body as SurveyUpdateBody);
 	}
 
 	if (result.ok) {
@@ -519,11 +522,6 @@ export default function HousingPage() {
         () => searchParams.get("living") ?? "",
         [searchParams]
     );
-
-    useEffect(() => {
-	console.log(loadOnboardingData());
-	}, []);
-
 
     return (
         <div className="flex flex-col min-h-screen items-center">

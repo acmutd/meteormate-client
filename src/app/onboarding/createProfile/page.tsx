@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { isProfane } from "@/utils/profanity";
 import NextStepButton from "../../../components/NextStepButton";
 import { useRouter, useSearchParams } from "next/navigation";

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo} from "react";
+import React, { useEffect, useState, useMemo, useCallback} from "react";
 //commenting these out but we will be needing them later - just so I don't forget
 // import { useRouter } from "next/navigation";
 // import { fetchCurrentUser } from "@/utils/api/auth";
@@ -7,7 +7,6 @@ import React, { useEffect, useState, useMemo} from "react";
 // import LoadingSpinner from "@/components/LoadingSpinner"; 
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 import confetti from "canvas-confetti";
-import { useCallback, useRef } from "react";
 import { ItsAMatchOverlay } from "@/components/itsAMatch";
 import FilterSidebar from "@/components/cardComponent/FilterSideBar";
 import { loadNotifications, type LikeNotification } from "@/lib/notifications";
@@ -116,10 +115,9 @@ export default function Discover() {
             { label: "Has a pet", tone: "gray" },
           ]}
           bio="Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe..."
-          onDislike={() => console.log("dislike")}
-          onRewind={() => console.log("rewind")}
+          onDislike={() => undefined}
+          onRewind={() => undefined}
           onLike={() => {
-						console.log("like");
 						fireMatch();
 					}}
           back={{

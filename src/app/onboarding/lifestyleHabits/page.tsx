@@ -75,7 +75,6 @@ export default function LifestyleHabitsPage() {
     };
 
     const handleNextStep = () => {
-        console.log(selectedCloseness, selectedSmokeVape, selectedDrink, selectedDealbreakers)
         router.push("/onboarding/interests");
     };
     return (

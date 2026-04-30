@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next"
 import React, { useMemo, useState, useEffect } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
 import { loadNotifications, type LikeNotification } from "@/lib/notifications";
@@ -41,17 +40,6 @@ type ProfileCardProps = {
     //showSidebar?: boolean;
 };
 
-function Dot({ active }: { active: boolean }) {
-    return (
-        <span
-        className={cn(
-            "h-2 w-2 rounded-full transition",
-            active ? "bg-white" : "bg-white/40"
-        )}
-        />
-    );
-    }
-
 export default function ProfileCard({
     name,
     subtitle,
@@ -60,7 +48,6 @@ export default function ProfileCard({
     bio,
     back,
     onDislike,
-    onRewind,
     onLike,
     showActions = true,
     }: ProfileCardProps) {
@@ -94,11 +81,6 @@ export default function ProfileCard({
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 3);
     }, [notifications]);
-
-    const handleFlip = () => {
-        setFlipped((v) => !v);
-        onRewind?.();
-    };
 
     return (
         <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center">
