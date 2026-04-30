@@ -39,7 +39,6 @@ export default function InterestsPage() {
 
 	const handleNextStep = () => {
 		router.push("/onboarding/lifestylePersonality");
-		console.log(selectedInterests)
 	}
 
 	const handleToggle = (interest: string) => {

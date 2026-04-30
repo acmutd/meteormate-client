@@ -46,7 +46,7 @@ export default function VerifyEmailPage() {
         try {
             setIsSending(true);
 
-            const response = await fetch(`api/auth/send-verification-code`, {
+            const response = await fetch(`/api/auth/send-verification-code`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
@@ -60,7 +60,7 @@ export default function VerifyEmailPage() {
                 throw new Error(data.detail || "Failed to send verification code.");
             }
 
-            localStorage.setItem("resetEmail", email);
+            sessionStorage.setItem("resetEmail", email);
 
             toast({
                 type: "success",

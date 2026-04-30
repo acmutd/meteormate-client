@@ -135,7 +135,6 @@ export default function CreateAccountPage() {
                 });
             }
         } catch (err: unknown) {
-            console.error("Signup error:", err);
             const {message} = getAuthErrorMessage(err);
             toast({type: "error", title: "Sign up failed", description: message});
             setEmailTouched(true);

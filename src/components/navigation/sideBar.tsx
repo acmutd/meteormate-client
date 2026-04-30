@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { doSignOut } from "@/firebase/auth";
 
 import {
   DiscoverIcon,
@@ -23,6 +24,11 @@ export default function Sidebar() {
     ];
 
     const isSettingsActive = pathname === "/dashboard/settings";
+
+    const handleSignOut = async () => {
+        await doSignOut();
+        router.replace("/authentication");
+    };
 
     const navItemClass = (active: boolean) =>
     `w-full flex items-center gap-3 px-5 py-2 rounded-md transition cursor-pointer ${
@@ -85,7 +91,7 @@ export default function Sidebar() {
                 <button
                     onClick={() => {
                         // todo: still need to make the logout thing working - aastha notes
-                        console.log("logout");
+                        void handleSignOut();
                     }}
                     className="w-full flex gap-2 px-4 py-2 rounded-md text-black hover:bg-gray-50 transition cursor-pointer"
                     >

@@ -35,7 +35,7 @@ export default function LoginPage() {
     // Redirect if logged in
     useEffect(() => {
         if (userLoggedIn) {
-            router.push("../authentication");
+            router.push("/dashboard");
         }
     }, [userLoggedIn, router]);
 
@@ -104,9 +104,11 @@ export default function LoginPage() {
 
                 const pingResponse = await ActivityPing();
                 if (!pingResponse.ok) {
-                    console.log(
-                        `Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`
-                    );
+                    toast({
+                        type: "error",
+                        title: "Activity update failed",
+                        description: pingResponse.error,
+                    });
                 }
 
                 toast({
