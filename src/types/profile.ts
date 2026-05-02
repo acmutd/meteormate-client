@@ -5,6 +5,7 @@ export type Classification = "freshman" | "sophomore" | "junior" | "senior" | "g
 export interface ProfileCreateBody {
     gender: Gender;
     major: string;
+    school: string;
     classification: Classification;
     bio: string;
     profile_picture_url: string[];
@@ -18,6 +19,7 @@ export interface ProfileCreateBody {
 export interface ProfileUpdateBody {
     gender?: Gender | null;
     major?: string | null;
+    school?: string | null;
     classification?: Classification | null;
     bio?: string | null;
     profile_picture_url?: string[] | null;
@@ -32,6 +34,7 @@ export interface ProfileResponse {
     user_id: string;
     gender: Gender;
     major: string;
+    school: string,
     classification: Classification;
     created_at: string;
     updated_at: string;
@@ -54,6 +57,7 @@ export interface ProfileUpdateNotificationsBody {
 }
 export interface UpdateUserProfileBody {
     major: string;
+    school: string;
     gender: string;
     classification: string;
     bio: string;
