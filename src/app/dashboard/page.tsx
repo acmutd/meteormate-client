@@ -12,40 +12,6 @@ import { ItsAMatchOverlay } from "@/components/itsAMatch";
 export default function Discover() {
   const [showMatch, setShowMatch] = useState(false);
 
-//   ======================================= Justin's Stuff ==================================
-//   const [user, setUser] = useState<UserProfile | null>(null);
-//     const [loading, setLoading] = useState(true);
-//     const router = useRouter();
-
-//     useEffect(() => {
-//         const fetchUser = async () => {
-//         try {
-//             const res = await fetchCurrentUser({ preferCache: true, maxAgeMs: 5 * 60 * 1000 });
-//             if (!res.ok) throw new Error(res.error || "Failed to fetch user");
-//             setUser(res.data);
-//         } catch (err) {
-//             console.error("Dashboard auth error:", err);
-//             router.push("/authentication?toast=not-signed-in");
-//         } finally {
-//             setLoading(false);
-//         }
-//         };
-//         fetchUser();
-//     }, [router]);
-
-//     if (loading) {
-//         return (
-//             <div className="min-h-screen flex items-center justify-center">
-//                 <LoadingSpinner size="lg" />
-//             </div>
-//         );
-//     }
-
-//     if (!user) return null;
-//   ======================================= Justin's Stuff ==================================
-
-	
-
 	const fireMatch = useCallback(() => {
     // A quick "for ~900ms keep firing" effect
     const duration = 900;
