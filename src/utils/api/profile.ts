@@ -26,7 +26,6 @@ function updateProfileCache(result: Result<ProfileResponse>) {
 
 // Creates a new user profile (requires all required fields)
 export async function createProfile(body: ProfileCreateBody): Promise<Result<ProfileResponse>> {
-    console.log(JSON.stringify(body));
     const result = await apiFetch<ProfileResponse>("/api/profiles/create", {
         method: "POST",
         body,
