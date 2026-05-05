@@ -11,7 +11,6 @@ import { ItsAMatchOverlay } from "@/components/itsAMatch";
 
 export default function Discover() {
   const [showMatch, setShowMatch] = useState(false);
-	
 
 	const fireMatch = useCallback(() => {
     // A quick "for ~900ms keep firing" effect

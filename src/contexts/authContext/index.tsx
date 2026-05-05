@@ -2,6 +2,8 @@
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import React, { useContext, useState, useEffect, createContext, useCallback } from "react";
+import { clearCachedCurrentUser } from "@/utils/currentUserCache";
+import { clearAllCachedProfiles } from "@/utils/profileCache";
 
 // Define what your AuthContext provides
 interface AuthContextType {
@@ -39,6 +41,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setCurrentUser(null);
       setUserLoggedIn(false);
+      clearCachedCurrentUser();
+      clearAllCachedProfiles();
     }
     setLoading(false);
   }

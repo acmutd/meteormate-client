@@ -9,6 +9,7 @@ import { UpdateUserProfileBody } from "@/types/profile";
 import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
+import { DatePicker } from "../../../components/DatePicker";
 import { majors } from "@/constants/majors";
 import { schools } from "@/constants/schools";
 
@@ -18,7 +19,7 @@ interface ProfileFormState {
   gender: string;
   classification: string;
   bio: string;
-  age: string;
+  dob: string;
 }
 
 export default function Profile() {
@@ -32,14 +33,15 @@ export default function Profile() {
   const [gender, setGender] = useState("");
   const [classification, setClassification] = useState("");
   const [bio, setBio] = useState("");
-  const [age, setAge] = useState("");
+  const [birthday, setBirthday] = useState<string | null>(null);
+
   const [initialValues, setInitialValues] = useState<ProfileFormState>({
     major: "",
     school: "",
     gender: "",
     classification: "",
     bio: "",
-    age: "",
+    dob: "",
   });
   const [hasLoadedProfileData, setHasLoadedProfileData] = useState(false);
 
@@ -55,7 +57,7 @@ export default function Profile() {
       gender !== initialValues.gender ||
       classification !== initialValues.classification ||
       bio !== initialValues.bio ||
-      age !== initialValues.age);
+      birthday !== initialValues.dob);
 
   const { isDialogOpen, confirmNavigation, cancelNavigation } =
     useUnsavedChangesGuard({ isDirty });
@@ -63,20 +65,23 @@ export default function Profile() {
   useEffect(() => {
     const fetchuser = async () => {
       try {
-        const data = await fetchCurrentUser();
+        const data = await fetchCurrentUser({
+          preferCache: true,
+          maxAgeMs: 5 * 60 * 1000,
+        });
         if (!data.ok) throw new Error(data.error || "Failed to fetch profile");
 
         setUser(data.data);
+        // To cut out the T00:00:00 
+        const dobString = data.data.profile?.dob ? String(data.data.profile.dob).split('T')[0] : "";
+        
         const normalized: ProfileFormState = {
           major: data.data.profile?.major || "",
           school: data.data.profile?.school || "",
           gender: data.data.profile?.gender || "",
           classification: data.data.profile?.classification || "",
           bio: data.data.profile?.bio || "",
-          age:
-            data.data.profile?.age !== undefined
-              ? String(data.data.profile.age)
-              : "",
+          dob: dobString || "",
         };
 
         setMajor(normalized.major);
@@ -84,7 +89,7 @@ export default function Profile() {
         setGender(normalized.gender);
         setClassification(normalized.classification);
         setBio(normalized.bio);
-        setAge(normalized.age);
+        setBirthday(normalized.dob);
         setInitialValues(normalized);
         setHasLoadedProfileData(true);
       } catch (err) {
@@ -100,28 +105,14 @@ export default function Profile() {
 
   const handleUpdateProfile = async () => {
     try {
-      const trimmedAge = age.trim();
-      const isValidAgeFormat = trimmedAge === "" || /^\d+$/.test(trimmedAge);
-
-      if (!isValidAgeFormat) {
+      if (!birthday) {
         toast({
           type: "error",
-          title: "Invalid age",
-          description: "Please enter a valid number for age.",
+          title: "Birthday required",
+          description: "Please select your birthday.",
         });
         return;
       }
-
-      const numericAge = Number(age);
-      if (numericAge < 16 || numericAge > 80 || trimmedAge === "") {
-        toast({
-          type: "error",
-          title: "Invalid age",
-          description: "Age must be between 16 and 80",
-        });
-        return;
-      }
-      const parsedAge = numericAge;
 
       const updatePayload: UpdateUserProfileBody = {
         major,
@@ -129,7 +120,7 @@ export default function Profile() {
         gender,
         classification,
         bio,
-        age: parsedAge,
+        dob: birthday,
       };
 
       const updateResult = await apiFetch("/api/profiles/update", {
@@ -139,7 +130,7 @@ export default function Profile() {
       if (!updateResult.ok)
         throw new Error(updateResult.error || "Failed to update profile");
 
-      const updatedData = await fetchCurrentUser();
+      const updatedData = await fetchCurrentUser({ forceRefresh: true });
       if (!updatedData.ok)
         throw new Error(updatedData.error || "Failed to refresh profile");
       setUser(updatedData.data);
@@ -150,7 +141,7 @@ export default function Profile() {
         gender,
         classification,
         bio,
-        age,
+        dob: birthday || "",
       };
       setInitialValues(normalized);
       toast({
@@ -384,28 +375,17 @@ export default function Profile() {
             </div>
 
             <div className="text-md">
-              <p className="mb-2">Age</p>
-              <div className="relative">
-                <input
-                  type="number"
-                  className={`${inputStyle}`}
-                  value={age}
-                  onChange={(e) => {
-                    const nextAge = e.target.value;
-                    if (nextAge === "" || /^\d+$/.test(nextAge)) {
-                      setAge(nextAge);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (["e", "E", "+", "-", "."].includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  min={16}
-                  max={80}
-                  placeholder="Enter your age"
-                />
-              </div>
+              <div>
+                <p className="mb-2">Birthday</p>
+                <div className="[&_input]:border-primary [&_input]:focus:ring-primary">
+                   <DatePicker
+                   value={birthday}
+                   onChange={setBirthday}
+                   placeholder="Select your birthday"
+
+                  />
+                </div>
+               </div>
             </div>
 
             <div className="text-md col-span-2">

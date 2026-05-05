@@ -40,7 +40,6 @@ export interface ProfileResponse {
     updated_at: string;
     first_name: string;
     last_name: string;
-    age: number;
     dob: string;
     profile_picture_url: string[];
     bio: string;
@@ -61,5 +60,5 @@ export interface UpdateUserProfileBody {
     gender: string;
     classification: string;
     bio: string;
-    age: number | null;
+    dob: string | null;
 }
