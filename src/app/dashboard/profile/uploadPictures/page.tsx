@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/utils/api/auth";
 import { uploadProfilePicture, deleteProfilePicture } from "@/utils/api/profile";
-import { compressImage } from "@/utils/imageCompression";
+import { compressImage } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
