@@ -5,7 +5,7 @@ import { cn } from "@/utils/cn";
 export type PhotoSlotProps = {
     photo?: string;
     slotIndex: number;
-    photosLength: number;
+	isNextSlot: boolean;
     uploadingSlotIndex: number | null;
     deletingSlotIndex: number | null;
     primaryPhoto?: string;
@@ -16,7 +16,7 @@ export type PhotoSlotProps = {
 export default function PhotoSlot({
     photo,
     slotIndex,
-    photosLength,
+	isNextSlot,
     uploadingSlotIndex,
     deletingSlotIndex,
     onDeletePhoto,
@@ -54,12 +54,12 @@ export default function PhotoSlot({
 	return (
 		<button
 			type="button"
-			onClick={slotIndex === photosLength ? onImageClick : undefined}
-			disabled={uploadingSlotIndex !== null}
-			aria-label={slotIndex === photosLength ? "Upload new photo" : `Photo slot ${slotIndex + 1}`}
+			onClick={isNextSlot ? onImageClick : undefined}
+			disabled={!isNextSlot || uploadingSlotIndex !== null}
+			aria-label={isNextSlot ? "Upload new photo" : `Photo slot ${slotIndex + 1}`}
 			className={cn(
 				"aspect-3/4 rounded-xl flex items-center justify-center transition-all overflow-hidden relative",
-				slotIndex === photosLength
+				isNextSlot
 					? "border-2 border-dashed border-gray-300 hover:border-primary hover:bg-orange-50/50 cursor-pointer group"
 					: "border border-dashed border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
 			)}
@@ -75,7 +75,7 @@ export default function PhotoSlot({
 				<div
 					className={cn(
 						"w-8 h-8 rounded-full flex items-center justify-center transition-transform",
-						slotIndex === photosLength ? "bg-orange-50 group-hover:scale-110 group-hover:bg-orange-100 text-primary" : "text-gray-300"
+						isNextSlot ? "bg-orange-50 group-hover:scale-110 group-hover:bg-orange-100 text-primary" : "text-gray-300"
 					)}
 				>
 					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

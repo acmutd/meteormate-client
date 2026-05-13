@@ -5,7 +5,7 @@ import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
 import { uploadProfilePicture, deleteProfilePicture } from "@/utils/api/profile";
-import { compressImage } from "@/utils/imageCompression";
+import { compressImage } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
@@ -15,6 +15,7 @@ import { useOnboarding } from "@/contexts/onboardingContext";
 import { useToast } from "@/components/ui/ToastProvider";
 
 import { MIN_PHOTOS, MAX_PHOTOS } from "@/constants/onboarding";
+import { base } from "framer-motion/client";
 
 export default function UploadPicturesPage() {
 	const router = useRouter();
@@ -26,7 +27,8 @@ export default function UploadPicturesPage() {
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 	const [initialLoading, setInitialLoading] = useState(true);
 
-	const [photos, setPhotos] = useState<string[]>([]);
+	const [photos, setPhotos] = useState<string[]>(["", "", "", "", ""]);
+	const [deletedPhotoIds, setDeletedPhotoIds] = useState<number[]>([]);
 	const [cropImage, setCropImage] = useState<string | null>(null);
 	const [isCropping, setIsCropping] = useState(false);
 	const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
@@ -38,23 +40,24 @@ export default function UploadPicturesPage() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-		const fetchUser = async () => {
-			try {
-				const res = await fetchCurrentUser();
-				if (res.ok && res.data) {
-					setUserProfile(res.data);
-					if (res.data.profile?.profile_picture_url) {
-						setPhotos(res.data.profile.profile_picture_url);
-					}
-				}
-			} catch (err) {
-				console.error("Failed to fetch user profile", err);
-			} finally {
-				setInitialLoading(false);
-			}
-		};
-		fetchUser();
-	}, []);
+        const fetchUser = async () => {
+            try {
+                const res = await fetchCurrentUser();
+                if (res.ok && res.data) {
+                    setUserProfile(res.data);
+                    const urls = res.data.profile?.profile_picture_url;
+                    if (urls?.length) {
+                        setPhotos(prev => prev.map((_, i) => urls[i] ?? ""));
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch user profile", err);
+            } finally {
+                setInitialLoading(false);
+            }
+        };
+        fetchUser();
+    }, []);
 
 	useEffect(() => {
 		if (!toastShownRef.current && searchParams.get("toast") === "needs-pictures") {
@@ -122,13 +125,11 @@ export default function UploadPicturesPage() {
 		}
 	};
 
-	const primaryPhoto = photos[0];
-
 	const handleCropDone = async (croppedDataUrl: string) => {
 		setIsCropping(false);
 		setCropImage(null);
 		
-		const currentSlot = photos.length;
+		const currentSlot = photos.findIndex(p => !p);
 		setUploadingSlotIndex(currentSlot);
 		setCompressionError(null);
 
@@ -153,15 +154,13 @@ export default function UploadPicturesPage() {
 				reader.onerror = reject;
 				reader.readAsDataURL(compressedFile);
 			});
-			
+
 			const base64 = await base64Promise;
-			const uploadRes = await uploadProfilePicture({ base64 });
-			
-			if (uploadRes.ok && uploadRes.data?.profile_picture_url) {
-				setPhotos(uploadRes.data.profile_picture_url);
-			} else {
-				setCompressionError("Failed to upload image. Please try again.");
-			}
+			setPhotos(prev => {
+				const newPhotos = [...prev];
+				newPhotos[currentSlot] = base64;
+				return newPhotos;
+			});
 		} catch (error) {
 			console.error("Image compression/upload failed:", error);
 			setCompressionError("Failed to process image. Please try a different photo.");
@@ -175,12 +174,14 @@ export default function UploadPicturesPage() {
 		try {
 			// Show specific loader over this slot while deleting
 			setDeletingSlotIndex(index);
-			const res = await deleteProfilePicture(index);
-			if (res.ok && res.data?.profile_picture_url) {
-				setPhotos(res.data.profile_picture_url);
-			} else if (res.ok && res.data) {
-				setPhotos(res.data.profile_picture_url || []);
+			if (!photos[index].startsWith("data:")) {
+				setDeletedPhotoIds(prev => [...prev, index]); // mark for deleting from db
 			}
+			setPhotos(prev => {
+				const newPhotos = [...prev];
+				newPhotos[index] = "";
+				return newPhotos;
+			});
 		} catch (e) {
 			console.error("Failed to delete photo", e);
 		} finally {
@@ -224,7 +225,7 @@ export default function UploadPicturesPage() {
 				<div className="w-full lg:w-1/2 lg:max-w-135 flex flex-col pt-4">
 					<ImageUpload
 						photos={photos}
-						primaryPhoto={primaryPhoto}
+						primaryPhoto={photos[0]}
 						uploadingSlotIndex={uploadingSlotIndex}
 						deletingSlotIndex={deletingSlotIndex}
 						compressionError={compressionError}
