@@ -129,7 +129,7 @@ export default function CreateProfilePage() {
 			classification: year as Classification,
 			bio,
 			dob: birthday!,
-			profile_picture_url: [],
+			profile_picture_url: ["", "", "", "", ""], // placeholder, actual pictures will be uploaded in the next step
 		});
 
         if (!createResult.ok) {

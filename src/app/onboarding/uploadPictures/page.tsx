@@ -5,7 +5,7 @@ import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
 import { uploadProfilePicture, deleteProfilePicture } from "@/utils/api/profile";
-import { compressImage } from "@/utils/profile_pictures";
+import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
@@ -196,8 +196,14 @@ export default function UploadPicturesPage() {
 		setIsLoading(true);
 
 		setIsLoading(false);
-		markPictureUploaded();
-		router.push("/onboarding/lifestylePreferences");
+
+		console.log(photos);
+		console.log(deletedPhotoIds);
+
+		const changedImageMap = await uploadImages(photos);
+
+		// markPictureUploaded();
+		// router.push("/onboarding/lifestylePreferences");
 	};
 
 	if (initialLoading) {
