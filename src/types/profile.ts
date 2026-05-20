@@ -59,3 +59,7 @@ export interface UpdateUserProfileBody {
     bio: string;
     age: number | null;
 }
+
+export interface UserDeleteProfilePicturesBody {
+    profile_picture_url: string[];
+}
