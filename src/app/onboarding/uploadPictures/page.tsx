@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { uploadProfilePicture, deleteProfilePicture } from "@/utils/api/profile";
+import { updateProfile, deleteProfilePictures } from "@/utils/api/profile";
 import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
@@ -28,7 +28,7 @@ export default function UploadPicturesPage() {
 	const [initialLoading, setInitialLoading] = useState(true);
 
 	const [photos, setPhotos] = useState<string[]>(["", "", "", "", ""]);
-	const [deletedPhotoIds, setDeletedPhotoIds] = useState<number[]>([]);
+	const [deletedPhotoUrls, setDeletedPhotoUrls] = useState<string[]>([]);
 	const [cropImage, setCropImage] = useState<string | null>(null);
 	const [isCropping, setIsCropping] = useState(false);
 	const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
@@ -40,24 +40,24 @@ export default function UploadPicturesPage() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await fetchCurrentUser();
-                if (res.ok && res.data) {
-                    setUserProfile(res.data);
-                    const urls = res.data.profile?.profile_picture_url;
-                    if (urls?.length) {
-                        setPhotos(prev => prev.map((_, i) => urls[i] ?? ""));
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to fetch user profile", err);
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-        fetchUser();
-    }, []);
+		const fetchUser = async () => {
+			try {
+				const res = await fetchCurrentUser();
+				if (res.ok && res.data) {
+					setUserProfile(res.data);
+					const urls = res.data.profile?.profile_picture_url;
+					if (urls?.length) {
+						setPhotos(prev => prev.map((_, i) => urls[i] ?? ""));
+					}
+				}
+			} catch (err) {
+				console.error("Failed to fetch user profile", err);
+			} finally {
+				setInitialLoading(false);
+			}
+		};
+		fetchUser();
+	}, []);
 
 	useEffect(() => {
 		if (!toastShownRef.current && searchParams.get("toast") === "needs-pictures") {
@@ -128,7 +128,7 @@ export default function UploadPicturesPage() {
 	const handleCropDone = async (croppedDataUrl: string) => {
 		setIsCropping(false);
 		setCropImage(null);
-		
+
 		const currentSlot = photos.findIndex(p => !p);
 		setUploadingSlotIndex(currentSlot);
 		setCompressionError(null);
@@ -175,7 +175,7 @@ export default function UploadPicturesPage() {
 			// Show specific loader over this slot while deleting
 			setDeletingSlotIndex(index);
 			if (!photos[index].startsWith("data:")) {
-				setDeletedPhotoIds(prev => [...prev, index]); // mark for deleting from db
+				setDeletedPhotoUrls(prev => [...prev, photos[index]]); // mark for deleting from db
 			}
 			setPhotos(prev => {
 				const newPhotos = [...prev];
@@ -195,15 +195,61 @@ export default function UploadPicturesPage() {
 		setApiError(null);
 		setIsLoading(true);
 
-		setIsLoading(false);
-
-		console.log(photos);
-		console.log(deletedPhotoIds);
-
+		
 		const changedImageMap = await uploadImages(photos);
-
-		// markPictureUploaded();
-		// router.push("/onboarding/lifestylePreferences");
+		
+		let newPhotos = [...photos];
+		let newDeletedUrls = [...deletedPhotoUrls];
+		
+		for (const key in changedImageMap) {
+			const slotIndex = parseInt(key);
+			const newUrl = changedImageMap[key];
+			if (photos[slotIndex] && !photos[slotIndex].startsWith("data:")) {
+				// This slot had an existing URL, so we need to delete the old one
+				newDeletedUrls.push(photos[slotIndex]);
+				continue;
+			}
+			
+			// Update the photo URL in the local state
+			newPhotos[slotIndex] = newUrl;
+		}
+		
+		setPhotos(newPhotos);
+		setDeletedPhotoUrls(newDeletedUrls);
+		
+		console.log("Changed image map after upload:", changedImageMap);
+		console.log("Deleted photo URLs to remove from profile:", newDeletedUrls);
+		console.log("Final photo URLs to save in profile:", newPhotos);
+		
+		const updateRes = await updateProfile({ profile_picture_url: newPhotos.filter(p => p && !p.startsWith("data:")) });
+		if (!updateRes.ok) {
+			console.error("Failed to update profile with new picture URLs", updateRes.error);
+			setApiError("Failed to save photos. Please try again.");
+			setIsLoading(false);
+			return;
+		} else {
+			setUserProfile(prev => {
+				if (!prev || !prev.profile) return prev;
+				prev.profile = updateRes.data;
+				return prev;
+			})
+		}
+		
+		if (newDeletedUrls.length > 0) {
+			const deleteRes = await deleteProfilePictures({ profile_picture_url: newDeletedUrls });
+			if (!deleteRes.ok) {
+				console.error("Failed to delete old photos from profile", deleteRes.error);
+				setApiError("Failed to delete old photos. Please try again.");
+				setIsLoading(false);
+				return;
+			}
+		}
+		
+		setIsLoading(false);
+		
+		markPictureUploaded();
+		
+		router.push("/onboarding/lifestylePreferences");
 	};
 
 	if (initialLoading) {
@@ -262,9 +308,8 @@ export default function UploadPicturesPage() {
 
 			<div className="mt-8 w-full flex flex-col items-center justify-center">
 				<NextStepButton
-					className={`mb-3 ${
-						photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null ? "opacity-50 cursor-not-allowed" : ""
-					}`}
+					className={`mb-3 ${photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null ? "opacity-50 cursor-not-allowed" : ""
+						}`}
 					onClick={handleNextStep}
 					disabled={photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null}
 				/>
