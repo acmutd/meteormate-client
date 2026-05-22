@@ -5,6 +5,7 @@ import {useRouter} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { VerifyEmail, SendVerificationCode } from "@/utils/api/auth";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { handleOTPCodePaste } from "@/utils/otp";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
@@ -64,8 +65,15 @@ export default function VerifyEmailPage() {
         }
     };
 
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData("text");
+        handleOTPCodePaste(pastedText, index, code, setCode, inputsRef.current);
+    };
+
     const handleVerifyEmail = async () => {
         const verificationCode = code.join("");
+        
         setError(null);
 
         if (verificationCode.length !== 6) {
@@ -197,6 +205,7 @@ export default function VerifyEmailPage() {
                                     value={digit}
                                     onChange={(e) => handleChange(e.target.value, index)}
                                     onKeyDown={(e) => handleKeyDown(e, index)}
+                                    onPaste={(e) => handlePaste(e, index)}
                                     ref={(el: HTMLInputElement | null) => {
                                         inputsRef.current[index] = el;
                                     }}

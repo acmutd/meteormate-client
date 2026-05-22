@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter, useSearchParams} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import { handleOTPCodePaste } from "@/utils/otp";
 
 export default function VerifyPassword() {
     const router = useRouter();
@@ -57,6 +58,12 @@ export default function VerifyPassword() {
         } else if (e.key === "ArrowRight" && index < 5) {
             inputsRef.current[index + 1]?.focus();
         }
+    };
+
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData("text");
+        handleOTPCodePaste(pastedText, index, code, setCode, inputsRef.current, () => setError(""));
     };
 
     const handleVerifyPassword = async () => {
@@ -158,6 +165,7 @@ export default function VerifyPassword() {
                                     value={digit}
                                     onChange={(e) => handleChange(e.target.value, index)}
                                     onKeyDown={(e) => handleKeyDown(e, index)}
+                                    onPaste={(e) => handlePaste(e, index)}
                                     ref={(el: HTMLInputElement | null) => {
                                         inputsRef.current[index] = el;
                                     }}
@@ -197,7 +205,7 @@ export default function VerifyPassword() {
                         </button>
 
                         <p className="text-center text-xs text-zinc-400 mt-3">
-                            Tip: You can paste digits one-by-one; use backspace to move left.
+                            Tip: You can paste the 6-digit code or digits one-by-one.
                         </p>
                     </div>
                 </div>
