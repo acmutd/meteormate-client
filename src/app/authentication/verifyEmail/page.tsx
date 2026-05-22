@@ -6,11 +6,12 @@ import LoadingSpinner from "../../../components/LoadingSpinner";
 import { VerifyEmail, SendVerificationCode } from "@/utils/api/auth";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { handleOTPCodePaste } from "@/utils/otp";
+import { OTP_LENGTH } from "@/constants/otp";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
 
-    const [code, setCode] = useState(Array(6).fill(""));
+    const [code, setCode] = useState(Array(OTP_LENGTH).fill(""));
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const [email, setEmail] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export default function VerifyEmailPage() {
             const newCode = [...code];
             newCode[index] = value;
             setCode(newCode);
-            if (index < 5) inputsRef.current[index + 1]?.focus();
+            if (index < OTP_LENGTH - 1) inputsRef.current[index + 1]?.focus();
         }
     };
 
@@ -60,7 +61,7 @@ export default function VerifyEmailPage() {
             setCode(newCode);
         } else if (e.key === "ArrowLeft" && index > 0) {
             inputsRef.current[index - 1]?.focus();
-        } else if (e.key === "ArrowRight" && index < 5) {
+        } else if (e.key === "ArrowRight" && index < OTP_LENGTH - 1) {
             inputsRef.current[index + 1]?.focus();
         }
     };
@@ -76,8 +77,8 @@ export default function VerifyEmailPage() {
         
         setError(null);
 
-        if (verificationCode.length !== 6) {
-            setError("Please enter the 6-digit code.");
+        if (verificationCode.length !== OTP_LENGTH) {
+            setError(`Please enter the ${OTP_LENGTH}-digit code.`);
             return;
         }
 
@@ -184,8 +185,8 @@ export default function VerifyEmailPage() {
 
                         <p className="mt-1 font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500">
                             {email
-                                ? `We sent a 6-digit code to ${email}.`
-                                : "We sent a 6-digit code to your registered email."}
+                                ? `We sent a ${OTP_LENGTH}-digit code to ${email}.`
+                                : `We sent a ${OTP_LENGTH}-digit code to your registered email.`}
                         </p>
 
                         <p className="font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500 -mb-4">

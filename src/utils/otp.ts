@@ -1,3 +1,5 @@
+import { OTP_LENGTH } from "../constants/otp";
+
 export function handleOTPCodePaste(
     pastedText: string,
     index: number,
@@ -6,17 +8,17 @@ export function handleOTPCodePaste(
     inputs: (HTMLInputElement | null)[],
     onSuccess?: () => void
 ) {
-    // 6 digits
-    const digits = pastedText.replace(/\D/g, "").slice(0, 6);
+    // OTP_LENGTH digits
+    const digits = pastedText.replace(/\D/g, "").slice(0, OTP_LENGTH);
     
     if (digits.length > 0) {
         const newCode = [...code];
-        // If pasted text has 6 digits, assume user is pasting whole code, otherwise fill from active input field
-        const startIndex = digits.length === 6 ? 0 : index;
+        // If pasted text has OTP_LENGTH digits, assume user is pasting whole code, otherwise fill from active input field
+        const startIndex = digits.length === OTP_LENGTH ? 0 : index;
         
         for (let i = 0; i < digits.length; i++) {
             const targetIndex = startIndex + i;
-            if (targetIndex < 6) {
+            if (targetIndex < OTP_LENGTH) {
                 newCode[targetIndex] = digits[i];
             }
         }
@@ -26,9 +28,9 @@ export function handleOTPCodePaste(
             onSuccess();
         }
         
-        const lastFilledIndex = Math.min(startIndex + digits.length - 1, 5);
+        const lastFilledIndex = Math.min(startIndex + digits.length - 1, OTP_LENGTH - 1);
         const nextEmptyIndex = startIndex + digits.length;
-        const targetFocusIndex = nextEmptyIndex < 6 ? nextEmptyIndex : lastFilledIndex;
+        const targetFocusIndex = nextEmptyIndex < OTP_LENGTH ? nextEmptyIndex : lastFilledIndex;
         
         inputs[targetFocusIndex]?.focus();
     }
