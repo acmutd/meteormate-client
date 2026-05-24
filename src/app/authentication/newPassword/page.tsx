@@ -157,7 +157,7 @@ export default function NewPasswordPage() {
     );
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.webp" logoAlt="MeteorMate Logo">
             <div className="flex flex-col w-full max-w-2xl px-10">
                 {/* Back Arrow */}
                 <button

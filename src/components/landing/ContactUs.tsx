@@ -23,7 +23,7 @@ export default function ContactUs() {
 					<div className="flex flex-col items-center md:items-start gap-3">
 						<div className="flex items-center gap-3">
 							<Image
-								src="/MM_logo_V1.webp"
+								src="/MM_logo_V2.svg"
 								alt="MeteorMate Logo"
 								width={40}
 								height={40}

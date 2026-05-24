@@ -142,7 +142,7 @@ export default function LoginPage() {
     };
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             {/* Back arrow */}
             <button
                 onClick={() => router.push("/")}
