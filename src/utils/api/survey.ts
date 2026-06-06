@@ -6,10 +6,49 @@ import {
     SurveyResponse,
     SurveyUpdateBody,
 } from "@/types/survey";
+import { fetchCurrentUser } from "@/utils/api/auth";
+import {
+    readCachedCurrentUser,
+    writeCachedCurrentUser,
+} from "@/utils/currentUserCache";
 
-// fetches user survey for the profile page when we integrate that
+// survey comes from /api/auth/me
 export async function getSurvey(): Promise<Result<SurveyResponse>> {
-    return apiFetch<SurveyResponse>("/api/survey/me", { method: "GET" });
+    const userResponse = await fetchCurrentUser({
+        preferCache: true,
+        maxAgeMs: 5 * 60 * 1000, // (minute) x (secondsPerMinute) x (milisecondsPerSecond). This is 5 minutes
+    });
+
+    if (!userResponse.ok) {
+        return {
+            ok: false,
+            error: userResponse.error,
+            code: userResponse.code,
+        };
+    }
+
+    if (!userResponse.data.survey) {
+        const refreshedResponse = await fetchCurrentUser({ forceRefresh: true });
+        if (!refreshedResponse.ok) {
+            return {
+                ok: false,
+                error: refreshedResponse.error,
+                code: refreshedResponse.code,
+            };
+        }
+
+        if (!refreshedResponse.data.survey) {
+            return {
+                ok: false,
+                error: "Survey not found",
+                code: "404",
+            };
+        }
+
+        return { ok: true, data: refreshedResponse.data.survey };
+    }
+
+    return { ok: true, data: userResponse.data.survey };
 }
 
 // creates a new survey
@@ -48,6 +87,15 @@ export async function upsertSurvey(
 
     if (!response.ok) {
         throw new Error(`Failed to save survey: ${response.code} (${response.error})`);
+    }
+
+    const cachedUser = readCachedCurrentUser();
+    if (cachedUser) {
+        writeCachedCurrentUser({
+            ...cachedUser,
+            survey: response.data,
+            survey_done: true,
+        });
     }
 
     return response.data;

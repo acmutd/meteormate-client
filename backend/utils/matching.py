@@ -215,13 +215,13 @@ def encode_answers(survey: SurveyCreate, profile) -> list[int]:
         GUESTS_FREQUENCY_INDEX.get(survey.guests_frequency, -1),
         ROOMMATE_CLOSENESS_INDEX.get(survey.roommate_closeness, -1),
         ON_CAMPUS_LOCATION_INDEX.get(
-            survey.on_campus_locations[0].value if survey.on_campus_locations else None,
-            -1
+            survey.on_campus_locations[0].value if survey.on_campus_locations else None, -1
         ),
     ]
+
     for location in ON_CAMPUS_LOCATION_INDEX.keys():
         answers.append(1 if location in survey.on_campus_locations else 0)
-        
+
     for interest in POSSIBLE_INTERESTS:
         answers.append(1 if interest in survey.interests else 0)
 

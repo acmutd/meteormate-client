@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ImageDisplay from "./ImageDisplay";
 import LoadingSpinner from "../LoadingSpinner";
-import { apiFetch } from "@/utils/api/client";
+import { fetchProfile } from "@/utils/api/profile";
 
 // const MAX_IMAGES = 5;
 
 interface ProfileGalleryProps {
   userId: string;
 }
-
-type ProfileImagesResponse = {
-  profile_picture_url?: string[];
-};
 
 export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   const [images, setImages] = useState<string[]>([]);
@@ -21,8 +17,9 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
     async function fetchProfileImages() {
       setLoading(true);
       try {
-        const res = await apiFetch<ProfileImagesResponse>(`/api/profiles/get/${userId}`, {
-          method: "GET",
+        const res = await fetchProfile(userId, {
+          preferCache: true,
+          maxAgeMs: 5 * 60 * 1000,
         });
         if (!res.ok) {
           throw new Error(res.error || "Failed to receive profile images");
