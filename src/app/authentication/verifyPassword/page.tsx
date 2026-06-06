@@ -106,7 +106,7 @@ export default function VerifyPassword() {
     };
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             <div className="w-full px-6">
                 {/* Back arrow */}
                 <button
