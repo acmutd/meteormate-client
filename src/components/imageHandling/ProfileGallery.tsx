@@ -3,17 +3,24 @@ import ImageDisplay from "./ImageDisplay";
 import LoadingSpinner from "../LoadingSpinner";
 import { fetchProfile } from "@/utils/api/profile";
 
-// const MAX_IMAGES = 5;
-
 interface ProfileGalleryProps {
   userId: string;
+  initialImages?: string[];
 }
 
-export default function ProfileGallery({ userId }: ProfileGalleryProps) {
-  const [images, setImages] = useState<string[]>([]);
+export default function ProfileGallery({ userId, initialImages }: ProfileGalleryProps) {
+  const [images, setImages] = useState<string[]>(initialImages ?? []);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (initialImages !== undefined) {
+      setImages(initialImages);
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+
     async function fetchProfileImages() {
       setLoading(true);
       try {
@@ -26,6 +33,8 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
         }
 
         const data = res.data;
+        if (!isMounted) return;
+
         if (
           !data ||
           !Array.isArray(data.profile_picture_url) ||
@@ -37,13 +46,18 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
         }
       } catch (error) {
         console.error("Failed to fetch profile images:", error);
-        setImages([]);
+        if (isMounted) setImages([]);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
+
     if (userId) fetchProfileImages();
-  }, [userId]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialImages, userId]);
 
   const handleImageChange = (newImageUrl: string, index?: number) => {
     setImages((prev) => {
@@ -70,8 +84,6 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
   };
 
   const profileImage = images[0];
-  // const featuredImages = images.slice(1, MAX_IMAGES);
-  // const nextFeaturedIndex = 1 + featuredImages.length;
 
   return (
     <div>
@@ -101,31 +113,6 @@ export default function ProfileGallery({ userId }: ProfileGalleryProps) {
             </span>
           )}
         </div>
-        {/* Removing featured images to match figma design, but the code is still here */}
-        {/* <div className="flex flex-col items-center">
-          <span className="mb-2 font-semibold text-sm self-start">
-            Featured Pictures
-          </span>
-          <div className="flex flex-row gap-4">
-            {featuredImages.map((img, idx) => (
-              <ImageDisplay
-                key={idx + 1}
-                imageUrl={img}
-                onImageChange={(url) => handleImageChange(url, idx + 1)}
-                deleteIndex={images.length > idx + 1 ? idx + 1 : undefined}
-                onDeleted={() => handleImageRemoved(idx + 1)}
-              />
-            ))}
-            {featuredImages.length < MAX_IMAGES - 1 && (
-              <ImageDisplay
-                key={nextFeaturedIndex}
-                imageUrl=""
-                variant="placeholder"
-                onImageChange={(url) => handleImageChange(url, nextFeaturedIndex)}
-              />
-            )}
-          </div>
-        </div> */}
       </div>
     </div>
   );

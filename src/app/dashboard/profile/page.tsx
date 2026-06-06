@@ -179,7 +179,10 @@ export default function Profile() {
       <div className="flex flex-col justify-center items-center relative">
         <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl ">
           <div className="mt-4 ml-6">
-            <ProfileGallery userId={userData.id} />
+            <ProfileGallery
+              userId={userData.id}
+              initialImages={userData.profile?.profile_picture_url}
+            />
           </div>
           <div className="grid grid-cols-2 gap-4 w-full p-4">
             <div className="text-md">
