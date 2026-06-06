@@ -8,7 +8,7 @@ import React, { useEffect, useState, useMemo, useCallback} from "react";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 import confetti from "canvas-confetti";
 import { ItsAMatchOverlay } from "@/components/itsAMatch";
-import FilterSidebar from "@/components/cardComponent/FilterSideBar";
+import FilterSidebar from "@/components/cardComponent/FilterSideBar"; // TODO: Wire filters into discover matching API once backend filtering is available.
 import { loadNotifications, type LikeNotification } from "@/lib/notifications";
 
 export default function Discover() {
@@ -139,6 +139,7 @@ export default function Discover() {
               "Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe. To do for mm: nuke atharva. WOHOOOOOOOOOOOOOOOOOOOOOOOOo",
           }}
         />
+        // TODO: Wire filters into discover matching API once backend filtering is available.
         <FilterSidebar
           loadingNotifications={loadingNotifications}
           top3={top3}

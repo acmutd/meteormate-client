@@ -13,6 +13,7 @@ type FilterSidebarProps = {
   top3?: Notification[];
 };
 
+// TODO: Wire filters into discover matching API once backend filtering is available.
 export default function FilterSidebar({
   loadingNotifications = false,
   top3 = [],
