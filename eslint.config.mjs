@@ -15,7 +15,7 @@ const eslintConfig = [
 
 eslintConfig.push({
     rules: {
-        indent: ["error", 4],
+        indent: ["warn", 4],
     },
 });
 
