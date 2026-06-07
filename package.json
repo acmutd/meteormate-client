@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src next.config.ts"
+    "lint": "eslint src next.config.ts",
+    "lint-fix": "eslint src next.config.ts --fix"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
