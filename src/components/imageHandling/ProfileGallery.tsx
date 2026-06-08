@@ -9,111 +9,111 @@ interface ProfileGalleryProps {
 }
 
 export default function ProfileGallery({ userId, initialImages }: ProfileGalleryProps) {
-  const [images, setImages] = useState<string[]>(initialImages ?? []);
-  const [loading, setLoading] = useState(true);
+    const [images, setImages] = useState<string[]>(initialImages ?? []);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (initialImages !== undefined) {
-      setImages(initialImages);
-      setLoading(false);
-      return;
-    }
-
-    let isMounted = true;
-
-    async function fetchProfileImages() {
-      setLoading(true);
-      try {
-        const res = await fetchProfile(userId, {
-          preferCache: true,
-          maxAgeMs: 5 * 60 * 1000,
-        });
-        if (!res.ok) {
-          throw new Error(res.error || "Failed to receive profile images");
+    useEffect(() => {
+        if (initialImages !== undefined) {
+            setImages(initialImages);
+            setLoading(false);
+            return;
         }
 
-        const data = res.data;
-        if (!isMounted) return;
+        let isMounted = true;
 
-        if (
-          !data ||
+        async function fetchProfileImages() {
+            setLoading(true);
+            try {
+                const res = await fetchProfile(userId, {
+                    preferCache: true,
+                    maxAgeMs: 5 * 60 * 1000,
+                });
+                if (!res.ok) {
+                    throw new Error(res.error || "Failed to receive profile images");
+                }
+
+                const data = res.data;
+                if (!isMounted) return;
+
+                if (
+                    !data ||
           !Array.isArray(data.profile_picture_url) ||
           data.profile_picture_url.length === 0
-        ) {
-          setImages([]);
-        } else {
-          setImages(data.profile_picture_url);
+                ) {
+                    setImages([]);
+                } else {
+                    setImages(data.profile_picture_url);
+                }
+            } catch (error) {
+                console.error("Failed to fetch profile images:", error);
+                if (isMounted) setImages([]);
+            } finally {
+                if (isMounted) setLoading(false);
+            }
         }
-      } catch (error) {
-        console.error("Failed to fetch profile images:", error);
-        if (isMounted) setImages([]);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
 
-    if (userId) fetchProfileImages();
+        if (userId) fetchProfileImages();
 
-    return () => {
-      isMounted = false;
+        return () => {
+            isMounted = false;
+        };
+    }, [initialImages, userId]);
+
+    const handleImageChange = (newImageUrl: string, index?: number) => {
+        setImages((prev) => {
+            if (typeof index !== "number") {
+                return [...prev, newImageUrl];
+            }
+
+            if (index > prev.length) {
+                return [...prev, newImageUrl];
+            }
+
+            const updated = [...prev];
+            updated[index] = newImageUrl;
+            return updated;
+        });
     };
-  }, [initialImages, userId]);
 
-  const handleImageChange = (newImageUrl: string, index?: number) => {
-    setImages((prev) => {
-      if (typeof index !== "number") {
-        return [...prev, newImageUrl];
-      }
+    const handleImageRemoved = (index: number) => {
+        setImages((prev) => {
+            const updated = [...prev];
+            updated.splice(index, 1);
+            return updated;
+        });
+    };
 
-      if (index > prev.length) {
-        return [...prev, newImageUrl];
-      }
+    const profileImage = images[0];
 
-      const updated = [...prev];
-      updated[index] = newImageUrl;
-      return updated;
-    });
-  };
-
-  const handleImageRemoved = (index: number) => {
-    setImages((prev) => {
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
-  };
-
-  const profileImage = images[0];
-
-  return (
-    <div>
-      <div className="flex gap-100">
-        <div className="flex flex-col items-center">
-          <span className="mb-2 font-semibold text-sm self-start">
+    return (
+        <div>
+            <div className="flex gap-100">
+                <div className="flex flex-col items-center">
+                    <span className="mb-2 font-semibold text-sm self-start">
             Your Profile Picture
-          </span>
-          {profileImage && !loading ? (
-            <ImageDisplay
-              key={0}
-              imageUrl={profileImage}
-              onImageChange={(url) => handleImageChange(url, 0)}
-              deleteIndex={images.length > 0 ? 0 : undefined}
-              onDeleted={() => handleImageRemoved(0)}
-            />
-          ) : !loading ? (
-            <ImageDisplay
-              key={0}
-              imageUrl=""
-              variant="placeholder"
-              onImageChange={(url) => handleImageChange(url, 0)}
-            />
-          ) : (
-            <span className="w-32 h-32 rounded-xl object-cover bg-gray-300 cursor-pointer flex items-center justify-center">
-              <LoadingSpinner />
-            </span>
-          )}
+                    </span>
+                    {profileImage && !loading ? (
+                        <ImageDisplay
+                            key={0}
+                            imageUrl={profileImage}
+                            onImageChange={(url) => handleImageChange(url, 0)}
+                            deleteIndex={images.length > 0 ? 0 : undefined}
+                            onDeleted={() => handleImageRemoved(0)}
+                        />
+                    ) : !loading ? (
+                        <ImageDisplay
+                            key={0}
+                            imageUrl=""
+                            variant="placeholder"
+                            onImageChange={(url) => handleImageChange(url, 0)}
+                        />
+                    ) : (
+                        <span className="w-32 h-32 rounded-xl object-cover bg-gray-300 cursor-pointer flex items-center justify-center">
+                            <LoadingSpinner />
+                        </span>
+                    )}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

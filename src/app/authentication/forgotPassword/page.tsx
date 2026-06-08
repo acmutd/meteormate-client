@@ -79,8 +79,8 @@ export default function VerifyEmailPage() {
                 typeof err === "object" &&
                 "message" in err &&
                 typeof err.message === "string"
-                    ? err.message
-                    : "Something went wrong. Please try again.";
+                	? err.message
+                	: "Something went wrong. Please try again.";
 
             setEmailTouched(true);
             setEmailError(errorMessage);

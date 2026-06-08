@@ -24,10 +24,10 @@ export default function HeroSection() {
                         {/* Badge */}
                         <div
                             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-xs font-semibold text-primary mb-8 mx-auto lg:mx-0">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inset-0 rounded-full bg-primary opacity-75"/>
-                <span className="relative inset-0 rounded-full bg-primary"/>
-              </span>
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inset-0 rounded-full bg-primary opacity-75"/>
+                                <span className="relative inset-0 rounded-full bg-primary"/>
+                            </span>
                             Powered by ACM Development
                         </div>
 
@@ -36,7 +36,7 @@ export default function HeroSection() {
                             <span
                                 className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 roommate here at UT Dallas.
-              </span>
+                            </span>
                         </h1>
 
                         <p className="text-xl md:text-2xl text-zinc-300 mb-10 leading-relaxed max-w-md mx-auto lg:mx-0">
@@ -52,10 +52,10 @@ export default function HeroSection() {
                                 offset={-100}
                                 className="group relative bg-gradient-to-r from-primary to-secondary group-hover:from-primary-hover group-hover:to-secondary-hover group-hover:shadow-xl text-white font-bold px-8 py-4 rounded-2xl text-lg shadow-2xl hover:shadow-primary-hover/25 hover:scale-[1.02] transition-all duration-300"
                             >
-                <span className="relative z-10 flex items-center gap-2">
+                                <span className="relative z-10 flex items-center gap-2">
                   Get Started
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
-                </span>
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
+                                </span>
                             </Link>
 
                             <Link

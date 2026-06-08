@@ -129,10 +129,10 @@ export default function VerifyPassword() {
 
                 <div className="mx-auto w-full max-w-md">
                     <div className="text-center mb-4">
-            <span
-                className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
+                        <span
+                            className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
               Password reset
-            </span>
+                        </span>
 
                         <h1 className="mt-3 font-urbanist font-semibold md:text-[35px] text-[20px] text-white">
                             Verify Code

@@ -158,9 +158,9 @@ export default function CreateAccountPage() {
     };
 
     const RequirementLine = ({
-                                 ok,
-                                 children,
-                             }: {
+        ok,
+        children,
+    }: {
         ok: boolean;
         children: React.ReactNode;
     }) => (
