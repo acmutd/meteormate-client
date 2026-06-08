@@ -274,10 +274,10 @@ export default function HousingPage() {
     );
     const livingPreferenceLabel =
         housingIntent === "on_campus"
-            ? "On-Campus"
-            : housingIntent === "off_campus"
-              ? "Off-Campus"
-              : null;
+        	? "On-Campus"
+        	: housingIntent === "off_campus"
+        		? "Off-Campus"
+        		: null;
 
     return (
         <>
@@ -288,303 +288,303 @@ export default function HousingPage() {
             />
             <div className="flex flex-col justify-center items-center relative">
                 <div className="w-[76%] max-h-192 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
-                <div className="text-center mt-2 relative">
-                    <button
-                        type="button"
-                        onClick={handleUpdateProfile}
-                        disabled={!isDirty}
-                        className="absolute right-8 top-4 px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
+                    <div className="text-center mt-2 relative">
+                        <button
+                            type="button"
+                            onClick={handleUpdateProfile}
+                            disabled={!isDirty}
+                            className="absolute right-8 top-4 px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
                         Update Profile
-                    </button>
-                    <p className="text-3xl font-bold">Housing</p>
-                    <p className="text-center text-md text-gray-600 mb-2">
+                        </button>
+                        <p className="text-3xl font-bold">Housing</p>
+                        <p className="text-center text-md text-gray-600 mb-2">
                         Help us find your ideal roommate by selecting your housing
                         preferences!
-                    </p>
-                </div>
-
-                <div className="py-8 px-15 w-full flex flex-col overflow-y-auto flex-1 custom-scrollbar">
-                    <h1 className="text-black text-xl font-bold">Living Preference</h1>
-                    <p className="text-black text-sm mt-1 mb-2">
-                        This value is managed in Lifestyle Personality.
-                    </p>
-                    <div className="mb-6 rounded-lg border border-[#FF9100]/40 bg-[#FFF7ED] px-4 py-3 text-sm text-gray-800">
-                        <span className="font-semibold">Current setting:</span>{" "}
-                        {livingPreferenceLabel ?? "Not set"}
+                        </p>
                     </div>
 
-                    {!livingPreferenceLabel && (
-                        <p className="text-sm text-red-600 mb-4">
+                    <div className="py-8 px-15 w-full flex flex-col overflow-y-auto flex-1 custom-scrollbar">
+                        <h1 className="text-black text-xl font-bold">Living Preference</h1>
+                        <p className="text-black text-sm mt-1 mb-2">
+                        This value is managed in Lifestyle Personality.
+                        </p>
+                        <div className="mb-6 rounded-lg border border-[#FF9100]/40 bg-[#FFF7ED] px-4 py-3 text-sm text-gray-800">
+                            <span className="font-semibold">Current setting:</span>{" "}
+                            {livingPreferenceLabel ?? "Not set"}
+                        </div>
+
+                        {!livingPreferenceLabel && (
+                            <p className="text-sm text-red-600 mb-4">
                             Please set living preference in Lifestyle Personality before
                             editing housing details here.
-                        </p>
-                    )}
+                            </p>
+                        )}
 
-                    {housingIntent === "on_campus" && (
-                        <>
-                            <p className="text-black text-sm font-bold mt-1 mb-2">
+                        {housingIntent === "on_campus" && (
+                            <>
+                                <p className="text-black text-sm font-bold mt-1 mb-2">
                                 Location: Northside, UV, CC, or Freshmen dorms?
-                            </p>
-                            <div className="grid grid-cols-4 gap-2 mb-4 cursor-pointer">
-                                <LifestylePreferencesCard
-                                    title="Northside"
-                                    imageSrc="/northside_card.svg"
-                                    isSelected={selectedLocation.includes("northside")}
-                                    onClick={() => handleLocationToggle("northside")}
-                                />
-                                <LifestylePreferencesCard
-                                    title="University Village"
-                                    imageSrc="/uv_card.svg"
-                                    isSelected={selectedLocation.includes("uv")}
-                                    onClick={() => handleLocationToggle("uv")}
-                                />
-                                <LifestylePreferencesCard
-                                    title="Canyon Creek"
-                                    imageSrc="/canyon_creek_card.svg"
-                                    isSelected={selectedLocation.includes("cc")}
-                                    onClick={() => handleLocationToggle("cc")}
-                                />
-                                <LifestylePreferencesCard
-                                    title="Freshmen Dorms"
-                                    imageSrc="/freshman_dorms_card.svg"
-                                    isSelected={selectedLocation.includes("freshman_dorms")}
-                                    onClick={() => handleLocationToggle("freshman_dorms")}
-                                />
-                            </div>
+                                </p>
+                                <div className="grid grid-cols-4 gap-2 mb-4 cursor-pointer">
+                                    <LifestylePreferencesCard
+                                        title="Northside"
+                                        imageSrc="/northside_card.svg"
+                                        isSelected={selectedLocation.includes("northside")}
+                                        onClick={() => handleLocationToggle("northside")}
+                                    />
+                                    <LifestylePreferencesCard
+                                        title="University Village"
+                                        imageSrc="/uv_card.svg"
+                                        isSelected={selectedLocation.includes("uv")}
+                                        onClick={() => handleLocationToggle("uv")}
+                                    />
+                                    <LifestylePreferencesCard
+                                        title="Canyon Creek"
+                                        imageSrc="/canyon_creek_card.svg"
+                                        isSelected={selectedLocation.includes("cc")}
+                                        onClick={() => handleLocationToggle("cc")}
+                                    />
+                                    <LifestylePreferencesCard
+                                        title="Freshmen Dorms"
+                                        imageSrc="/freshman_dorms_card.svg"
+                                        isSelected={selectedLocation.includes("freshman_dorms")}
+                                        onClick={() => handleLocationToggle("freshman_dorms")}
+                                    />
+                                </div>
 
-                            <p className="text-black text-sm font-bold mt-1 mb-2">
+                                <p className="text-black text-sm font-bold mt-1 mb-2">
                                 Are you an Honors student?
-                            </p>
-                            <div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
-                                <LifestylePreferencesCard
-                                    title="Yes, I am an Honors student"
-                                    imageSrc="/honors_card.svg"
-                                    isSelected={selectedHonorsStatus === true}
-                                    onClick={() =>
-                                        handleBooleanToggle(
-                                            selectedHonorsStatus,
-                                            setSelectedHonorsStatus,
-                                            true,
-                                        )
-                                    }
-                                />
-                                <LifestylePreferencesCard
-                                    title="No, I am not an Honors student"
-                                    imageSrc="/not_honors_card.svg"
-                                    isSelected={selectedHonorsStatus === false}
-                                    onClick={() =>
-                                        handleBooleanToggle(
-                                            selectedHonorsStatus,
-                                            setSelectedHonorsStatus,
-                                            false,
-                                        )
-                                    }
-                                />
-                            </div>
+                                </p>
+                                <div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
+                                    <LifestylePreferencesCard
+                                        title="Yes, I am an Honors student"
+                                        imageSrc="/honors_card.svg"
+                                        isSelected={selectedHonorsStatus === true}
+                                        onClick={() =>
+                                            handleBooleanToggle(
+                                                selectedHonorsStatus,
+                                                setSelectedHonorsStatus,
+                                                true,
+                                            )
+                                        }
+                                    />
+                                    <LifestylePreferencesCard
+                                        title="No, I am not an Honors student"
+                                        imageSrc="/not_honors_card.svg"
+                                        isSelected={selectedHonorsStatus === false}
+                                        onClick={() =>
+                                            handleBooleanToggle(
+                                                selectedHonorsStatus,
+                                                setSelectedHonorsStatus,
+                                                false,
+                                            )
+                                        }
+                                    />
+                                </div>
 
-                            {showFreshmanSpecifics && (
-                                <>
-                                    <p className="text-black text-sm mt-1 font-bold mb-2">
+                                {showFreshmanSpecifics && (
+                                    <>
+                                        <p className="text-black text-sm mt-1 font-bold mb-2">
                                         Are you interested in being part of the Living Learning
                                         Community (LLC)?
-                                    </p>
-                                    <div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
-                                        <LifestylePreferencesCard
-                                            title="Yes, I would like to be a part of LLC"
-                                            imageSrc="/llc_card.svg"
-                                            isSelected={selectedLLCPreference === true}
-                                            onClick={() =>
-                                                handleBooleanToggle(
-                                                    selectedLLCPreference,
-                                                    setSelectedLLCPreference,
-                                                    true,
-                                                )
-                                            }
-                                        />
-                                        <LifestylePreferencesCard
-                                            title="No, I would not like to be a part of LLC"
-                                            imageSrc="/not_honors_card.svg"
-                                            isSelected={selectedLLCPreference === false}
-                                            onClick={() =>
-                                                handleBooleanToggle(
-                                                    selectedLLCPreference,
-                                                    setSelectedLLCPreference,
-                                                    false,
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                </>
-                            )}
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-4 mb-4 cursor-pointer">
+                                            <LifestylePreferencesCard
+                                                title="Yes, I would like to be a part of LLC"
+                                                imageSrc="/llc_card.svg"
+                                                isSelected={selectedLLCPreference === true}
+                                                onClick={() =>
+                                                    handleBooleanToggle(
+                                                        selectedLLCPreference,
+                                                        setSelectedLLCPreference,
+                                                        true,
+                                                    )
+                                                }
+                                            />
+                                            <LifestylePreferencesCard
+                                                title="No, I would not like to be a part of LLC"
+                                                imageSrc="/not_honors_card.svg"
+                                                isSelected={selectedLLCPreference === false}
+                                                onClick={() =>
+                                                    handleBooleanToggle(
+                                                        selectedLLCPreference,
+                                                        setSelectedLLCPreference,
+                                                        false,
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    </>
+                                )}
 
-                            {showRoommateOptions && (
-                                <>
-                                    <p className="text-black text-sm mt-1 font-bold mb-2">
+                                {showRoommateOptions && (
+                                    <>
+                                        <p className="text-black text-sm mt-1 font-bold mb-2">
                                         How many roommates is ideal?
-                                    </p>
-                                    <div className="grid grid-cols-4 gap-4 mb-4 cursor-pointer">
-                                        <LifestylePreferencesCard
-                                            title="No preference"
-                                            imageSrc="/no_preference_roomate_card.svg"
-                                            isSelected={selectedNumOfRoommates === "no_preference"}
-                                            onClick={() =>
-                                                handleStringToggle(
-                                                    selectedNumOfRoommates,
-                                                    setSelectedNumOfRoommates,
-                                                    "no_preference",
-                                                )
-                                            }
-                                        />
-                                        <LifestylePreferencesCard
-                                            title="One"
-                                            imageSrc="/one_roomate_card.svg"
-                                            isSelected={selectedNumOfRoommates === "one"}
-                                            onClick={() =>
-                                                handleStringToggle(
-                                                    selectedNumOfRoommates,
-                                                    setSelectedNumOfRoommates,
-                                                    "one",
-                                                )
-                                            }
-                                        />
-                                        <LifestylePreferencesCard
-                                            title="Two"
-                                            imageSrc="/two_roomate_card.svg"
-                                            isSelected={selectedNumOfRoommates === "two"}
-                                            onClick={() =>
-                                                handleStringToggle(
-                                                    selectedNumOfRoommates,
-                                                    setSelectedNumOfRoommates,
-                                                    "two",
-                                                )
-                                            }
-                                        />
-                                        <LifestylePreferencesCard
-                                            title="Three"
-                                            imageSrc="/three_roomate_card.svg"
-                                            isSelected={selectedNumOfRoommates === "three"}
-                                            onClick={() =>
-                                                handleStringToggle(
-                                                    selectedNumOfRoommates,
-                                                    setSelectedNumOfRoommates,
-                                                    "three",
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                </>
-                            )}
-                        </>
-                    )}
+                                        </p>
+                                        <div className="grid grid-cols-4 gap-4 mb-4 cursor-pointer">
+                                            <LifestylePreferencesCard
+                                                title="No preference"
+                                                imageSrc="/no_preference_roomate_card.svg"
+                                                isSelected={selectedNumOfRoommates === "no_preference"}
+                                                onClick={() =>
+                                                    handleStringToggle(
+                                                        selectedNumOfRoommates,
+                                                        setSelectedNumOfRoommates,
+                                                        "no_preference",
+                                                    )
+                                                }
+                                            />
+                                            <LifestylePreferencesCard
+                                                title="One"
+                                                imageSrc="/one_roomate_card.svg"
+                                                isSelected={selectedNumOfRoommates === "one"}
+                                                onClick={() =>
+                                                    handleStringToggle(
+                                                        selectedNumOfRoommates,
+                                                        setSelectedNumOfRoommates,
+                                                        "one",
+                                                    )
+                                                }
+                                            />
+                                            <LifestylePreferencesCard
+                                                title="Two"
+                                                imageSrc="/two_roomate_card.svg"
+                                                isSelected={selectedNumOfRoommates === "two"}
+                                                onClick={() =>
+                                                    handleStringToggle(
+                                                        selectedNumOfRoommates,
+                                                        setSelectedNumOfRoommates,
+                                                        "two",
+                                                    )
+                                                }
+                                            />
+                                            <LifestylePreferencesCard
+                                                title="Three"
+                                                imageSrc="/three_roomate_card.svg"
+                                                isSelected={selectedNumOfRoommates === "three"}
+                                                onClick={() =>
+                                                    handleStringToggle(
+                                                        selectedNumOfRoommates,
+                                                        setSelectedNumOfRoommates,
+                                                        "three",
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )}
 
-                    {housingIntent === "off_campus" && (
-                        <>
-                            <h1 className="text-black text-xl font-bold">Do you have a lease?</h1>
-                            <p className="text-black text-sm mb-3 mt-2">
+                        {housingIntent === "off_campus" && (
+                            <>
+                                <h1 className="text-black text-xl font-bold">Do you have a lease?</h1>
+                                <p className="text-black text-sm mb-3 mt-2">
                                 This will help us pair you with the right people.
-                            </p>
-                            <div className="grid grid-cols-2 gap-2 mb-4 cursor-pointer">
-                                <LifestylePreferencesCard
-                                    title="I have a lease and need a roommate"
-                                    imageSrc="/have_a_lease_card.svg"
-                                    isSelected={selectedLeaseStatus === true}
-                                    onClick={() =>
-                                        handleBooleanToggle(
-                                            selectedLeaseStatus,
-                                            setSelectedLeaseStatus,
-                                            true,
-                                        )
-                                    }
-                                />
-                                <LifestylePreferencesCard
-                                    title="I do not have a lease"
-                                    imageSrc="/do_not_have_a_lease_card.svg"
-                                    isSelected={selectedLeaseStatus === false}
-                                    onClick={() =>
-                                        handleBooleanToggle(
-                                            selectedLeaseStatus,
-                                            setSelectedLeaseStatus,
-                                            false,
-                                        )
-                                    }
-                                />
-                            </div>
+                                </p>
+                                <div className="grid grid-cols-2 gap-2 mb-4 cursor-pointer">
+                                    <LifestylePreferencesCard
+                                        title="I have a lease and need a roommate"
+                                        imageSrc="/have_a_lease_card.svg"
+                                        isSelected={selectedLeaseStatus === true}
+                                        onClick={() =>
+                                            handleBooleanToggle(
+                                                selectedLeaseStatus,
+                                                setSelectedLeaseStatus,
+                                                true,
+                                            )
+                                        }
+                                    />
+                                    <LifestylePreferencesCard
+                                        title="I do not have a lease"
+                                        imageSrc="/do_not_have_a_lease_card.svg"
+                                        isSelected={selectedLeaseStatus === false}
+                                        onClick={() =>
+                                            handleBooleanToggle(
+                                                selectedLeaseStatus,
+                                                setSelectedLeaseStatus,
+                                                false,
+                                            )
+                                        }
+                                    />
+                                </div>
 
-                            <h1 className="text-black text-xl font-bold">Duration:</h1>
-                            <p className="text-black text-sm mb-3 mt-2">
-                                {selectedLeaseStatus
-                                    ? "Pick the option that best matches how long you are looking to lease for."
-                                    : "Pick the option that best matches how long the roommate would stay."}
-                            </p>
-                            <div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
-                                <LifestylePreferencesCard
-                                    title="Semester"
-                                    imageSrc="/semester_card.svg"
-                                    isSelected={selectedHaveLeaseLength === "semester"}
-                                    onClick={() =>
-                                        handleStringToggle(
-                                            selectedHaveLeaseLength,
-                                            setSelectedHaveLeaseLength,
-                                            "semester",
-                                        )
-                                    }
-                                />
-                                <LifestylePreferencesCard
-                                    title="Academic Year"
-                                    imageSrc="/academic_year_card.svg"
-                                    isSelected={selectedHaveLeaseLength === "academic_year"}
-                                    onClick={() =>
-                                        handleStringToggle(
-                                            selectedHaveLeaseLength,
-                                            setSelectedHaveLeaseLength,
-                                            "academic_year",
-                                        )
-                                    }
-                                />
-                                <LifestylePreferencesCard
-                                    title="Year"
-                                    imageSrc="/year_card.svg"
-                                    isSelected={selectedHaveLeaseLength === "year"}
-                                    onClick={() =>
-                                        handleStringToggle(
-                                            selectedHaveLeaseLength,
-                                            setSelectedHaveLeaseLength,
-                                            "year",
-                                        )
-                                    }
-                                />
-                            </div>
+                                <h1 className="text-black text-xl font-bold">Duration:</h1>
+                                <p className="text-black text-sm mb-3 mt-2">
+                                    {selectedLeaseStatus
+                                        ? "Pick the option that best matches how long you are looking to lease for."
+                                        : "Pick the option that best matches how long the roommate would stay."}
+                                </p>
+                                <div className="grid grid-cols-3 gap-4 mb-4 cursor-pointer">
+                                    <LifestylePreferencesCard
+                                        title="Semester"
+                                        imageSrc="/semester_card.svg"
+                                        isSelected={selectedHaveLeaseLength === "semester"}
+                                        onClick={() =>
+                                            handleStringToggle(
+                                                selectedHaveLeaseLength,
+                                                setSelectedHaveLeaseLength,
+                                                "semester",
+                                            )
+                                        }
+                                    />
+                                    <LifestylePreferencesCard
+                                        title="Academic Year"
+                                        imageSrc="/academic_year_card.svg"
+                                        isSelected={selectedHaveLeaseLength === "academic_year"}
+                                        onClick={() =>
+                                            handleStringToggle(
+                                                selectedHaveLeaseLength,
+                                                setSelectedHaveLeaseLength,
+                                                "academic_year",
+                                            )
+                                        }
+                                    />
+                                    <LifestylePreferencesCard
+                                        title="Year"
+                                        imageSrc="/year_card.svg"
+                                        isSelected={selectedHaveLeaseLength === "year"}
+                                        onClick={() =>
+                                            handleStringToggle(
+                                                selectedHaveLeaseLength,
+                                                setSelectedHaveLeaseLength,
+                                                "year",
+                                            )
+                                        }
+                                    />
+                                </div>
 
-                            {selectedLeaseStatus ? (
-                                <>
-                                    <h1 className="text-black text-xl font-bold">Monthly Rent:</h1>
-                                    <p className="text-black text-sm mb-3 mt-2">
+                                {selectedLeaseStatus ? (
+                                    <>
+                                        <h1 className="text-black text-xl font-bold">Monthly Rent:</h1>
+                                        <p className="text-black text-sm mb-3 mt-2">
                                         How much are you charging for the room? (This does NOT
                                         consider utilities)
-                                    </p>
-                                </>
-                            ) : (
-                                <>
-                                    <h1 className="text-black text-xl font-bold">Budget:</h1>
-                                    <p className="text-black text-sm mb-3 mt-2">
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h1 className="text-black text-xl font-bold">Budget:</h1>
+                                        <p className="text-black text-sm mb-3 mt-2">
                                         What is your preferred monthly rent budget?
-                                    </p>
-                                </>
-                            )}
+                                        </p>
+                                    </>
+                                )}
 
-                            <PriceRangeSlider
-                                minValue={selectedBudgetMin ?? 600}
-                                maxValue={selectedBudgetMax ?? 1400}
-                                onMinChange={setSelectedBudgetMin}
-                                onMaxChange={setSelectedBudgetMax}
-                                min={0}
-                                max={2000}
-                            />
-                        </>
-                    )}
+                                <PriceRangeSlider
+                                    minValue={selectedBudgetMin ?? 600}
+                                    maxValue={selectedBudgetMax ?? 1400}
+                                    onMinChange={setSelectedBudgetMin}
+                                    onMaxChange={setSelectedBudgetMax}
+                                    min={0}
+                                    max={2000}
+                                />
+                            </>
+                        )}
 
-                </div>
+                    </div>
                 </div>
             </div>
         </>

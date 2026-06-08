@@ -98,7 +98,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         return () => {
             active = false;
         };
-    // uid + emailVerified are primitives so this only re-runs on real identity changes.
+        // uid + emailVerified are primitives so this only re-runs on real identity changes.
     }, [userLoggedIn, uid, emailVerified, resetOnboardingState]);
 
     const markProfileCompleted = useCallback((hasPic: boolean) => {

@@ -5,11 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { doSignOut } from "@/firebase/auth";
 
 import {
-  DiscoverIcon,
-  MatchesIcon,
-  MessagesIcon,
-  SettingsIcon,
-  ProfileIcon,
+    DiscoverIcon,
+    MatchesIcon,
+    MessagesIcon,
+    SettingsIcon,
+    ProfileIcon,
 } from "@/components/icons/sidebar-icons";
 
 export default function Sidebar() {
@@ -31,44 +31,44 @@ export default function Sidebar() {
     };
 
     const navItemClass = (active: boolean) =>
-    `w-full flex items-center gap-3 px-5 py-2 rounded-md transition cursor-pointer ${
-        active
-        ? "bg-gradient-to-r from-primary to-secondary text-white shadow-md"
-        : "text-gray-700 hover:bg-gray-50"
-    }`;
+        `w-full flex items-center gap-3 px-5 py-2 rounded-md transition cursor-pointer ${
+            active
+                ? "bg-gradient-to-r from-primary to-secondary text-white shadow-md"
+                : "text-gray-700 hover:bg-gray-50"
+        }`;
 
     const iconClass = (active: boolean) =>
-    `w-6 h-6 transition ${active ? "text-white" : "text-gray-800"}`;
+        `w-6 h-6 transition ${active ? "text-white" : "text-gray-800"}`;
 
 
     return (
         <aside className="w-70 border-r border-[#F1EADA] px-5 py-5 mx-1 mt-3 mb-3 flex flex-col">
             <nav className="space-y-2 flex-1">
                 {items.map((item) => {
-                const isActive = item.href === "/dashboard/profile" 
-                    ? pathname.startsWith(item.href)
-                    : pathname === item.href;
-                const Icon = item.icon;
+                    const isActive = item.href === "/dashboard/profile" 
+                        ? pathname.startsWith(item.href)
+                        : pathname === item.href;
+                    const Icon = item.icon;
 
-                return (
-                    <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-3 px-5 py-2 rounded-md transition ${
-                        isActive
-                        ? "bg-gradient-to-r from-primary to-secondary text-white shadow-md"
-                        : "text-gray-700 hover:bg-gray-50"
-                    }`}
-                    >
-                    <Icon
-                            className={`w-6 h-6 transition ${
-                                isActive ? "text-white" : "text-gray-800"
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`flex items-center gap-3 px-5 py-2 rounded-md transition ${
+                                isActive
+                                    ? "bg-gradient-to-r from-primary to-secondary text-white shadow-md"
+                                    : "text-gray-700 hover:bg-gray-50"
                             }`}
-                        />
+                        >
+                            <Icon
+                                className={`w-6 h-6 transition ${
+                                    isActive ? "text-white" : "text-gray-800"
+                                }`}
+                            />
 
-                    <span>{item.label}</span>
-                    </Link>
-                );
+                            <span>{item.label}</span>
+                        </Link>
+                    );
                 })}
             </nav>
 
@@ -83,9 +83,9 @@ export default function Sidebar() {
                 <button
                     onClick={() => router.push("/dashboard/settings")}
                     className={navItemClass(isSettingsActive)}
-                    >
-                        <SettingsIcon className={iconClass(isSettingsActive)} />
-                        <span>Settings</span>
+                >
+                    <SettingsIcon className={iconClass(isSettingsActive)} />
+                    <span>Settings</span>
                 </button>
 
                 <button
@@ -94,7 +94,7 @@ export default function Sidebar() {
                         void handleSignOut();
                     }}
                     className="w-full flex gap-2 px-4 py-2 rounded-md text-black hover:bg-gray-50 transition cursor-pointer"
-                    >
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
                     </svg>

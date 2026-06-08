@@ -205,7 +205,7 @@ export default function LoginPage() {
                         <hr className="grow border-zinc-400"/>
                         <span className="text-xs font-medium tracking-wider uppercase">
               OR
-            </span>
+                        </span>
                         <hr className="grow border-zinc-400"/>
                     </div>
 
