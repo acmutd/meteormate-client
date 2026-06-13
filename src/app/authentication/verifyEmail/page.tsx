@@ -105,6 +105,9 @@ export default function VerifyEmailPage() {
                 return;
             }
 
+            // Reload the Firebase user so emailVerified is up-to-date
+            await getAuth().currentUser?.reload();
+
             router.push("../authentication?created=1");
         } catch (err) {
             setError("Something went wrong. Please try again.");
