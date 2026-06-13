@@ -19,6 +19,7 @@ export default function VerifyPassword() {
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const [error, setError] = useState("");
     const [isVerifying, setIsVerifying] = useState(false);
+    const [isResending, setIsResending] = useState(false);
 
     useEffect(() => {
         const t = setTimeout(() => inputsRef.current[0]?.focus(), 0);
@@ -114,13 +115,51 @@ export default function VerifyPassword() {
         }
     };
 
+    const resendCode = async () => {
+        setError("");
+
+        if (!email) {
+            setError("Missing email. Please restart the reset password process.");
+            return;
+        }
+
+        if (isResending) return;
+
+        try {
+            setIsResending(true);
+            const response = await fetch(`/api/auth/send-verification-code`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    email,
+                    purpose: "reset",
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.detail || "Failed to resend code.");
+            }
+
+            setError("");
+        } catch (err: unknown) {
+            const errorMessage =
+                err instanceof Error ? err.message : "Failed to resend code. Please try again.";
+            setError(errorMessage);
+        } finally {
+            setIsResending(false);
+        }
+    };
+
+    const isBusy = isVerifying || isResending;
+
     return (
         <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             <div className="w-full px-6">
                 {/* Back arrow */}
                 <button
                     onClick={() => router.push("/authentication/forgotPassword")}
-                    className="absolute top-8 left-5 p-2 rounded-full text-white/90 hover:text-white hover:bg-white/5 border border-white/10 hover:border-primary-hover/30 transition-colors"
+                    className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/10 border border-white/10 hover:border-primary-hover/30 transition-colors"
                     aria-label="Back"
                     type="button"
                 >
@@ -150,13 +189,13 @@ export default function VerifyPassword() {
                         <p className="mt-1 font-urbanist font-light md:text-[12px] text-[10px] text-zinc-400">
                             We sent a {OTP_LENGTH}-digit code to {email || "your UTD email address"}.
                         </p>
-                        <p className="font-urbanist font-light md:text-[12px] text-[10px] text-zinc-400">
+                        <p className="font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500 -mb-4">
                             Enter it below to continue.
                         </p>
                     </div>
 
                     {/* Glass card */}
-                    <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 pt-4 pb-0">
                         <div className="flex justify-center gap-2 sm:gap-3">
                             {code.map((digit, index) => (
                                 <input
@@ -171,22 +210,22 @@ export default function VerifyPassword() {
                                     ref={(el: HTMLInputElement | null) => {
                                         inputsRef.current[index] = el;
                                     }}
-                                    disabled={isVerifying}
+                                    disabled={isBusy}
                                     aria-label={`Reset code digit ${index + 1}`}
                                     className={[
                                         "w-12 h-12 text-center text-xl rounded-lg",
-                                        "bg-white/5 text-white",
-                                        "border border-white/10",
+                                        "bg-white/5 text-black placeholder:text-zinc-400",
+                                        "border border-zinc-300",
                                         "outline-none",
-                                        "focus:border-primary/40 focus:ring-2 focus:ring-primary/30",
+                                        "focus:border-primary focus:ring-2 focus:ring-primary/30",
                                         "disabled:opacity-50 disabled:cursor-not-allowed",
-                                        "transition-colors",
+                                        "transition-all duration-200",
                                     ].join(" ")}
                                 />
                             ))}
                         </div>
 
-                        {error && <p className="text-red-400 text-xs mt-3 text-center max-w-xs mx-auto">{error}</p>}
+                        {error && <p className="mt-3 text-sm text-red-500 text-center">{error}</p>}
 
                         <button
                             onClick={handleVerifyPassword}
@@ -194,16 +233,30 @@ export default function VerifyPassword() {
                             className={[
                                 "mt-5 w-full py-2 rounded-3xl",
                                 "transition-all duration-200 flex items-center justify-center gap-2",
-                                "border",
+                                "border font-medium",
                                 isVerifying
-                                    ? "bg-white/10 text-zinc-400 border-white/10 cursor-not-allowed"
-                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer",
+                                    ? "bg-zinc-500/10 text-zinc-400 border-zinc-500/10 cursor-not-allowed"
+                                    : "bg-primary text-white border-primary/30 hover:bg-primary-hover hover:border-primary-hover/40 cursor-pointer shadow-lg shadow-primary/20",
                                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0",
                             ].join(" ")}
                             type="button"
                         >
                             {isVerifying && <LoadingSpinner size="sm"/>}
                             {isVerifying ? "Verifying..." : "Verify Code"}
+                        </button>
+
+                        <button
+                            onClick={resendCode}
+                            disabled={isResending}
+                            className={[
+                                "w-full mt-3 text-sm underline underline-offset-4",
+                                isResending
+                                    ? "text-zinc-400 cursor-not-allowed"
+                                    : "text-zinc-500 hover:text-primary-hover cursor-pointer transition-colors",
+                            ].join(" ")}
+                            type="button"
+                        >
+                            {isResending ? "Resending..." : "Resend code"}
                         </button>
 
                         <p className="text-center text-xs text-zinc-400 mt-3">
