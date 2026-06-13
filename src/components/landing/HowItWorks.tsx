@@ -11,11 +11,11 @@ interface FeatureCardProps {
 }
 
 function FeatureCard({
-                         imageSrc,
-                         imageAlt,
-                         title,
-                         description,
-                     }: FeatureCardProps) {
+    imageSrc,
+    imageAlt,
+    title,
+    description,
+}: FeatureCardProps) {
     return (
         <div
             className="flex flex-col items-start gap-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 hover:border-primary-hover/30 hover:bg-white/10 transition-all duration-300 group">
@@ -98,13 +98,13 @@ export default function HowItWorks() {
         >
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-16 space-y-4">
-          <span
-              className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
+                    <span
+                        className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
             Features
-          </span>
+                    </span>
                     <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
                         Built for <span
-                        className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Comets</span>
+                            className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Comets</span>
                     </h2>
                     <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
                         Everything you need to find your perfect match, verified and secure.

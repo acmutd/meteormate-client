@@ -3,6 +3,9 @@ import React, {useEffect, useRef, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter, useSearchParams} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import { handleOTPCodePaste } from "@/utils/otp";
+import { OTP_LENGTH } from "@/constants/otp";
+
 
 export default function VerifyPassword() {
     const router = useRouter();
@@ -12,7 +15,7 @@ export default function VerifyPassword() {
     const emailFromQuery = searchParams.get("email");
     const [email] = useState(emailFromQuery || "");
 
-    const [code, setCode] = useState<string[]>(Array(6).fill(""));
+    const [code, setCode] = useState<string[]>(Array(OTP_LENGTH).fill(""));
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const [error, setError] = useState("");
     const [isVerifying, setIsVerifying] = useState(false);
@@ -30,7 +33,7 @@ export default function VerifyPassword() {
             setCode(newCode);
             setError("");
 
-            if (index < 5) inputsRef.current[index + 1]?.focus();
+            if (index < OTP_LENGTH - 1) inputsRef.current[index + 1]?.focus();
         } else if (value === "") {
             const newCode = [...code];
             newCode[index] = "";
@@ -55,9 +58,15 @@ export default function VerifyPassword() {
             setCode(newCode);
         } else if (e.key === "ArrowLeft" && index > 0) {
             inputsRef.current[index - 1]?.focus();
-        } else if (e.key === "ArrowRight" && index < 5) {
+        } else if (e.key === "ArrowRight" && index < OTP_LENGTH - 1) {
             inputsRef.current[index + 1]?.focus();
         }
+    };
+
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData("text");
+        handleOTPCodePaste(pastedText, index, code, setCode, inputsRef.current, () => setError(""));
     };
 
     const handleVerifyPassword = async () => {
@@ -68,8 +77,8 @@ export default function VerifyPassword() {
             return;
         }
 
-        if (verificationCode.length !== 6) {
-            setError("Please enter the full 6-digit code.");
+        if (verificationCode.length !== OTP_LENGTH) {
+            setError(`Please enter the full ${OTP_LENGTH}-digit code.`);
             return;
         }
 
@@ -145,7 +154,7 @@ export default function VerifyPassword() {
     const isBusy = isVerifying || isResending;
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             <div className="w-full px-6">
                 {/* Back arrow */}
                 <button
@@ -168,14 +177,17 @@ export default function VerifyPassword() {
 
                 <div className="mx-auto w-full max-w-md">
                     <div className="text-center mb-4">
-                        <div className="flex flex-col justify-center items-center text-center">
-                            <h1 className="mt-3 font-urbanist font-semibold md:text-[35px] text-[20px] text-black pt-2">
-                                Verify Code
-                            </h1>
-                        </div>
+                        <span
+                            className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
+              Password reset
+                        </span>
 
-                        <p className="mt-1 font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500">
-                            We sent a 6-digit code to {email || "your registered email"}.
+                        <h1 className="mt-3 font-urbanist font-semibold md:text-[35px] text-[20px] text-white">
+                            Verify Code
+                        </h1>
+
+                        <p className="mt-1 font-urbanist font-light md:text-[12px] text-[10px] text-zinc-400">
+                            We sent a {OTP_LENGTH}-digit code to {email || "your UTD email address"}.
                         </p>
                         <p className="font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500 -mb-4">
                             Enter it below to continue.
@@ -194,6 +206,7 @@ export default function VerifyPassword() {
                                     value={digit}
                                     onChange={(e) => handleChange(e.target.value, index)}
                                     onKeyDown={(e) => handleKeyDown(e, index)}
+                                    onPaste={(e) => handlePaste(e, index)}
                                     ref={(el: HTMLInputElement | null) => {
                                         inputsRef.current[index] = el;
                                     }}
@@ -245,6 +258,10 @@ export default function VerifyPassword() {
                         >
                             {isResending ? "Resending..." : "Resend code"}
                         </button>
+
+                        <p className="text-center text-xs text-zinc-400 mt-3">
+                            Tip: You can paste the {OTP_LENGTH}-digit code or digits one-by-one.
+                        </p>
                     </div>
                 </div>
             </div>
