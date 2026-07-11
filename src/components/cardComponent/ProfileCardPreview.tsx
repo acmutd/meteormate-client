@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Image from "next/image";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
 import { cn } from "@/utils/cn";
 

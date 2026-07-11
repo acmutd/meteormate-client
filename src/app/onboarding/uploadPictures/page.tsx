@@ -40,10 +40,7 @@ export default function UploadPicturesPage() {
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const res = await fetchCurrentUser({
-					preferCache: true,
-					maxAgeMs: 5 * 60 * 1000,
-				});
+				const res = await fetchCurrentUser();
 				if (res.ok && res.data) {
 					setUserProfile(res.data);
 					if (res.data.profile?.profile_picture_url) {

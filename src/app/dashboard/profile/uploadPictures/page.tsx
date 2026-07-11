@@ -73,10 +73,7 @@ export default function UploadPicturesPage() {
         let isMounted = true;
         const fetchUser = async () => {
             try {
-                const res = await fetchCurrentUser({
-                    preferCache: true,
-                    maxAgeMs: 5 * 60 * 1000,
-                });
+                const res = await fetchCurrentUser();
                 if (!isMounted) return;
 
                 if (res.ok && res.data) {
@@ -292,7 +289,7 @@ export default function UploadPicturesPage() {
                 appliedAnyOperation = true;
             }
 
-            const refreshedUser = await fetchCurrentUser({ forceRefresh: true });
+            const refreshedUser = await fetchCurrentUser();
             if (!refreshedUser.ok || !refreshedUser.data) {
                 throw new Error("Failed to refresh profile pictures after saving.");
             }

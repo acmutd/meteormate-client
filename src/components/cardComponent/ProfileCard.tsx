@@ -40,6 +40,17 @@ type ProfileCardProps = {
     //showSidebar?: boolean;
 };
 
+function Dot({ active }: { active: boolean }) {
+    return (
+        <span
+        className={cn(
+            "h-2 w-2 rounded-full transition",
+            active ? "bg-white" : "bg-white/40"
+        )}
+        />
+    );
+    }
+
 export default function ProfileCard({
     name,
     subtitle,

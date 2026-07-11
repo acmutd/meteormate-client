@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "./authContext";
-import { fetchCurrentUser } from "@/utils/api/auth";
+import { getProfile } from "@/utils/api/profile";
+import { getSurvey } from "@/utils/api/survey";
 import { MIN_PHOTOS } from "@/constants/onboarding";
 
 interface OnboardingContextType {
@@ -41,37 +42,48 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         setHasSurvey(false);
     }, []);
 
-    // prevents re firing when firebase replaces user
-    const uid = currentUser?.uid;
-    const emailVerified = currentUser?.emailVerified;
-
     useEffect(() => {
         let active = true;
 
         async function checkOnboardingStatus() {
             // Only check if logged in and email is verified.
-            if (userLoggedIn && emailVerified) {
+            if (userLoggedIn && currentUser?.emailVerified) {
                 setIsLoading(true);
                 setIsError(false);
                 try {
-                    // /api/auth/me returns survey_done, profile_created, and the profile with profile_picture
-                    const res = await fetchCurrentUser();
+                    const [profileRes, surveyRes] = await Promise.all([
+                        getProfile(currentUser.uid),
+                        getSurvey()
+                    ]);
 
                     if (!active) return;
 
-                    if (!res.ok || !res.data) {
+                    // If either critical call failed at the API level (e.g. 500), consider it an error
+                    if (!profileRes.ok && profileRes.code !== "404") {
                         resetOnboardingState();
                         setIsError(true);
                         return;
                     }
 
-                    const userData = res.data;
-                    const profileDone = userData.profile_created;
-                    const picturesDone = profileDone && (userData.profile?.profile_picture_url?.length ?? 0) >= MIN_PHOTOS;
+                    if (profileRes.ok && profileRes.data) {
+                        setHasProfile(true);
+                        setHasPicture(
+                            Array.isArray(profileRes.data.profile_picture_url) && 
+                            profileRes.data.profile_picture_url.length >= MIN_PHOTOS
+                        );
+                    } else {
+                        setHasProfile(false);
+                        setHasPicture(false);
+                    }
 
-                    setHasProfile(profileDone);
-                    setHasPicture(picturesDone);
-                    setHasSurvey(userData.survey_done);
+                    if (surveyRes.ok && surveyRes.data) {
+                        setHasSurvey(true);
+                    } else if (!surveyRes.ok && surveyRes.code !== "404") {
+                        resetOnboardingState();
+                        setIsError(true);
+                    } else {
+                        setHasSurvey(false);
+                    }
                 } catch (error) {
                     if (active) {
                         console.error("Failed to fetch onboarding status", error);
@@ -84,7 +96,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
                     }
                 }
             } else {
-                // not logged in or email not verified, reset
+                // If not logged in or email not verified stop loading and reset states
                 if (active) {
                     setIsLoading(false);
                     setIsError(false);
@@ -98,8 +110,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         return () => {
             active = false;
         };
-    // uid + emailVerified are primitives so this only re-runs on real identity changes.
-    }, [userLoggedIn, uid, emailVerified, resetOnboardingState]);
+    }, [userLoggedIn, currentUser]);
 
     const markProfileCompleted = useCallback((hasPic: boolean) => {
         setHasProfile(true);

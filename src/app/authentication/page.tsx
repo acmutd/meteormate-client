@@ -10,7 +10,7 @@ import EmailInput from "@/components/forms/EmailInput";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {getAuthErrorMessage} from "@/utils/authErrors";
-import { ActivityPing, fetchCurrentUser } from "@/utils/api/auth";
+import { ActivityPing } from "@/utils/api/auth";
 
 
 
@@ -101,13 +101,6 @@ export default function LoginPage() {
                 setIsSigningIn(true);
                 await doSignInWithEmailAndPassword(email, password);
                 await reloadUser();
-
-                const userResponse = await fetchCurrentUser({ forceRefresh: true });
-                if (!userResponse.ok) {
-                    console.log(
-                        `Error ${userResponse.code} when calling /api/auth/me: ${userResponse.error}`,
-                    );
-                }
 
                 const pingResponse = await ActivityPing();
                 if (!pingResponse.ok) {
