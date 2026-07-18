@@ -13,7 +13,9 @@ type FilterSidebarProps = {
   top3?: Notification[];
 };
 
-// TODO: Wire filters into discover matching API once backend filtering is available.
+// TODO:
+// Connect filter selections to the discover/matching API once backend
+// filtering is implemented. Filter chips are currently visual placeholders.
 export default function FilterSidebar({
   loadingNotifications = false,
   top3 = [],
@@ -26,7 +28,6 @@ export default function FilterSidebar({
           <FilterIcon />
           <p className="text-sm font-semibold text-gray-900">Filters</p>
         </div>
-
         <div className="space-y-4">
           <div>
             <p className="mb-2 text-sm font-medium text-gray-900">

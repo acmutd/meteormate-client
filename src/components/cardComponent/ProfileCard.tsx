@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
-import { loadNotifications, type LikeNotification } from "@/lib/notifications";
 import ProfileCardBack from "@/components/cardComponent/ProfileCardBack";
 import { cn } from "@/utils/cn";
+//Commented out for future implementation of notifications in ProfileCard.
+// import { loadNotifications, type LikeNotification } from "@/lib/notifications";
+
 
 type Chip = {
 	label: string;
@@ -40,16 +42,6 @@ type ProfileCardProps = {
     //showSidebar?: boolean;
 };
 
-function Dot({ active }: { active: boolean }) {
-    return (
-        <span
-        className={cn(
-            "h-2 w-2 rounded-full transition",
-            active ? "bg-white" : "bg-white/40"
-        )}
-        />
-    );
-    }
 
 export default function ProfileCard({
     name,
@@ -62,36 +54,41 @@ export default function ProfileCard({
     onLike,
     showActions = true,
     }: ProfileCardProps) {
-    
 
     const [flipped, setFlipped] = useState(false); 
     const [peek, setPeek] = useState(false);  
     const [peekDown, setPeekDown] = useState(false);
     const [showHint, setShowHint] = useState(true);
     const [showReportMenu, setShowReportMenu] = useState(false);
-    const [notifications, setNotifications] = useState<LikeNotification[]>([]);
-    const [loadingNotifications, setLoadingNotifications] = useState(true);
-    useEffect(() => {
-        let mounted = true;
+    //Commented out for future implementation of notifications in ProfileCard.
+    // const [notifications, setNotifications] = useState<LikeNotification[]>([]);
+    // const [loadingNotifications, setLoadingNotifications] = useState(true);
 
-        try {
-            setLoadingNotifications(true);
-            const data = loadNotifications(); // reads local storage cache you already use
-            if (mounted) setNotifications(data);
-        } finally {
-            if (mounted) setLoadingNotifications(false);
-        }
+    // useEffect(() => {
+    //     let mounted = true;
 
-        return () => {
-            mounted = false;
-        };
-    }, []);
+    //     try {
+    //         setLoadingNotifications(true);
+    //         const data = loadNotifications();
+    //         if (mounted) setNotifications(data);
+    //     } finally {
+    //         if (mounted) setLoadingNotifications(false);
+    //     }
 
-    const top3 = useMemo(() => {
-    return [...notifications]
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 3);
-    }, [notifications]);
+    //     return () => {
+    //         mounted = false;
+    //     };
+    // }, []);
+
+    // const top3 = useMemo(() => {
+    //     return [...notifications]
+    //         .sort(
+    //             (a, b) =>
+    //                 new Date(b.createdAt).getTime() -
+    //                 new Date(a.createdAt).getTime()
+    //         )
+    //         .slice(0, 3);
+    // }, [notifications]);
 
     return (
         <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center">
@@ -321,3 +318,15 @@ export default function ProfileCard({
         </div>
     );
 }
+
+//Dot function is commented out since it was not referenced anywhere else in the code
+// function Dot({ active }: { active: boolean }) {
+//     return (
+//         <span
+//             className={cn(
+//                 "h-2 w-2 rounded-full transition",
+//                 active ? "bg-white" : "bg-white/40"
+//             )}
+//         />
+//     );
+// }

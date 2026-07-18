@@ -139,7 +139,8 @@ export default function Discover() {
               "Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe. To do for mm: nuke atharva. WOHOOOOOOOOOOOOOOOOOOOOOOOOo",
           }}
         />
-        // TODO: Wire filters into discover matching API once backend filtering is available.
+        {/* TODO: Connect FilterSidebar to the discover/matching API once backend filtering
+          is implemented. Current filter UI is intentionally static.*/}
         <FilterSidebar
           loadingNotifications={loadingNotifications}
           top3={top3}
