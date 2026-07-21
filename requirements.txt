@@ -41,7 +41,7 @@ identify==2.6.15
 idna==3.11
 msgpack==1.1.2
 nodeenv==1.10.0
-pillow==12.1.0
+pillow==12.3.0
 platformdirs==4.5.1
 pre_commit==4.2.0
 proto-plus==1.27.0
