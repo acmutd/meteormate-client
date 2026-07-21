@@ -8,7 +8,8 @@ export type PhotoSlotProps = {
     photosLength: number;
     uploadingSlotIndex: number | null;
     deletingSlotIndex: number | null;
-    primaryPhoto?: string;
+	// TODO: Re-add primaryPhoto when PhotoSlot needs to display the primary photo.
+    //primaryPhoto?: string;
     onDeletePhoto: (index: number) => void;
     onImageClick: () => void;
 };
@@ -19,7 +20,7 @@ export default function PhotoSlot({
     photosLength,
     uploadingSlotIndex,
     deletingSlotIndex,
-    primaryPhoto,
+    //primaryPhoto,
     onDeletePhoto,
     onImageClick
 }: PhotoSlotProps) {
