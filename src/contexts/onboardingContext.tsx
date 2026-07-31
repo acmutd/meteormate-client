@@ -11,11 +11,9 @@ interface OnboardingContextType {
     hasProfile: boolean;
     hasPicture: boolean;
     hasSurvey: boolean;
-    needsSchool: boolean;
     markProfileCompleted: (hasPic: boolean) => void;
     markPictureUploaded: () => void;
     markSurveyCompleted: () => void;
-    markSchoolSelected: () => void;
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
@@ -36,14 +34,11 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     const [hasProfile, setHasProfile] = useState(false);
     const [hasPicture, setHasPicture] = useState(false);
     const [hasSurvey, setHasSurvey] = useState(false);
-    const [needsSchool, setNeedsSchool] = useState(false);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const resetOnboardingState = useCallback(() => {
         setHasProfile(false);
         setHasPicture(false);
         setHasSurvey(false);
-        setNeedsSchool(false);
     }, []);
 
     // prevents re firing when firebase replaces user
@@ -64,20 +59,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
                     if (!active) return;
 
-                    if (!res.ok) {
-                        if (res.code === "428") { // auth.py: error code for if there isn't a school selected
-                            setNeedsSchool(true);
-                            setHasProfile(true);
-                            return;
-                        }
-                        console.error(`Onboarding fetch failed: code=${res.code}, error=${res.error}`);
-                        resetOnboardingState();
-                        setIsError(true);
-                        return;
-                    }
-
-                    if (!res.data) {
-                        console.error("Onboarding fetch succeeded but response body was empty");
+                    if (!res.ok || !res.data) {
                         resetOnboardingState();
                         setIsError(true);
                         return;
@@ -90,7 +72,6 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
                     setHasProfile(profileDone);
                     setHasPicture(picturesDone);
                     setHasSurvey(userData.survey_done);
-                    setNeedsSchool(false);
                 } catch (error) {
                     if (active) {
                         console.error("Failed to fetch onboarding status", error);
@@ -118,7 +99,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
             active = false;
         };
         // uid + emailVerified are primitives so this only re-runs on real identity changes.
-    }, [userLoggedIn, uid, emailVerified, resetOnboardingState, refreshTrigger]);
+    }, [userLoggedIn, uid, emailVerified, resetOnboardingState]);
 
     const markProfileCompleted = useCallback((hasPic: boolean) => {
         setHasProfile(true);
@@ -133,33 +114,24 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         setHasSurvey(true);
     }, []);
 
-    const markSchoolSelected = useCallback(() => {
-        setNeedsSchool(false);
-        setRefreshTrigger((c) => c + 1);
-    }, []);
-
     const value: OnboardingContextType = useMemo(() => ({
         isLoading,
         isError,
         hasProfile,
         hasPicture,
         hasSurvey,
-        needsSchool,
         markProfileCompleted,
         markPictureUploaded,
         markSurveyCompleted,
-        markSchoolSelected,
     }), [
         isLoading,
         isError,
         hasProfile,
         hasPicture,
         hasSurvey,
-        needsSchool,
         markProfileCompleted,
         markPictureUploaded,
         markSurveyCompleted,
-        markSchoolSelected,
     ]);
 
     return (

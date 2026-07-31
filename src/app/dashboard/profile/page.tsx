@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/utils/api/auth";
 import { UserProfile } from "@/types/userProfile";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -12,8 +12,6 @@ import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
 import { DatePicker } from "../../../components/DatePicker";
 import { majors } from "@/constants/majors";
 import { schools } from "@/constants/schools";
-import { useOnboarding } from "@/contexts/onboardingContext";
-import SchoolOnlyCard from "@/components/profile/SchoolOnlyCard";
 
 interface ProfileFormState {
   major: string;
@@ -28,13 +26,8 @@ export default function Profile() {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [schoolOnlyMode, setSchoolOnlyMode] = useState(false);
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { toast } = useToast();
-    const toastShownRef = useRef(false);
-    const { markSchoolSelected } = useOnboarding();
-
     const [major, setMajor] = useState("");
     const [school, setSchool] = useState("");
     const [gender, setGender] = useState("");
@@ -75,14 +68,7 @@ export default function Profile() {
                     maxAgeMs: 5 * 60 * 1000,
                 });
 
-                if (!data.ok) {
-                    if (data.code === "428") {
-                        // Profile exists but school is missing
-                        setSchoolOnlyMode(true);
-                        return;
-                    }
-                    throw new Error(data.error || "Failed to fetch profile");
-                }
+                if (!data.ok) throw new Error(data.error || "Failed to fetch profile");
 
                 setUser(data.data);
                 // To cut out the T00:00:00 
@@ -116,45 +102,8 @@ export default function Profile() {
         fetchuser();
     }, [router]);
 
-    useEffect(() => {
-        if (!toastShownRef.current && searchParams.get("toast") === "needs-school") {
-            toast({
-                type: "info",
-                title: "School Required",
-                description: "Please select your school to complete your profile.",
-            });
-            toastShownRef.current = true;
-        }
-    }, [searchParams, toast]);
-
     const handleUpdateProfile = async () => {
         try {
-            if (schoolOnlyMode) {
-                if (!school) {
-                    toast({
-                        type: "error",
-                        title: "School required",
-                        description: "Please select your school.",
-                    });
-                    return;
-                }
-
-                const updateResult = await apiFetch("/api/profiles/update", {
-                    method: "PUT",
-                    body: { school },
-                });
-                if (!updateResult.ok)
-                    throw new Error(updateResult.error || "Failed to update profile");
-
-                markSchoolSelected();
-                toast({
-                    type: "success",
-                    title: "School updated",
-                    description: "Your school has been saved.",
-                });
-                return;
-            }
-
             if (!birthday) {
                 toast({
                     type: "error",
@@ -211,16 +160,6 @@ export default function Profile() {
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
-    if (schoolOnlyMode) {
-        return (
-            <SchoolOnlyCard
-                school={school}
-                onSchoolChange={setSchool}
-                onSave={handleUpdateProfile}
-                disabled={!school}
-            />
-        );
-    }
     if (!user) return <div>No user data found</div>;
     const userData = user;
 
