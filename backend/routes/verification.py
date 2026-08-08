@@ -136,7 +136,7 @@ def reset_password(
     next(verify_gen)
 
     # lil troll hehe
-    if request.new_password:
+    if not request.new_password:
         raise BadRequest("Password cannot be the same as old password")
 
     try:

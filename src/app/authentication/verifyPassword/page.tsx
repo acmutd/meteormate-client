@@ -5,7 +5,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { handleOTPCodePaste } from "@/utils/otp";
 import { OTP_LENGTH } from "@/constants/otp";
-
+import {SendResetPasswordCode} from "@/utils/api/auth";
 
 export default function VerifyPassword() {
     const router = useRouter();
@@ -86,22 +86,6 @@ export default function VerifyPassword() {
             setIsVerifying(true);
             setError("");
 
-            // Verify code with backend
-            const response = await fetch(`/api/auth/verify-reset-code`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email,
-                    code: verificationCode,
-                }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                throw new Error(data.detail || "Invalid or expired code.");
-            }
-
-            // Store for next page (so /newPassword can use it)
             sessionStorage.setItem("resetEmail", email);
             sessionStorage.setItem("resetCode", verificationCode);
 
@@ -127,18 +111,11 @@ export default function VerifyPassword() {
 
         try {
             setIsResending(true);
-            const response = await fetch(`/api/auth/send-verification-code`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email,
-                    purpose: "reset",
-                }),
-            });
 
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                throw new Error(data.detail || "Failed to resend code.");
+            const result = await SendResetPasswordCode(email);
+
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to resend code.");
             }
 
             setError("");

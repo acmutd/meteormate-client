@@ -7,6 +7,7 @@ import LoadingSpinner from "../../../components/LoadingSpinner";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {Check, X} from "lucide-react";
+import { ResetPassword } from "@/utils/api/auth";
 
 export default function NewPasswordPage() {
     const router = useRouter();
@@ -85,19 +86,10 @@ export default function NewPasswordPage() {
         try {
             setIsSubmitting(true);
 
-            const response = await fetch(`/api/auth/reset-password`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email,
-                    code,
-                    new_password: password,
-                }),
-            });
+            const result = await ResetPassword(email, code, password);
 
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                throw new Error(data.detail || "Failed to reset password.");
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to reset password.");
             }
 
             sessionStorage.removeItem("resetEmail");
