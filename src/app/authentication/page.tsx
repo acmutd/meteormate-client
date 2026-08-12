@@ -135,7 +135,7 @@ export default function LoginPage() {
     };
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             {/* Back arrow */}
             <button
                 onClick={() => router.push("/")}
@@ -198,7 +198,7 @@ export default function LoginPage() {
                         <hr className="grow border-zinc-400"/>
                         <span className="text-xs font-medium tracking-wider uppercase">
               OR
-            </span>
+                        </span>
                         <hr className="grow border-zinc-400"/>
                     </div>
 

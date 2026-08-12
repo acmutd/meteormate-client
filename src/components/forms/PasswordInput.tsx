@@ -15,18 +15,18 @@ interface PasswordInputProps {
 }
 
 export default function PasswordInput({
-                                          value,
-                                          onChange,
-                                          onBlur,
-                                          placeholder = "Password",
-                                          label,
-                                          error,
-                                          disabled = false,
-                                          className = "",
-                                          showToggle = false,
-                                          autoComplete = "current-password",
-                                          inputRef,
-                                      }: PasswordInputProps) {
+    value,
+    onChange,
+    onBlur,
+    placeholder = "Password",
+    label,
+    error,
+    disabled = false,
+    className = "",
+    showToggle = false,
+    autoComplete = "current-password",
+    inputRef,
+}: PasswordInputProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
