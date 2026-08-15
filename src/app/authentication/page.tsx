@@ -10,7 +10,7 @@ import EmailInput from "@/components/forms/EmailInput";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {getAuthErrorMessage} from "@/utils/authErrors";
-import { ActivityPing } from "@/utils/api/auth";
+import { ActivityPing, fetchCurrentUser } from "@/utils/api/auth";
 
 
 
@@ -102,6 +102,13 @@ export default function LoginPage() {
                 await doSignInWithEmailAndPassword(email, password);
                 await reloadUser();
 
+                const userResponse = await fetchCurrentUser({ forceRefresh: true });
+                if (!userResponse.ok) {
+                    console.log(
+                        `Error ${userResponse.code} when calling /api/auth/me: ${userResponse.error}`,
+                    );
+                }
+
                 const pingResponse = await ActivityPing();
                 if (!pingResponse.ok) {
                     toast({
@@ -135,7 +142,7 @@ export default function LoginPage() {
     };
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             {/* Back arrow */}
             <button
                 onClick={() => router.push("/")}
@@ -198,7 +205,7 @@ export default function LoginPage() {
                         <hr className="grow border-zinc-400"/>
                         <span className="text-xs font-medium tracking-wider uppercase">
               OR
-            </span>
+                        </span>
                         <hr className="grow border-zinc-400"/>
                     </div>
 

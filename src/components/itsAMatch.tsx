@@ -15,50 +15,50 @@ type MatchOverlayProps = {
 };
 
 function AvatarCircle({ src, alt }: { src: string; alt: string }) {
-	return (
-		<div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white mt-5">
-			<Image
-				src={src}
-				alt={alt}
-				fill
-				className="object-cover"
-				sizes="(max-width: 640px) 80px, 96px"
-			/>
-		</div>
-	);
+    return (
+        <div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-white overflow-hidden shadow-md bg-white mt-5">
+            <Image
+                src={src}
+                alt={alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 80px, 96px"
+            />
+        </div>
+    );
 }
 
 export function ItsAMatchOverlay({
-	open,
-	onClose,
-	onConfirm,
-	leftImg,
-	rightImg,
-	rightName = "them",
+    open,
+    onClose,
+    onConfirm,
+    leftImg,
+    rightImg,
+    rightName = "them",
 
 }: MatchOverlayProps) {
     const router = useRouter();
-	if (!open) return null;
+    if (!open) return null;
 
-	return (
-		<div className="fixed inset-0 z-[2000]">
-			<button
-				type="button"
-				aria-label="Close match modal"
-				onClick={onClose}
-				className="cursor-pointer absolute inset-0 bg-black/35 backdrop-blur-[1px]"
-			/>
+    return (
+        <div className="fixed inset-0 z-[2000]">
+            <button
+                type="button"
+                aria-label="Close match modal"
+                onClick={onClose}
+                className="cursor-pointer absolute inset-0 bg-black/35 backdrop-blur-[1px]"
+            />
 
 			
-			<div className="relative h-full w-full flex items-center justify-center px-4">
-				<div className="relative w-full max-w-4xl">
+            <div className="relative h-full w-full flex items-center justify-center px-4">
+                <div className="relative w-full max-w-4xl">
 					
-					<h2 className="text-center text-5xl sm:text-6xl font-extrabold text-white tracking-tight drop-shadow">
+                    <h2 className="text-center text-5xl sm:text-6xl font-extrabold text-white tracking-tight drop-shadow">
 						IT&apos;S A MATCH!
-					</h2>
+                    </h2>
 
 					
-					<div className="relative mt-8 sm:mt-10 flex items-center justify-center">
+                    <div className="relative mt-8 sm:mt-10 flex items-center justify-center">
                         {/* Avatar row wrapper (THIS is the positioning anchor) */}
                         <div className="relative inline-flex items-center gap-6 sm:gap-10 mt-2">
                             {/* LEFT meteor (centered over left avatar) */}
@@ -122,38 +122,38 @@ export function ItsAMatchOverlay({
                     </div>
 
 					
-					<p className="mt-6 text-center text-white/90 text-lg sm:text-xl drop-shadow">
+                    <p className="mt-6 text-center text-white/90 text-lg sm:text-xl drop-shadow">
 						You matched with{" "}
-						<span className="font-semibold text-white">{rightName}</span>!
-					</p>
+                        <span className="font-semibold text-white">{rightName}</span>!
+                    </p>
 
 					
-					<div className="mt-6 flex justify-center">
-						<button
-							type="button"
-							onClick={() => {
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            type="button"
+                            onClick={() => {
                                 if (onConfirm) onConfirm();
                                 else onClose();
                                 router.push("/dashboard/matches");
                             }}
-							className="cursor-pointer rounded-2xl bg-[#FF9100] px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition"
-						>
+                            className="cursor-pointer rounded-2xl bg-[#FF9100] px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition"
+                        >
 							Go to Matches
-						</button>
-					</div>
+                        </button>
+                    </div>
 
 					
-					<div className="mt-4 flex justify-center">
-						<button
-							type="button"
-							onClick={onClose}
-							className="cursor-pointer text-sm text-white/80 hover:text-white underline underline-offset-4"
-						>
+                    <div className="mt-4 flex justify-center">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="cursor-pointer text-sm text-white/80 hover:text-white underline underline-offset-4"
+                        >
 							Close
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }

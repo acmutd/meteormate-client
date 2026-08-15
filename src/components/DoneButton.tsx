@@ -26,10 +26,10 @@ const DoneButton: React.FC<NextStepButtonProps> = ({
         transition-all duration-200 ease-in-out
         		overflow-visible
 					${
-					disabled
-						? "bg-gray-300 text-gray-500 cursor-not-allowed"
-						: "bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover text-white cursor-pointer"
-					}
+        disabled
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover text-white cursor-pointer"
+        }
 					${className || ""}
 		`}
         >

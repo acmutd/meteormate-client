@@ -18,14 +18,14 @@ import { MIN_PHOTOS, MAX_PHOTOS } from "@/constants/onboarding";
 import { base } from "framer-motion/client";
 
 export default function UploadPicturesPage() {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const { toast } = useToast();
-	const toastShownRef = useRef(false);
-	const { markPictureUploaded } = useOnboarding();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { toast } = useToast();
+    const toastShownRef = useRef(false);
+    const { markPictureUploaded } = useOnboarding();
 
-	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-	const [initialLoading, setInitialLoading] = useState(true);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [initialLoading, setInitialLoading] = useState(true);
 
 	const [photos, setPhotos] = useState<string[]>(["", "", "", "", ""]);
 	const [deletedPhotoUrls, setDeletedPhotoUrls] = useState<string[]>([]);
@@ -35,9 +35,9 @@ export default function UploadPicturesPage() {
 	const [deletingSlotIndex, setDeletingSlotIndex] = useState<number | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	const [compressionError, setCompressionError] = useState<string | null>(null);
-	const [apiError, setApiError] = useState<string | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
+    const [compressionError, setCompressionError] = useState<string | null>(null);
+    const [apiError, setApiError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -59,61 +59,61 @@ export default function UploadPicturesPage() {
 		fetchUser();
 	}, []);
 
-	useEffect(() => {
-		if (!toastShownRef.current && searchParams.get("toast") === "needs-pictures") {
-			toast({
-				type: "info",
-				title: "Photos Required",
-				description: `Please upload at least ${MIN_PHOTOS} photos to continue to the dashboard.`,
-			});
-			toastShownRef.current = true;
-		}
-	}, [searchParams, toast]);
+    useEffect(() => {
+        if (!toastShownRef.current && searchParams.get("toast") === "needs-pictures") {
+            toast({
+                type: "info",
+                title: "Photos Required",
+                description: `Please upload at least ${MIN_PHOTOS} photos to continue to the dashboard.`,
+            });
+            toastShownRef.current = true;
+        }
+    }, [searchParams, toast]);
 
-	const [dropWarning, setDropWarning] = useState<string | null>(null);
-	const [isDragOver, setIsDragOver] = useState(false);
+    const [dropWarning, setDropWarning] = useState<string | null>(null);
+    const [isDragOver, setIsDragOver] = useState(false);
 
-	const handleImageClick = () => {
-		fileInputRef.current?.click();
-	};
+    const handleImageClick = () => {
+        fileInputRef.current?.click();
+    };
 
-	const processSelectedFile = (file: File) => {
-		setCompressionError(null);
-		setDropWarning(null);
-		setApiError(null);
-		const reader = new FileReader();
-		reader.onload = () => {
-			setCropImage(reader.result as string);
-			setIsCropping(true);
-		};
-		reader.readAsDataURL(file);
-	};
+    const processSelectedFile = (file: File) => {
+        setCompressionError(null);
+        setDropWarning(null);
+        setApiError(null);
+        const reader = new FileReader();
+        reader.onload = () => {
+            setCropImage(reader.result as string);
+            setIsCropping(true);
+        };
+        reader.readAsDataURL(file);
+    };
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) return;
-		processSelectedFile(file);
-		e.target.value = "";
-	};
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        processSelectedFile(file);
+        e.target.value = "";
+    };
 
-	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-		e.preventDefault();
-		if (photos.length < MAX_PHOTOS) {
-			setIsDragOver(true);
-		}
-	};
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        if (photos.length < MAX_PHOTOS) {
+            setIsDragOver(true);
+        }
+    };
 
-	const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-		e.preventDefault();
-		setIsDragOver(false);
-	};
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragOver(false);
+    };
 
-	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-		e.preventDefault();
-		setIsDragOver(false);
-		setDropWarning(null);
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragOver(false);
+        setDropWarning(null);
 
-		if (photos.length >= MAX_PHOTOS) return;
+        if (photos.length >= MAX_PHOTOS) return;
 
 		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
 			const file = e.dataTransfer.files[0];
@@ -133,20 +133,20 @@ export default function UploadPicturesPage() {
 		setUploadingSlotIndex(currentSlot);
 		setCompressionError(null);
 
-		try {
-			const res = await fetch(croppedDataUrl);
-			const blob = await res.blob();
-			const file = new File([blob], "cropped_image.jpg", {
-				type: Object.hasOwn(blob, "type") ? blob.type : "image/jpeg",
-			});
+        try {
+            const res = await fetch(croppedDataUrl);
+            const blob = await res.blob();
+            const file = new File([blob], "cropped_image.jpg", {
+                type: Object.hasOwn(blob, "type") ? blob.type : "image/jpeg",
+            });
 
-			const compressedFile = await compressImage(file);
+            const compressedFile = await compressImage(file);
 
-			// 1MB safety check
-			if (compressedFile.size > 1024 * 1024) {
-				setCompressionError("Image is too complex to compress under 1MB. Please try a simpler photo.");
-				return;
-			}
+            // 1MB safety check
+            if (compressedFile.size > 1024 * 1024) {
+                setCompressionError("Image is too complex to compress under 1MB. Please try a simpler photo.");
+                return;
+            }
 
 			const reader = new FileReader();
 			const base64Promise = new Promise<string>((resolve, reject) => {
@@ -189,8 +189,8 @@ export default function UploadPicturesPage() {
 		}
 	};
 
-	const handleNextStep = async () => {
-		if (photos.length < MIN_PHOTOS || photos.length > MAX_PHOTOS) return;
+    const handleNextStep = async () => {
+        if (photos.length < MIN_PHOTOS || photos.length > MAX_PHOTOS) return;
 
 		setApiError(null);
 		setIsLoading(true);
@@ -252,26 +252,26 @@ export default function UploadPicturesPage() {
 		router.push("/onboarding/lifestylePreferences");
 	};
 
-	if (initialLoading) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<LoadingSpinner size="lg" />
-			</div>
-		);
-	}
+    if (initialLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+            </div>
+        );
+    }
 
-	const displayName = userProfile?.profile?.first_name ? `${userProfile.profile.first_name}`.trim() : "Your Name";
-	const DEFAULT_BIO = "Your bio will appear here...";
-	const displayBio = userProfile?.profile?.bio || DEFAULT_BIO;
+    const displayName = userProfile?.profile?.first_name ? `${userProfile.profile.first_name}`.trim() : "Your Name";
+    const DEFAULT_BIO = "Your bio will appear here...";
+    const displayBio = userProfile?.profile?.bio || DEFAULT_BIO;
 
-	return (
-		<div className="min-h-screen w-screen overflow-x-hidden px-4 pb-10 sm:px-6 lg:px-10">
-			<ProgressHeader
-				title="Upload Your Photos"
-				subtitle="Show off your best self."
-				currentStep={2}
-				progressImage="/peechi_progress_2.svg"
-			/>
+    return (
+        <div className="min-h-screen w-screen overflow-x-hidden px-4 pb-10 sm:px-6 lg:px-10">
+            <ProgressHeader
+                title="Upload Your Photos"
+                subtitle="Show off your best self."
+                currentStep={2}
+                progressImage="/peechi_progress_2.svg"
+            />
 
 			<div className="mx-auto mt-5 flex flex-col lg:flex-row gap-8 w-full justify-center lg:items-stretch">
 				<div className="w-full lg:w-1/2 lg:max-w-135 flex flex-col pt-4">
@@ -296,15 +296,15 @@ export default function UploadPicturesPage() {
 					/>
 				</div>
 
-				<div className="w-full lg:w-1/2 lg:max-w-195 flex flex-col pt-4">
-					<ProfileCardPreview
-						name={displayName}
-						images={photos}
-						bio={displayBio}
-						tags={[]}
-					/>
-				</div>
-			</div>
+                <div className="w-full lg:w-1/2 lg:max-w-195 flex flex-col pt-4">
+                    <ProfileCardPreview
+                        name={displayName}
+                        images={photos}
+                        bio={displayBio}
+                        tags={[]}
+                    />
+                </div>
+            </div>
 
 			<div className="mt-8 w-full flex flex-col items-center justify-center">
 				<NextStepButton
@@ -319,16 +319,16 @@ export default function UploadPicturesPage() {
 				{apiError && <p className="text-red-500 text-sm text-center mt-2">{apiError}</p>}
 			</div>
 
-			{isCropping && cropImage && (
-				<ImageCropper
-					image={cropImage}
-					onCropDone={handleCropDone}
-					onCancel={() => {
-						setIsCropping(false);
-						setCropImage(null);
-					}}
-				/>
-			)}
-		</div>
-	);
+            {isCropping && cropImage && (
+                <ImageCropper
+                    image={cropImage}
+                    onCropDone={handleCropDone}
+                    onCancel={() => {
+                        setIsCropping(false);
+                        setCropImage(null);
+                    }}
+                />
+            )}
+        </div>
+    );
 }

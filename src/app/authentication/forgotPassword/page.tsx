@@ -79,8 +79,8 @@ export default function VerifyEmailPage() {
                 typeof err === "object" &&
                 "message" in err &&
                 typeof err.message === "string"
-                    ? err.message
-                    : "Something went wrong. Please try again.";
+                	? err.message
+                	: "Something went wrong. Please try again.";
 
             setEmailTouched(true);
             setEmailError(errorMessage);
@@ -104,7 +104,7 @@ export default function VerifyEmailPage() {
         !isSending && !!email && !getEmailValidationError(email) && !emailError;
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             <div className="flex flex-col w-full max-w-2xl px-10">
                 {/* Back arrow */}
                 <button

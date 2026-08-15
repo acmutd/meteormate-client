@@ -61,7 +61,10 @@ export default function UploadPicturesPage() {
         let isMounted = true;
         const fetchUser = async () => {
             try {
-                const res = await fetchCurrentUser();
+                const res = await fetchCurrentUser({
+                    preferCache: true,
+                    maxAgeMs: 5 * 60 * 1000,
+                });
                 if (!isMounted) return;
 
                 if (res.ok && res.data) {

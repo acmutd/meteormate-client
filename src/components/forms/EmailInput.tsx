@@ -13,16 +13,16 @@ interface EmailInputProps {
 }
 
 export default function EmailInput({
-                                       value,
-                                       onChange,
-                                       onBlur,
-                                       placeholder = "Email",
-                                       label,
-                                       error,
-                                       disabled = false,
-                                       className = "",
-                                       inputRef,
-                                   }: EmailInputProps) {
+    value,
+    onChange,
+    onBlur,
+    placeholder = "Email",
+    label,
+    error,
+    disabled = false,
+    className = "",
+    inputRef,
+}: EmailInputProps) {
     return (
         <div className={`flex flex-col ${className}`}>
             {label && (
