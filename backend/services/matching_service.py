@@ -3,13 +3,12 @@
 # ACM MeteorMate | All Rights Reserved
 
 import logging
+from typing import List
+
 import numpy as np
-from typing import List, Dict
 
 from sqlalchemy.orm import Session
 from models.user import User
-from models.user_profile import UserProfile
-from models.survey import Survey
 from models.matches import Match
 from services.matching_config import sim_matrix, q_weights
 
@@ -31,7 +30,7 @@ def top_k_matches(db: Session, user_id: str, k: int = 10) -> List[User]:
     active_users = (
         db.query(User).filter(
             User.id != user_id,
-            User.is_active == True,
+            User.is_active.is_(True),
             User.id.notin_(already_matched_subquery),
             # make sure all candidates have completed survey and profile
             User.survey.has(), 
@@ -62,8 +61,8 @@ def top_k_matches(db: Session, user_id: str, k: int = 10) -> List[User]:
         f"User {user_id} has {len(active_users)} potential matches after filtering out inactive users, already matched users, and users violating dealbreakers"
     )
 
-    uids = np.array([user.user_id for user in active_users], dtype=object)
-    uid_to_user = {user.user_id: user for user in active_users}
+    uids = np.array([user.id for user in active_users], dtype=object)
+    uid_to_user = {user.id: user for user in active_users}
 
     uid_scores = {}
 
@@ -73,9 +72,6 @@ def top_k_matches(db: Session, user_id: str, k: int = 10) -> List[User]:
     sim_scores = sim_matrix[q_idx, current_user_answers, potential_match_answers] # (N, Q)
     avg_sim_scores = np.sum(q_weights * sim_scores, axis=-1) / np.sum(q_weights) # (N,) 
     sorted_uids = uids[avg_sim_scores.argsort()[::-1]]
-    logger.info(
-        f"User has {len(sorted_uids)} matches after applying dealbreaker filters and calculating similarity scores"
-    )
 
     top_k_uids = sorted_uids[:k]
     top_k_matches = [uid_to_user[uid] for uid in top_k_uids]

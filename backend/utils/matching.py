@@ -199,7 +199,7 @@ def get_major_category(major: str) -> int:
 
     return -1
 
-s
+
 def encode_answers(survey: SurveyCreate, profile) -> list[int]:
     profile = profile.profile
     answers = [

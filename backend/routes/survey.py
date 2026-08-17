@@ -20,6 +20,7 @@ from utils.rate_limiters import sensitive_updates_limiter, regular_updates_limit
 logger = logging.getLogger("meteormate." + __name__)
 router = APIRouter()
 
+
 @router.post("", response_model=SurveyResponse, dependencies=[sensitive_updates_limiter])
 async def create_survey(
     survey_data: SurveyCreate,
