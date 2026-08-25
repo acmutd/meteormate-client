@@ -1,16 +1,9 @@
 "use client";
-
-type Notification = {
-  id: string;
-  isRead: boolean;
-  liker: {
-    name: string;
-  };
-};
+import { LikeNotification } from "@/lib/notifications";
 
 type RecentActivityProps = {
   loadingNotifications?: boolean;
-  top3?: Notification[];
+  top3?: LikeNotification[];
 };
 
 export default function RecentActivity({
@@ -44,13 +37,16 @@ export default function RecentActivity({
                 n.isRead ? "bg-white" : "bg-[#FFF7ED]",
               ].join(" ")}
             >
-              <p className="text-sm text-gray-900 truncate">
-                <span className="font-semibold">{n.liker.name}</span>{" "}
-                liked your profile
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-gray-900 truncate">
+                  <span className="font-semibold">{n.liker?.name}</span>{" "}
+                  liked your profile
+                </p>
+
                 {!n.isRead && (
-                  <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
+                  <span className="shrink-0 h-2 w-2 rounded-full bg-primary" />
                 )}
-              </p>
+              </div>
             </div>
           ))}
         </div>
