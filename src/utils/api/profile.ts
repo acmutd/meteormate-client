@@ -8,7 +8,6 @@ import {
     ProfileCreateBody,
     ProfileUpdateBody,
     ProfileResponse,
-    ProfilePictureBody,
     ProfileUpdateNotificationsBody,
     UserDeleteProfilePicturesBody,
 } from "@/types/profile";

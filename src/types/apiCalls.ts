@@ -13,7 +13,8 @@ export type ApiRequestBody =
     | ProfileUpdateBody
     | ProfilePictureBody
     | ProfileUpdateNotificationsBody
-    | UpdateUserProfileBody | UserDeleteProfilePicturesBody;
+    | UpdateUserProfileBody 
+    | UserDeleteProfilePicturesBody;
 
 export interface ApiFetchOptions {
     method?: HttpMethod;

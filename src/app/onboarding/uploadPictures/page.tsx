@@ -15,7 +15,6 @@ import { useOnboarding } from "@/contexts/onboardingContext";
 import { useToast } from "@/components/ui/ToastProvider";
 
 import { MIN_PHOTOS, MAX_PHOTOS } from "@/constants/onboarding";
-import { base } from "framer-motion/client";
 
 export default function UploadPicturesPage() {
     const router = useRouter();
