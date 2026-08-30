@@ -139,24 +139,24 @@ export default function ImageUpload({
                             </h2>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-3">
-                            {Array.from({ length: secondaryPhotoSlots }, (_, idx) => idx + 1).map((slotIndex) => {
-                                return (
-                                    <PhotoSlot
-                                        key={slotIndex}
-                                        photo={photos[slotIndex]}
-                                        slotIndex={slotIndex}
-                                        photosLength={photos.length}
-                                        uploadingSlotIndex={uploadingSlotIndex}
-                                        deletingSlotIndex={deletingSlotIndex}
-                                        primaryPhoto={primaryPhoto}
-                                        onDeletePhoto={onDeletePhoto}
-                                        onImageClick={onImageClick}
-                                    />
-                                );
-                            })}
-                        </div>
-                    </div>
+						<div className="grid grid-cols-4 gap-3">
+							{Array.from({ length: secondaryPhotoSlots }, (_, idx) => idx + 1).map((slotIndex) => {
+								return (
+									<PhotoSlot
+										key={slotIndex}
+										photo={photos[slotIndex]}
+										slotIndex={slotIndex}
+										photosLength={photos.length}
+										uploadingSlotIndex={uploadingSlotIndex}
+										deletingSlotIndex={deletingSlotIndex}
+										//primaryPhoto={primaryPhoto}
+										onDeletePhoto={onDeletePhoto}
+										onImageClick={onImageClick}
+									/>
+								);
+							})}
+						</div>
+					</div>
 
                     {(compressionError || dropWarning) && (
                         <p className="mt-1 text-sm text-red-500 text-center">{compressionError || dropWarning}</p>
