@@ -38,6 +38,8 @@ export default function UploadPicturesPage() {
     const [apiError, setApiError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const filledPhotoCount = photos.filter((photo) => Boolean(photo)).length;
+
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
@@ -97,7 +99,7 @@ export default function UploadPicturesPage() {
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        if (photos.length < MAX_PHOTOS) {
+        if (filledPhotoCount < MAX_PHOTOS) {
             setIsDragOver(true);
         }
     };
@@ -112,7 +114,7 @@ export default function UploadPicturesPage() {
         setIsDragOver(false);
         setDropWarning(null);
 
-        if (photos.length >= MAX_PHOTOS) return;
+        if (filledPhotoCount >= MAX_PHOTOS) return;
 
 		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
 			const file = e.dataTransfer.files[0];
@@ -189,27 +191,26 @@ export default function UploadPicturesPage() {
 	};
 
     const handleNextStep = async () => {
-        if (photos.length < MIN_PHOTOS || photos.length > MAX_PHOTOS) return;
+        if (filledPhotoCount < MIN_PHOTOS || filledPhotoCount > MAX_PHOTOS) return;
 
 		setApiError(null);
 		setIsLoading(true);
 
-		
 		const changedImageMap = await uploadImages(photos);
-		
-		let newPhotos = [...photos];
-		let newDeletedUrls = [...deletedPhotoUrls];
+		const newPhotos = Array.from({ length: MAX_PHOTOS }, (_, slotIndex) => {
+			if (Object.prototype.hasOwnProperty.call(changedImageMap, slotIndex)) {
+				return changedImageMap[slotIndex];
+			}
+			return photos[slotIndex] ?? "";
+		});
+		const newDeletedUrls = [...deletedPhotoUrls];
 		
 		for (const key in changedImageMap) {
-			const slotIndex = parseInt(key);
-			const newUrl = changedImageMap[key];
+			const slotIndex = Number.parseInt(key, 10);
+			const newUrl = changedImageMap[slotIndex];
 			if (photos[slotIndex] && !photos[slotIndex].startsWith("data:")) {
-				// This slot had an existing URL, so we need to delete the old one
 				newDeletedUrls.push(photos[slotIndex]);
-				continue;
 			}
-			
-			// Update the photo URL in the local state
 			newPhotos[slotIndex] = newUrl;
 		}
 		
@@ -220,7 +221,7 @@ export default function UploadPicturesPage() {
 		console.log("Deleted photo URLs to remove from profile:", newDeletedUrls);
 		console.log("Final photo URLs to save in profile:", newPhotos);
 		
-		const updateRes = await updateProfile({ profile_picture_url: newPhotos.filter(p => p && !p.startsWith("data:")) });
+		const updateRes = await updateProfile({ profile_picture_url: newPhotos });
 		if (!updateRes.ok) {
 			console.error("Failed to update profile with new picture URLs", updateRes.error);
 			setApiError("Failed to save photos. Please try again.");
@@ -228,10 +229,9 @@ export default function UploadPicturesPage() {
 			return;
 		} else {
 			setUserProfile(prev => {
-				if (!prev || !prev.profile) return prev;
-				prev.profile = updateRes.data;
-				return prev;
-			})
+				if (!prev) return prev;
+				return { ...prev, profile: updateRes.data ?? prev.profile };
+			});
 		}
 		
 		if (newDeletedUrls.length > 0) {
@@ -307,12 +307,12 @@ export default function UploadPicturesPage() {
 
 			<div className="mt-8 w-full flex flex-col items-center justify-center">
 				<NextStepButton
-					className={`mb-3 ${photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null ? "opacity-50 cursor-not-allowed" : ""
+					className={`mb-3 ${filledPhotoCount < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null ? "opacity-50 cursor-not-allowed" : ""
 						}`}
 					onClick={handleNextStep}
-					disabled={photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null}
+					disabled={filledPhotoCount < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null}
 				/>
-				{photos.length < MIN_PHOTOS && (
+				{filledPhotoCount < MIN_PHOTOS && (
 					<p className="text-[13px] text-gray-500 font-medium">A minimum of {MIN_PHOTOS} photos is required.</p>
 				)}
 				{apiError && <p className="text-red-500 text-sm text-center mt-2">{apiError}</p>}
