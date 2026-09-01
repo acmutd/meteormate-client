@@ -1,16 +1,37 @@
 "use client";
-import { useCallback, useState } from "react";
-//commenting these out but we will be needing them later - just so I don't forget
-// import { useRouter } from "next/navigation";
-// import { fetchCurrentUser } from "@/utils/api/auth";
-// import { UserProfile } from "@/types/userProfile";
-// import LoadingSpinner from "@/components/LoadingSpinner"; 
+import { useCallback, useEffect, useState } from "react";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 import confetti from "canvas-confetti";
 import { ItsAMatchOverlay } from "@/components/itsAMatch";
+import { getPotentialMatches } from "@/utils/api/matches";
+import { PotentialMatch } from "@/types/matches";
+
 
 export default function Discover() {
     const [showMatch, setShowMatch] = useState(false);
+    const [matches, setMatches] = useState<PotentialMatch[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadMatches() {
+            setLoading(true);
+            setError(null);
+
+            const result = await getPotentialMatches();
+
+            if (!result.ok) {
+                setError(result.error);
+                setLoading(false);
+                return;
+            }
+
+            setMatches(result.data.matches);
+            setLoading(false);
+        }
+
+        loadMatches();
+    }, []);    
 
     const fireMatch = useCallback(() => {
         // A quick "for ~900ms keep firing" effect
@@ -56,6 +77,32 @@ export default function Discover() {
    
     }, []);
 
+    if (loading) {
+        return (
+            <div className="flex min-h-[600px] items-center justify-center">
+                <p className="text-gray-500">Loading potential matches...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex min-h-[600px] items-center justify-center">
+                <p className="text-red-500">{error}</p>
+            </div>
+        );
+    }
+
+    if (matches.length === 0) {
+        return (
+            <div className="flex min-h-[600px] items-center justify-center">
+                <p className="text-gray-500">
+                    No potential matches found.
+                </p>
+            </div>
+        );
+    }
+        const match = matches[0];
     return (
         <div className="relative">
             <ItsAMatchOverlay
@@ -69,16 +116,16 @@ export default function Discover() {
     
             <div className="flex justify-center py-7">
                 <ProfileCard
-                    name="Aastha Sheth"
-                    subtitle="Comp sci. major - senior"
-                    images={["/p2.png", "/p3.jpg","/p2.png"]}
+                    name={`${match.profile?.first_name ?? ""} ${match.profile?.last_name ?? ""}`.trim()}
+                    subtitle={`${match.profile?.major ?? ""} - ${match.profile?.classification ?? ""}`}
+                    images={match.profile?.profile_picture_url ?? []}
                     tags={[
                         { label: "Does not have a lease", tone: "orange"},
                         { label: "Year long lease", tone: "orange"},
                         { label: "$1200 Rent range", tone: "orange"},
                         { label: "Has a pet", tone: "gray" },
                     ]}
-                    bio="Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe..."
+                    bio={match.profile?.bio}
                     onDislike={() => undefined}
                     onRewind={() => undefined}
                     onLike={() => {
