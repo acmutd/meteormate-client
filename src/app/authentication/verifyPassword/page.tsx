@@ -85,6 +85,23 @@ export default function VerifyPassword() {
         try {
             setIsVerifying(true);
             setError("");
+            
+            // Verify code with backend
+            const response = await fetch(`/api/auth/verify-reset-code`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    email,
+                    code: verificationCode,
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.detail || "Invalid or expired code.");
+            }
+
+            // Store for next page (so /newPassword can use it)
 
             sessionStorage.setItem("resetEmail", email);
             sessionStorage.setItem("resetCode", verificationCode);
