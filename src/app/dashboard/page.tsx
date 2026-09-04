@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback} from "react";
 //commenting these out but we will be needing them later - just so I don't forget
 // import { useRouter } from "next/navigation";
 // import { fetchCurrentUser } from "@/utils/api/auth";
@@ -8,14 +8,50 @@ import { useCallback, useState } from "react";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 import confetti from "canvas-confetti";
 import { ItsAMatchOverlay } from "@/components/itsAMatch";
+import FilterSideBar from "@/components/cardComponent/FilterSideBar"; // TODO: Wire filters into discover matching API once backend filtering is available.
+import { loadNotifications, type LikeNotification } from "@/lib/notifications";
 
 export default function Discover() {
     const [showMatch, setShowMatch] = useState(false);
 
-    const fireMatch = useCallback(() => {
-        // A quick "for ~900ms keep firing" effect
-        const duration = 900;
-        const end = Date.now() + duration;
+  const [notifications, setNotifications] = useState<LikeNotification[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    try {
+      setLoadingNotifications(true);
+      const data = loadNotifications();
+
+      if (mounted) {
+        setNotifications(data);
+      }
+    } finally {
+      if (mounted) {
+        setLoadingNotifications(false);
+      }
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const top3 = useMemo(() => {
+    return [...notifications]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      .slice(0, 3);
+  }, [notifications]);
+	
+
+	const fireMatch = useCallback(() => {
+    // A quick "for ~900ms keep firing" effect
+    const duration = 900;
+    const end = Date.now() + duration;
 
         // helper: random in range
         const rand = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -101,10 +137,17 @@ export default function Discover() {
                         ],
                         expandedBio:
               "Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe. To do for mm: nuke atharva. WOHOOOOOOOOOOOOOOOOOOOOOOOOo",
-                    }}
-                />
-            </div>
-        </div>
-    );
+          }}
+        />
+        {/* TODO: Connect FilterSideBar to the discover/matching API once backend filtering
+          is implemented. Current filter UI is intentionally static.*/}
+        <FilterSideBar
+          loadingNotifications={loadingNotifications}
+          top3={top3}
+        />
+      </div>
+      
+    </div>
+  );
     
 }

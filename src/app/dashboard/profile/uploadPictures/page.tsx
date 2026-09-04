@@ -60,10 +60,7 @@ export default function UploadPicturesPage() {
         let isMounted = true;
         const fetchUser = async () => {
             try {
-                const res = await fetchCurrentUser({
-                    preferCache: true,
-                    maxAgeMs: 5 * 60 * 1000,
-                });
+                const res = await fetchCurrentUser();
                 if (!isMounted) return;
 
                 if (res.ok && res.data) {
@@ -254,15 +251,27 @@ export default function UploadPicturesPage() {
                 throw new Error(profileUpdateRes.error || "Failed to save profile pictures.");
             }
 
-            setUserProfile((prev) => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    profile: profileUpdateRes.data,
-                };
-            });
-            setPhotos(updatedPhotos);
-            setInitialPhotosSignature(getPhotosSignature(updatedPhotos));
+            const refreshedUser = await fetchCurrentUser();
+            if (!refreshedUser.ok || !refreshedUser.data) {
+                throw new Error("Failed to refresh profile pictures after saving.");
+            }
+
+            const refreshedPhotos = Array.isArray(
+                refreshedUser.data.profile?.profile_picture_url,
+            )
+                ? refreshedUser.data.profile.profile_picture_url
+                : [];
+
+            const refreshedEntries: PhotoEntry[] = refreshedPhotos.map((url, index) => ({
+                kind: "remote",
+                url,
+                remoteIndex: index,
+            }));
+
+            setUserProfile(refreshedUser.data);
+            setPhotoEntries(refreshedEntries);
+            setInitialEntriesSignature(getEntriesSignature(refreshedEntries));
+            setInitialRemoteCount(refreshedPhotos.length);
 
             toast({
                 type: "success",
