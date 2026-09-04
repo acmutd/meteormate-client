@@ -102,7 +102,46 @@ export default function Discover() {
             </div>
         );
     }
-        const match = matches[0];
+    const match = matches[0];
+    const habits = [
+        match.survey?.wake_time === "early_bird"
+            ? { label: "Early Bird", selected: true }
+            : match.survey?.wake_time === "night_owl"
+                ? { label: "Night Owl", selected: true }
+                : null,
+
+        match.survey?.cleanliness === "tidy"
+            ? { label: "Tidy", selected: true }
+            : match.survey?.cleanliness === "neat_freak"
+                ? { label: "Neat Freak", selected: true }
+                : match.survey?.cleanliness === "relaxed"
+                    ? { label: "Relaxed", selected: true }
+                    : null,
+
+        match.survey?.noise_tolerance === "quiet"
+            ? { label: "Quiet", selected: true }
+            : match.survey?.noise_tolerance === "moderate"
+                ? { label: "Moderate Noise", selected: true }
+                : match.survey?.noise_tolerance === "loud"
+                    ? { label: "Okay With Noise", selected: true }
+                    : null,
+
+        match.survey?.pet_preference === "okay"
+            ? { label: "Okay With Pets", selected: true }
+            : match.survey?.pet_preference === "have_a_pet"
+                ? { label: "Has a Pet", selected: true }
+                : match.survey?.pet_preference === "not_okay"
+                    ? { label: "No Pets", selected: true }
+                    : null,
+
+        match.survey?.cooking_frequency === "often"
+            ? { label: "Cooks Often", selected: true }
+            : match.survey?.cooking_frequency === "rarely"
+                ? { label: "Rarely Cooks", selected: true }
+                : match.survey?.cooking_frequency === "never"
+                    ? { label: "Doesn't Cook", selected: true }
+                    : null,
+    ].filter((habit): habit is { label: string; selected: true } => habit !== null);
     return (
         <div className="relative">
             <ItsAMatchOverlay
@@ -110,8 +149,8 @@ export default function Discover() {
                 onClose={() => setShowMatch(false)}
                 onConfirm={() => setShowMatch(false)}
                 leftImg="/p2.png"
-                rightImg="/p3.jpg"
-                rightName="Usagi"
+                rightImg={match.profile?.profile_picture_url?.[0] ?? "/p3.jpg"}
+                rightName={match.profile?.first_name ?? "them"}
             />
     
             <div className="flex justify-center py-7">
@@ -120,10 +159,22 @@ export default function Discover() {
                     subtitle={`${match.profile?.major ?? ""} - ${match.profile?.classification ?? ""}`}
                     images={match.profile?.profile_picture_url ?? []}
                     tags={[
-                        { label: "Does not have a lease", tone: "orange"},
-                        { label: "Year long lease", tone: "orange"},
-                        { label: "$1200 Rent range", tone: "orange"},
-                        { label: "Has a pet", tone: "gray" },
+                        ...(match.survey?.budget_min != null || match.survey?.budget_max != null
+                            ? [
+                                {
+                                    label: `$${match.survey?.budget_min ?? 0}–$${match.survey?.budget_max ?? 0} Rent range`,
+                                    tone: "orange" as const,
+                                },
+                            ]
+                            : []),
+
+                        ...(match.survey?.pet_preference === "have_a_pet"
+                            ? [{ label: "Has a pet", tone: "gray" as const }]
+                            : match.survey?.pet_preference === "okay"
+                                ? [{ label: "Okay with pets", tone: "gray" as const }]
+                                : match.survey?.pet_preference === "not_okay"
+                                    ? [{ label: "No pets", tone: "gray" as const }]
+                                    : []),
                     ]}
                     bio={match.profile?.bio}
                     onDislike={() => undefined}
@@ -132,22 +183,12 @@ export default function Discover() {
                         fireMatch();
                     }}
                     back={{
-                        interests: [
-                            { label: "Music", selected: true },
-                            { label: "Art", selected: true },
-                            { label: "Lifting" },
-                            { label: "Hiking" },
-                            { label: "Video Games" },
-                        ],
-                        habits: [
-                            { label: "Quiet", selected: true },
-                            { label: "Tidy", selected: true },
-                            { label: "Okay With Pets", selected: true },
-                            { label: "Cooks Often" },
-                            { label: "Early Bird" },
-                        ],
-                        expandedBio:
-              "Easygoing, clean, and respectful roommate. I value communication, shared spaces that stay organized, and a chill home vibe. To do for mm: nuke atharva. WOHOOOOOOOOOOOOOOOOOOOOOOOOo",
+                        interests: (match.survey?.interests ?? []).map((interest) => ({
+                            label: interest,
+                            selected: true,
+                        })),
+                        habits,
+                        expandedBio: match.profile?.bio,
                     }}
                 />
             </div>
