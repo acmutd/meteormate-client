@@ -9,7 +9,6 @@ import {
     ProfileUpdateBody,
     ProfileResponse,
     ProfileUpdateNotificationsBody,
-    UserDeleteProfilePicturesBody,
 } from "@/types/profile";
 
 export interface FetchProfileOptions {
@@ -74,10 +73,6 @@ export async function fetchProfile(
 // Gets a user profile by UID (public endpoint)
 export async function getProfile(uid: string): Promise<Result<ProfileResponse>> {
     return fetchProfile(uid);
-}
-
-export async function deleteProfilePictures(body: UserDeleteProfilePicturesBody): Promise<Result<ProfileResponse>> {
-    return apiFetch<ProfileResponse>("/api/profiles/delete_pictures", { method: "DELETE", body });
 }
 
 // Updates match_notification and/or promotional_notification preferences

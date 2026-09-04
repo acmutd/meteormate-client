@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { updateProfile, deleteProfilePictures } from "@/utils/api/profile";
+import { updateProfile } from "@/utils/api/profile";
 import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
@@ -33,7 +33,6 @@ export default function UploadPicturesPage() {
 
     const [photos, setPhotos] = useState<string[]>(Array(MAX_PHOTOS).fill(""));
     const [initialPhotosSignature, setInitialPhotosSignature] = useState("");
-    const [deletedPhotoUrls, setDeletedPhotoUrls] = useState<string[]>([]);
 
     const [cropImage, setCropImage] = useState<string | null>(null);
     const [isCropping, setIsCropping] = useState(false);
@@ -81,7 +80,6 @@ export default function UploadPicturesPage() {
 
                     setPhotos(normalizedPhotos);
                     setInitialPhotosSignature(getPhotosSignature(normalizedPhotos));
-                    setDeletedPhotoUrls([]);
                     return;
                 }
 
@@ -226,10 +224,6 @@ export default function UploadPicturesPage() {
         setCompressionError(null);
         setDropWarning(null);
 
-        if (!photos[index].startsWith("data:")) {
-            setDeletedPhotoUrls((prev) => [...prev, photos[index]]);
-        }
-
         setDeletingSlotIndex(index);
         setPhotos((prev) => {
             const nextPhotos = [...prev];
@@ -260,16 +254,6 @@ export default function UploadPicturesPage() {
                 throw new Error(profileUpdateRes.error || "Failed to save profile pictures.");
             }
 
-            if (deletedPhotoUrls.length > 0) {
-                const deleteRes = await deleteProfilePictures({
-                    profile_picture_url: deletedPhotoUrls,
-                });
-
-                if (!deleteRes.ok) {
-                    throw new Error(deleteRes.error || "Failed to delete old photos.");
-                }
-            }
-
             setUserProfile((prev) => {
                 if (!prev) return prev;
                 return {
@@ -279,7 +263,6 @@ export default function UploadPicturesPage() {
             });
             setPhotos(updatedPhotos);
             setInitialPhotosSignature(getPhotosSignature(updatedPhotos));
-            setDeletedPhotoUrls([]);
 
             toast({
                 type: "success",

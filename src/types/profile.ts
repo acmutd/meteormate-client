@@ -63,6 +63,3 @@ export interface UpdateUserProfileBody {
     dob: string | null;
 }
 
-export interface UserDeleteProfilePicturesBody {
-    profile_picture_url: string[];
-}

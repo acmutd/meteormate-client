@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { updateProfile, deleteProfilePictures } from "@/utils/api/profile";
+import { updateProfile } from "@/utils/api/profile";
 import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
@@ -232,16 +232,6 @@ export default function UploadPicturesPage() {
 				if (!prev) return prev;
 				return { ...prev, profile: updateRes.data ?? prev.profile };
 			});
-		}
-		
-		if (newDeletedUrls.length > 0) {
-			const deleteRes = await deleteProfilePictures({ profile_picture_url: newDeletedUrls });
-			if (!deleteRes.ok) {
-				console.error("Failed to delete old photos from profile", deleteRes.error);
-				setApiError("Failed to delete old photos. Please try again.");
-				setIsLoading(false);
-				return;
-			}
 		}
 		
 		setIsLoading(false);
