@@ -135,6 +135,7 @@ export default function CreateProfilePage() {
 			last_name: lastName.trim(),
 			gender: gender as Gender,
 			major,
+            school,
 			classification: year as Classification,
 			bio,
 			dob: birthday!,

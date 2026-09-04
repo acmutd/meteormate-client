@@ -262,16 +262,14 @@ export default function UploadPicturesPage() {
                 ? refreshedUser.data.profile.profile_picture_url
                 : [];
 
-            const refreshedEntries: PhotoEntry[] = refreshedPhotos.map((url, index) => ({
-                kind: "remote",
-                url,
-                remoteIndex: index,
-            }));
+            const normalizedRefreshedPhotos = Array.from(
+                { length: MAX_PHOTOS },
+                (_, index) => refreshedPhotos[index] ?? "",
+            );
 
             setUserProfile(refreshedUser.data);
-            setPhotoEntries(refreshedEntries);
-            setInitialEntriesSignature(getEntriesSignature(refreshedEntries));
-            setInitialRemoteCount(refreshedPhotos.length);
+            setPhotos(normalizedRefreshedPhotos);
+            setInitialPhotosSignature(getPhotosSignature(normalizedRefreshedPhotos));
 
             toast({
                 type: "success",

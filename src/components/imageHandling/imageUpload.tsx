@@ -148,7 +148,7 @@ export default function ImageUpload({
 										key={slotIndex}
 										photo={photos[slotIndex]}
 										slotIndex={slotIndex}
-										photosLength={photos.length}
+                                        isNextSlot={slotIndex === nextSlotIndex}
 										uploadingSlotIndex={uploadingSlotIndex}
 										deletingSlotIndex={deletingSlotIndex}
 										//primaryPhoto={primaryPhoto}
