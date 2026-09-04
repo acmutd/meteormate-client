@@ -5,6 +5,7 @@ import confetti from "canvas-confetti";
 import { ItsAMatchOverlay } from "@/components/itsAMatch";
 import { getPotentialMatches } from "@/utils/api/matches";
 import { PotentialMatch } from "@/types/matches";
+import { fetchCurrentUser } from "@/utils/api/auth";
 
 
 export default function Discover() {
@@ -12,6 +13,7 @@ export default function Discover() {
     const [matches, setMatches] = useState<PotentialMatch[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [currentUserPhoto, setCurrentUserPhoto] = useState("/p2.png");
 
     useEffect(() => {
         async function loadMatches() {
@@ -27,11 +29,23 @@ export default function Discover() {
             }
 
             setMatches(result.data.matches);
+
+            const userResult = await fetchCurrentUser({
+                preferCache: true,
+                maxAgeMs: 5 * 60 * 1000,
+            });
+
+            if (userResult.ok) {
+                setCurrentUserPhoto(
+                    userResult.data.profile?.profile_picture_url?.[0] ?? "/p2.png"
+                );
+            }
+
             setLoading(false);
         }
 
         loadMatches();
-    }, []);    
+    }, []);
 
     const fireMatch = useCallback(() => {
         // A quick "for ~900ms keep firing" effect
@@ -148,7 +162,7 @@ export default function Discover() {
                 open={showMatch}
                 onClose={() => setShowMatch(false)}
                 onConfirm={() => setShowMatch(false)}
-                leftImg="/p2.png"
+                leftImg={currentUserPhoto}
                 rightImg={match.profile?.profile_picture_url?.[0] ?? "/p3.jpg"}
                 rightName={match.profile?.first_name ?? "them"}
             />
