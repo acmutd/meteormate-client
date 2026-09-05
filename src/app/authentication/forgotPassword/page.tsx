@@ -71,9 +71,7 @@ export default function VerifyEmailPage() {
                 description: "Check your email for the 6-digit code.",
             });
 
-            router.push(
-                `/authentication/verifyPassword?email=${encodeURIComponent(email)}`
-            );
+            router.push("/authentication/newPassword");
         } catch (err: unknown) {
             console.error("Error sending reset verification:", err);
 
