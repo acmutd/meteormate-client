@@ -22,6 +22,14 @@ export async function apiFetch<T>(
             "Content-Type": "application/json",
         };
 
+        const sendRequest = async (): Promise<Response> => {
+            return fetch(finalUrl, {
+                method,
+                headers,
+                body: body !== undefined ? JSON.stringify(body) : undefined,
+            });
+        };
+
         if (!isPublic) {
             const user = auth.currentUser;
 
@@ -33,15 +41,37 @@ export async function apiFetch<T>(
                 };
             }
 
-            const token = await user.getIdToken();
+            let token: string;
+            try {
+                token = await user.getIdToken();
+            } catch (tokenError) {
+                token = await user.getIdToken(true);
+            }
+
             headers["Authorization"] = `Bearer ${token}`;
+
+            let response = await sendRequest();
+            if (response.status === 401) {
+                const freshToken = await user.getIdToken(true);
+                headers["Authorization"] = `Bearer ${freshToken}`;
+                response = await sendRequest();
+            }
+
+            if (!response.ok) {
+                const { message, code } = await parseApiError(response);
+                return { ok: false, error: message, code };
+            }
+
+            if (response.status === 204) {
+                return { ok: true, data: undefined as T };
+            }
+
+            const text = await response.text();
+            const data = text ? (JSON.parse(text) as T) : (undefined as T);
+            return { ok: true, data };
         }
 
-        const response = await fetch(finalUrl, {
-            method,
-            headers,
-            body: body !== undefined ? JSON.stringify(body) : undefined,
-        });
+        const response = await sendRequest();
 
         if (!response.ok) {
             const { message, code } = await parseApiError(response);

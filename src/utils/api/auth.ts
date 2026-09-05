@@ -52,6 +52,28 @@ export async function VerifyEmail(email: string, code: string): Promise<Result<{
     });
 }
 
+// send reset password code (no auth required — email passed directly)
+export async function SendResetPasswordCode(email: string): Promise<Result<{ message: string }>> {
+    return apiFetch<{ message: string }>(
+        `/api/verification/reset_password/${encodeURIComponent(email)}`,
+        { method: "GET", isPublic: true },
+    );
+}
+
+// reset password with code
+export async function ResetPassword(
+    email: string,
+    code: string,
+    new_password: string,
+): Promise<Result<{ message: string }>> {
+    const body = { email, code, new_password };
+    return apiFetch<{ message: string }>("/api/verification/reset_password", {
+        method: "POST",
+        body,
+        isPublic: true,
+    });
+}
+
 // get current user from /api/auth/me or localstorage cache
 export async function fetchCurrentUser(
     options: FetchCurrentUserOptions = {},

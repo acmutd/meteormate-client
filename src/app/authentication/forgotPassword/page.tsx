@@ -7,6 +7,7 @@ import {getEmailValidationError} from "@/utils/validation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import EmailInput from "@/components/forms/EmailInput";
 import {useToast} from "@/components/ui/ToastProvider";
+import {SendResetPasswordCode} from "@/utils/api/auth";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
@@ -46,18 +47,20 @@ export default function VerifyEmailPage() {
         try {
             setIsSending(true);
 
-            const response = await fetch(`/api/auth/send-verification-code`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email,
-                    purpose: "reset",
-                }),
-            });
+            const result = await SendResetPasswordCode(email);
 
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                throw new Error(data.detail || "Failed to send verification code.");
+            if (!result.ok) {
+                console.error("Error sending reset verification:", result.error);
+
+                setEmailTouched(true);
+                setEmailError(result.error);
+
+                toast({
+                    type: "error",
+                    title: "Couldn't send code",
+                    description: result.error,
+                });
+                return;
             }
 
             sessionStorage.setItem("resetEmail", email);
@@ -68,9 +71,7 @@ export default function VerifyEmailPage() {
                 description: "Check your email for the 6-digit code.",
             });
 
-            router.push(
-                `/authentication/verifyPassword?email=${encodeURIComponent(email)}`
-            );
+            router.push("/authentication/newPassword");
         } catch (err: unknown) {
             console.error("Error sending reset verification:", err);
 
@@ -79,8 +80,8 @@ export default function VerifyEmailPage() {
                 typeof err === "object" &&
                 "message" in err &&
                 typeof err.message === "string"
-                	? err.message
-                	: "Something went wrong. Please try again.";
+                    ? err.message
+                    : "Something went wrong. Please try again.";
 
             setEmailTouched(true);
             setEmailError(errorMessage);
