@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import {validatePasswordMatch, validatePassword} from "@/utils/validation";
@@ -9,13 +9,12 @@ import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {Check, X} from "lucide-react";
 import {ResetPassword, SendResetPasswordCode} from "@/utils/api/auth";
-import {handleOTPCodePaste} from "@/utils/otp";
 import {OTP_LENGTH} from "@/constants/otp";
+import OtpCodeInput from "@/components/forms/OtpCodeInput";
 
 export default function NewPasswordPage() {
     const router = useRouter();
     const {toast} = useToast();
-    const codeInputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -40,56 +39,9 @@ export default function NewPasswordPage() {
         setEmail(storedEmail);
     }, [router]);
 
-    useEffect(() => {
-        codeInputsRef.current[0]?.focus();
-    }, []);
-
-    const handleCodeChange = (value: string, index: number) => {
-        if (/^\d$/.test(value)) {
-            const newCode = [...code];
-            newCode[index] = value;
-            setCode(newCode);
-            setErrorMsg("");
-
-            if (index < OTP_LENGTH - 1) codeInputsRef.current[index + 1]?.focus();
-        } else if (value === "") {
-            const newCode = [...code];
-            newCode[index] = "";
-            setCode(newCode);
-        }
-    };
-
-    const handleCodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-        if (e.key === "Backspace") {
-            const newCode = [...code];
-            if (code[index]) {
-                newCode[index] = "";
-            } else if (index > 0) {
-                newCode[index - 1] = "";
-                codeInputsRef.current[index - 1]?.focus();
-            }
-            setCode(newCode);
-        } else if (e.key === "Delete") {
-            const newCode = [...code];
-            newCode[index] = "";
-            setCode(newCode);
-        } else if (e.key === "ArrowLeft" && index > 0) {
-            codeInputsRef.current[index - 1]?.focus();
-        } else if (e.key === "ArrowRight" && index < OTP_LENGTH - 1) {
-            codeInputsRef.current[index + 1]?.focus();
-        }
-    };
-
-    const handleCodePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
-        e.preventDefault();
-        handleOTPCodePaste(
-            e.clipboardData.getData("text"),
-            index,
-            code,
-            setCode,
-            codeInputsRef.current,
-            () => setErrorMsg(""),
-        );
+    const handleCodeChange = (nextCode: string[]) => {
+        setCode(nextCode);
+        setErrorMsg("");
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +137,6 @@ export default function NewPasswordPage() {
             }
 
             setCode(Array(OTP_LENGTH).fill(""));
-            codeInputsRef.current[0]?.focus();
             toast({
                 type: "success",
                 title: "Verification code sent",
@@ -280,34 +231,13 @@ export default function NewPasswordPage() {
                             <p className="block text-sm font-urbanist font-light text-zinc-400 mb-2">
                                 Verification code
                             </p>
-                            <div className="flex justify-center gap-2 sm:gap-3">
-                                {code.map((digit, index) => (
-                                    <input
-                                        key={index}
-                                        type="text"
-                                        inputMode="numeric"
-                                        maxLength={1}
-                                        value={digit}
-                                        onChange={(e) => handleCodeChange(e.target.value, index)}
-                                        onKeyDown={(e) => handleCodeKeyDown(e, index)}
-                                        onPaste={(e) => handleCodePaste(e, index)}
-                                        ref={(el: HTMLInputElement | null) => {
-                                            codeInputsRef.current[index] = el;
-                                        }}
-                                        disabled={isBusy}
-                                        aria-label={`Reset code digit ${index + 1}`}
-                                        className={[
-                                            "w-10 h-10 sm:w-12 sm:h-12 text-center text-xl rounded-lg",
-                                            "bg-white/5 text-black placeholder:text-zinc-400",
-                                            "border border-zinc-300",
-                                            "outline-none",
-                                            "focus:border-primary focus:ring-2 focus:ring-primary/30",
-                                            "disabled:opacity-50 disabled:cursor-not-allowed",
-                                            "transition-all duration-200",
-                                        ].join(" ")}
-                                    />
-                                ))}
-                            </div>
+                            <OtpCodeInput
+                                value={code}
+                                onChange={handleCodeChange}
+                                disabled={isBusy}
+                                ariaLabelPrefix="Reset code"
+                                inputClassName="w-10 h-10 sm:w-12 sm:h-12"
+                            />
                             <button
                                 type="button"
                                 onClick={resendCode}

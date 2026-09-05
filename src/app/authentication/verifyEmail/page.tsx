@@ -1,18 +1,17 @@
 "use client";
-import React, {useRef, useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { VerifyEmail, SendVerificationCode } from "@/utils/api/auth";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { handleOTPCodePaste } from "@/utils/otp";
 import { OTP_LENGTH } from "@/constants/otp";
+import OtpCodeInput from "@/components/forms/OtpCodeInput";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
 
     const [code, setCode] = useState(Array(OTP_LENGTH).fill(""));
-    const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const [email, setEmail] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);
@@ -29,48 +28,6 @@ export default function VerifyEmailPage() {
         });
         return () => unsubscribe();
     }, []);
-
-    useEffect(() => {
-        const t = setTimeout(() => inputsRef.current[0]?.focus(), 0);
-        return () => clearTimeout(t);
-    }, []);
-
-    const handleChange = (value: string, index: number) => {
-        if (/^\d$/.test(value)) {
-            const newCode = [...code];
-            newCode[index] = value;
-            setCode(newCode);
-            if (index < OTP_LENGTH - 1) inputsRef.current[index + 1]?.focus();
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-        if (e.key === "Backspace") {
-            const newCode = [...code];
-            if (code[index]) {
-                newCode[index] = "";
-                setCode(newCode);
-            } else if (index > 0) {
-                newCode[index - 1] = "";
-                setCode(newCode);
-                inputsRef.current[index - 1]?.focus();
-            }
-        } else if (e.key === "Delete") {
-            const newCode = [...code];
-            newCode[index] = "";
-            setCode(newCode);
-        } else if (e.key === "ArrowLeft" && index > 0) {
-            inputsRef.current[index - 1]?.focus();
-        } else if (e.key === "ArrowRight" && index < OTP_LENGTH - 1) {
-            inputsRef.current[index + 1]?.focus();
-        }
-    };
-
-    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
-        e.preventDefault();
-        const pastedText = e.clipboardData.getData("text");
-        handleOTPCodePaste(pastedText, index, code, setCode, inputsRef.current);
-    };
 
     const handleVerifyEmail = async () => {
         const verificationCode = code.join("");
@@ -199,34 +156,12 @@ export default function VerifyEmailPage() {
 
                     {/* Glass card */}
                     <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 pt-4 pb-0">
-                        <div className="flex justify-center gap-2 sm:gap-3">
-                            {code.map((digit, index) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    inputMode="numeric"
-                                    maxLength={1}
-                                    value={digit}
-                                    onChange={(e) => handleChange(e.target.value, index)}
-                                    onKeyDown={(e) => handleKeyDown(e, index)}
-                                    onPaste={(e) => handlePaste(e, index)}
-                                    ref={(el: HTMLInputElement | null) => {
-                                        inputsRef.current[index] = el;
-                                    }}
-                                    disabled={isBusy}
-                                    aria-label={`Verification digit ${index + 1}`}
-                                    className={[
-                                        "w-12 h-12 text-center text-xl rounded-lg",
-                                        "bg-white/5 text-black placeholder:text-zinc-400",
-                                        "border border-zinc-300",
-                                        "outline-none",
-                                        "focus:border-primary focus:ring-2 focus:ring-primary/30",
-                                        "disabled:opacity-50 disabled:cursor-not-allowed",
-                                        "transition-all duration-200",
-                                    ].join(" ")}
-                                />
-                            ))}
-                        </div>
+                        <OtpCodeInput
+                            value={code}
+                            onChange={setCode}
+                            disabled={isBusy}
+                            ariaLabelPrefix="Verification code"
+                        />
 
                         {error && <p className="mt-3 text-sm text-red-500 text-center">{error}</p>}
 
