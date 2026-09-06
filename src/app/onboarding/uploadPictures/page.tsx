@@ -194,53 +194,54 @@ export default function UploadPicturesPage() {
     const handleNextStep = async () => {
         if (filledPhotoCount < MIN_PHOTOS || filledPhotoCount > MAX_PHOTOS) return;
 
-		setApiError(null);
-		setIsLoading(true);
+        setApiError(null);
+        setIsLoading(true);
 
-		const changedImageMap = await uploadImages(photos);
-		const newPhotos = Array.from({ length: MAX_PHOTOS }, (_, slotIndex) => {
-			if (Object.prototype.hasOwnProperty.call(changedImageMap, slotIndex)) {
-				return changedImageMap[slotIndex];
-			}
-			return photos[slotIndex] ?? "";
-		});
-		const newDeletedUrls = [...deletedPhotoUrls];
-		
-		for (const key in changedImageMap) {
-			const slotIndex = Number.parseInt(key, 10);
-			const newUrl = changedImageMap[slotIndex];
-			if (photos[slotIndex] && !photos[slotIndex].startsWith("data:")) {
-				newDeletedUrls.push(photos[slotIndex]);
-			}
-			newPhotos[slotIndex] = newUrl;
-		}
-		
-		setPhotos(newPhotos);
-		setDeletedPhotoUrls(newDeletedUrls);
-		
-		console.log("Changed image map after upload:", changedImageMap);
-		console.log("Deleted photo URLs to remove from profile:", newDeletedUrls);
-		console.log("Final photo URLs to save in profile:", newPhotos);
-		
-		const updateRes = await updateProfile({ profile_picture_url: newPhotos });
-		if (!updateRes.ok) {
-			console.error("Failed to update profile with new picture URLs", updateRes.error);
-			setApiError("Failed to save photos. Please try again.");
-			setIsLoading(false);
-			return;
-		} else {
-			setUserProfile(prev => {
-				if (!prev) return prev;
-				return { ...prev, profile: updateRes.data ?? prev.profile };
-			});
-		}
-		
-		setIsLoading(false);
-		
-		markPictureUploaded();
-		
-		router.push("/onboarding/lifestylePreferences");
-	};
+        try {
+            const changedImageMap = await uploadImages(photos);
+            const newPhotos = Array.from({ length: MAX_PHOTOS }, (_, slotIndex) => {
+                if (Object.prototype.hasOwnProperty.call(changedImageMap, slotIndex)) {
+                    return changedImageMap[slotIndex];
+                }
+                return photos[slotIndex] ?? "";
+            });
+            const newDeletedUrls = [...deletedPhotoUrls];
+
+            for (const key in changedImageMap) {
+                const slotIndex = Number.parseInt(key, 10);
+                const newUrl = changedImageMap[slotIndex];
+                if (photos[slotIndex] && !photos[slotIndex].startsWith("data:")) {
+                    newDeletedUrls.push(photos[slotIndex]);
+                }
+                newPhotos[slotIndex] = newUrl;
+            }
+
+            setPhotos(newPhotos);
+            setDeletedPhotoUrls(newDeletedUrls);
+
+            console.log("Changed image map after upload:", changedImageMap);
+            console.log("Deleted photo URLs to remove from profile:", newDeletedUrls);
+            console.log("Final photo URLs to save in profile:", newPhotos);
+
+            const updateRes = await updateProfile({ profile_picture_url: newPhotos });
+            if (!updateRes.ok) {
+                throw new Error(updateRes.error || "Failed to update profile pictures");
+            }
+
+            setUserProfile((prev) => {
+                if (!prev) return prev;
+                return { ...prev, profile: updateRes.data ?? prev.profile };
+            });
+
+            markPictureUploaded();
+            router.push("/onboarding/lifestylePreferences");
+        } catch (error) {
+            console.error("Failed to save profile pictures", error);
+            setApiError("Failed to save photos. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     if (initialLoading) {
         return (
