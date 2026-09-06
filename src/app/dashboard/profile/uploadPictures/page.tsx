@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { updateProfile } from "@/utils/api/profile";
+import { deleteProfilePictures, updateProfile } from "@/utils/api/profile";
 import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
@@ -34,6 +34,7 @@ export default function UploadPicturesPage() {
 
     const [photos, setPhotos] = useState<string[]>(Array(MAX_PHOTOS).fill(""));
     const [initialPhotosSignature, setInitialPhotosSignature] = useState("");
+    const [deletedPhotoUrls, setDeletedPhotoUrls] = useState<string[]>([]);
 
     const [cropImage, setCropImage] = useState<string | null>(null);
     const [isCropping, setIsCropping] = useState(false);
@@ -223,6 +224,12 @@ export default function UploadPicturesPage() {
         setDropWarning(null);
 
         setDeletingSlotIndex(index);
+        const photoToDelete = photos[index];
+        if (photoToDelete && !photoToDelete.startsWith("data:")) {
+            setDeletedPhotoUrls((prev) =>
+                prev.includes(photoToDelete) ? prev : [...prev, photoToDelete],
+            );
+        }
         setPhotos((prev) => {
             const nextPhotos = [...prev];
             nextPhotos[index] = "";
@@ -242,6 +249,17 @@ export default function UploadPicturesPage() {
             for (const key in changedImageMap) {
                 const slotIndex = Number.parseInt(key, 10);
                 updatedPhotos[slotIndex] = changedImageMap[slotIndex];
+            }
+            setPhotos(updatedPhotos);
+
+            const urlsToDelete = [...new Set(deletedPhotoUrls)];
+            if (urlsToDelete.length > 0) {
+                const deleteResult = await deleteProfilePictures({
+                    profile_picture_url: urlsToDelete,
+                });
+                if (!deleteResult.ok) {
+                    throw new Error(deleteResult.error || "Failed to delete profile pictures.");
+                }
             }
 
             const profileUpdateRes = await updateProfile({
@@ -271,6 +289,7 @@ export default function UploadPicturesPage() {
             setUserProfile(refreshedUser.data);
             setPhotos(normalizedRefreshedPhotos);
             setInitialPhotosSignature(getPhotosSignature(normalizedRefreshedPhotos));
+            setDeletedPhotoUrls([]);
 
             toast({
                 type: "success",

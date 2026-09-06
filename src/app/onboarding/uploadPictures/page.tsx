@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { updateProfile } from "@/utils/api/profile";
+import { deleteProfilePictures, updateProfile } from "@/utils/api/profile";
 import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
@@ -176,8 +176,10 @@ export default function UploadPicturesPage() {
 		try {
 			// Show specific loader over this slot while deleting
 			setDeletingSlotIndex(index);
-			if (!photos[index].startsWith("data:")) {
-				setDeletedPhotoUrls(prev => [...prev, photos[index]]); // mark for deleting from db
+			if (photos[index] && !photos[index].startsWith("data:")) {
+				setDeletedPhotoUrls((prev) =>
+					prev.includes(photos[index]) ? prev : [...prev, photos[index]],
+				);
 			}
 			setPhotos(prev => {
 				const newPhotos = [...prev];
@@ -205,23 +207,17 @@ export default function UploadPicturesPage() {
                 }
                 return photos[slotIndex] ?? "";
             });
-            const newDeletedUrls = [...deletedPhotoUrls];
-
-            for (const key in changedImageMap) {
-                const slotIndex = Number.parseInt(key, 10);
-                const newUrl = changedImageMap[slotIndex];
-                if (photos[slotIndex] && !photos[slotIndex].startsWith("data:")) {
-                    newDeletedUrls.push(photos[slotIndex]);
-                }
-                newPhotos[slotIndex] = newUrl;
-            }
-
+            const urlsToDelete = [...new Set(deletedPhotoUrls)];
             setPhotos(newPhotos);
-            setDeletedPhotoUrls(newDeletedUrls);
 
-            console.log("Changed image map after upload:", changedImageMap);
-            console.log("Deleted photo URLs to remove from profile:", newDeletedUrls);
-            console.log("Final photo URLs to save in profile:", newPhotos);
+            if (urlsToDelete.length > 0) {
+                const deleteResult = await deleteProfilePictures({
+                    profile_picture_url: urlsToDelete,
+                });
+                if (!deleteResult.ok) {
+                    throw new Error(deleteResult.error || "Failed to delete profile pictures");
+                }
+            }
 
             const updateRes = await updateProfile({ profile_picture_url: newPhotos });
             if (!updateRes.ok) {
@@ -232,6 +228,7 @@ export default function UploadPicturesPage() {
                 if (!prev) return prev;
                 return { ...prev, profile: updateRes.data ?? prev.profile };
             });
+            setDeletedPhotoUrls([]);
 
             markPictureUploaded();
             router.push("/onboarding/lifestylePreferences");

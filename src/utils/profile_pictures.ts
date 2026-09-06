@@ -1,6 +1,12 @@
 import imageCompression from 'browser-image-compression';
 import { storage, auth } from '@/firebase/firebase';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import {
+    deleteObject,
+    getDownloadURL,
+    ref,
+    uploadBytes,
+    type StorageReference,
+} from 'firebase/storage';
 
 export const compressImage = async (file: File): Promise<File> => {
     const options = {
@@ -23,26 +29,46 @@ export const compressImage = async (file: File): Promise<File> => {
 };
 
 export const uploadImages = async (base64Images: string[]) => {
-    const uid = auth.currentUser!.uid;
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        throw new Error("You must be signed in to upload profile pictures");
+    }
+
+    const uid = currentUser.uid;
     const changedImageMap: Record<number, string> = {}; // slotIndex -> new URL
+    const uploadedRefs: StorageReference[] = [];
 
-    for (let i = 0; i < base64Images.length; i++) {
-        const base64 = base64Images[i];
-        if (!base64.startsWith("data:")) continue;
+    try {
+        for (let i = 0; i < base64Images.length; i++) {
+            const base64 = base64Images[i];
+            if (!base64.startsWith("data:")) continue;
 
-        const blob = await (await fetch(base64)).blob();
-        const file_path = `profile_pictures/${uid}/${crypto.randomUUID()}.webp`;
+            const blob = await (await fetch(base64)).blob();
+            const filePath = `profile_pictures/${uid}/${crypto.randomUUID()}.webp`;
+            const imageRef = ref(storage, filePath);
 
-        try {
-            const img_ref = ref(storage, file_path);
-            await uploadBytes(img_ref, blob);
-            const downloadURL = await getDownloadURL(img_ref);
+            await uploadBytes(imageRef, blob);
+            uploadedRefs.push(imageRef);
+
+            const downloadURL = await getDownloadURL(imageRef);
             changedImageMap[i] = downloadURL;
-        } catch (error) {
-            console.error(`Failed to upload image for slot ${i}:`, error);
-            throw error;
         }
+    } catch (error) {
+        const cleanupResults = await Promise.allSettled(
+            uploadedRefs.map((imageRef) => deleteObject(imageRef)),
+        );
+        const cleanupFailures = cleanupResults.filter(
+            (result) => result.status === "rejected",
+        );
+
+        if (cleanupFailures.length > 0) {
+            console.error(
+                `Failed to clean up ${cleanupFailures.length} partially uploaded profile picture(s)`,
+            );
+        }
+
+        throw error;
     }
 
     return changedImageMap;
-}
+};

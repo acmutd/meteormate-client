@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
 import ImageDisplay from "./ImageDisplay";
 import LoadingSpinner from "../LoadingSpinner";
-import { fetchProfile } from "@/utils/api/profile";
+import { fetchProfile, updateProfile } from "@/utils/api/profile";
+import { MAX_PHOTOS } from "@/constants/onboarding";
 
 interface ProfileGalleryProps {
   userId: string;
   initialImages?: string[];
 }
 
+function normalizeImages(images: string[] | undefined): string[] {
+    return Array.from({ length: MAX_PHOTOS }, (_, index) => images?.[index] ?? "");
+}
+
 export default function ProfileGallery({ userId, initialImages }: ProfileGalleryProps) {
-    const [images, setImages] = useState<string[]>(initialImages ?? []);
+    const [images, setImages] = useState<string[]>(() => normalizeImages(initialImages));
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (initialImages !== undefined) {
-            setImages(initialImages);
+            setImages(normalizeImages(initialImages));
             setLoading(false);
             return;
         }
@@ -40,13 +45,13 @@ export default function ProfileGallery({ userId, initialImages }: ProfileGallery
           !Array.isArray(data.profile_picture_url) ||
           data.profile_picture_url.length === 0
                 ) {
-                    setImages([]);
+                    setImages(normalizeImages(undefined));
                 } else {
-                    setImages(data.profile_picture_url);
+                    setImages(normalizeImages(data.profile_picture_url));
                 }
             } catch (error) {
                 console.error("Failed to fetch profile images:", error);
-                if (isMounted) setImages([]);
+                if (isMounted) setImages(normalizeImages(undefined));
             } finally {
                 if (isMounted) setLoading(false);
             }
@@ -59,28 +64,20 @@ export default function ProfileGallery({ userId, initialImages }: ProfileGallery
         };
     }, [initialImages, userId]);
 
-    const handleImageChange = (newImageUrl: string, index?: number) => {
-        setImages((prev) => {
-            if (typeof index !== "number") {
-                return [...prev, newImageUrl];
-            }
+    const handleImageChange = async (newImageUrl: string, index: number) => {
+        const updated = normalizeImages(images);
+        updated[index] = newImageUrl;
 
-            if (index > prev.length) {
-                return [...prev, newImageUrl];
-            }
+        const result = await updateProfile({ profile_picture_url: updated });
+        if (!result.ok) {
+            throw new Error(result.error || "Failed to save profile picture");
+        }
 
-            const updated = [...prev];
-            updated[index] = newImageUrl;
-            return updated;
-        });
+        setImages(normalizeImages(result.data.profile_picture_url));
     };
 
-    const handleImageRemoved = (index: number) => {
-        setImages((prev) => {
-            const updated = [...prev];
-            updated.splice(index, 1);
-            return updated;
-        });
+    const handleImageRemoved = (profilePictures: string[]) => {
+        setImages(normalizeImages(profilePictures));
     };
 
     const profileImage = images[0];
@@ -97,8 +94,8 @@ export default function ProfileGallery({ userId, initialImages }: ProfileGallery
                             key={0}
                             imageUrl={profileImage}
                             onImageChange={(url) => handleImageChange(url, 0)}
-                            deleteIndex={images.length > 0 ? 0 : undefined}
-                            onDeleted={() => handleImageRemoved(0)}
+                            canDelete
+                            onDeleted={handleImageRemoved}
                         />
                     ) : !loading ? (
                         <ImageDisplay

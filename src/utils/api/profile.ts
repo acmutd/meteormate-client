@@ -4,10 +4,12 @@ import {
     readCachedProfile,
     writeCachedProfile,
 } from "@/utils/profileCache";
+import { updateCachedCurrentUserProfile } from "@/utils/currentUserCache";
 import {
     ProfileCreateBody,
     ProfileUpdateBody,
     ProfileResponse,
+    ProfileDeletePicturesBody,
     ProfileUpdateNotificationsBody,
 } from "@/types/profile";
 
@@ -20,6 +22,7 @@ export interface FetchProfileOptions {
 function updateProfileCache(result: Result<ProfileResponse>) {
     if (result.ok) {
         writeCachedProfile(result.data);
+        updateCachedCurrentUserProfile(result.data);
     }
 }
 
@@ -73,6 +76,18 @@ export async function fetchProfile(
 // Gets a user profile by UID (public endpoint)
 export async function getProfile(uid: string): Promise<Result<ProfileResponse>> {
     return fetchProfile(uid);
+}
+
+// Deletes profile-picture objects and clears their slots in the profile.
+export async function deleteProfilePictures(
+    body: ProfileDeletePicturesBody,
+): Promise<Result<ProfileResponse>> {
+    const result = await apiFetch<ProfileResponse>("/api/profiles/delete_pictures", {
+        method: "DELETE",
+        body,
+    });
+    updateProfileCache(result);
+    return result;
 }
 
 // Updates match_notification and/or promotional_notification preferences

@@ -48,9 +48,10 @@ export interface ProfileResponse {
     promotional_notification: boolean;
 }
 
-export interface ProfilePictureBody {
-    base64: string;
+export interface ProfileDeletePicturesBody {
+    profile_picture_url: string[];
 }
+
 export interface ProfileUpdateNotificationsBody {
     match_notification?: boolean | null;
     promotional_notification?: boolean | null;
