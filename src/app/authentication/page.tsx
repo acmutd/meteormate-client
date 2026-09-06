@@ -35,7 +35,7 @@ export default function LoginPage() {
     // Redirect if logged in
     useEffect(() => {
         if (userLoggedIn) {
-            router.push("../authentication");
+            router.push("/dashboard");
         }
     }, [userLoggedIn, router]);
 
@@ -104,9 +104,11 @@ export default function LoginPage() {
 
                 const pingResponse = await ActivityPing();
                 if (!pingResponse.ok) {
-                    console.log(
-                        `Error ${pingResponse.code} when calling activityPing: ${pingResponse.error}`
-                    );
+                    toast({
+                        type: "error",
+                        title: "Activity update failed",
+                        description: pingResponse.error,
+                    });
                 }
 
                 toast({
@@ -133,7 +135,7 @@ export default function LoginPage() {
     };
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             {/* Back arrow */}
             <button
                 onClick={() => router.push("/")}
@@ -196,7 +198,7 @@ export default function LoginPage() {
                         <hr className="grow border-zinc-400"/>
                         <span className="text-xs font-medium tracking-wider uppercase">
               OR
-            </span>
+                        </span>
                         <hr className="grow border-zinc-400"/>
                     </div>
 

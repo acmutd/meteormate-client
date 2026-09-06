@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import MaintenanceView from "@/app/(system)/status/MaintenanceView";
 import {
-	MAINTENANCE_EVENT,
-	maintenanceStorage,
-	MaintenanceState,
-	readMaintenanceState,
+    MAINTENANCE_EVENT,
+    maintenanceStorage,
+    MaintenanceState,
+    readMaintenanceState,
 } from "./maintenanceState";
 
 type Props = {
@@ -15,35 +15,35 @@ type Props = {
 };
 
 export default function MaintenanceGate({ children }: Props) {
-	const pathname = usePathname();
-	const bypassMaintenance = pathname?.startsWith("/maintenance");
-	const [state, setState] = useState<MaintenanceState>(readMaintenanceState());
+    const pathname = usePathname();
+    const bypassMaintenance = pathname?.startsWith("/maintenance");
+    const [state, setState] = useState<MaintenanceState>(readMaintenanceState());
 
-	useEffect(() => {
-		const sync = () => setState(readMaintenanceState());
-		const onStorage = (event: StorageEvent) => {
-			if (event.key === maintenanceStorage.key) {
-				sync();
-			}
-		};
+    useEffect(() => {
+        const sync = () => setState(readMaintenanceState());
+        const onStorage = (event: StorageEvent) => {
+            if (event.key === maintenanceStorage.key) {
+                sync();
+            }
+        };
 
-		sync();
-		window.addEventListener("storage", onStorage);
-		window.addEventListener(MAINTENANCE_EVENT, sync);
-		return () => {
-			window.removeEventListener("storage", onStorage);
-			window.removeEventListener(MAINTENANCE_EVENT, sync);
-		};
-	}, []);
+        sync();
+        window.addEventListener("storage", onStorage);
+        window.addEventListener(MAINTENANCE_EVENT, sync);
+        return () => {
+            window.removeEventListener("storage", onStorage);
+            window.removeEventListener(MAINTENANCE_EVENT, sync);
+        };
+    }, []);
 
-	if (bypassMaintenance) {
-		return <>{children}</>;
-	}
+    if (bypassMaintenance) {
+        return <>{children}</>;
+    }
 
-	if (state.on) {
-		return <MaintenanceView reason={state.reason} />;
-	}
+    if (state.on) {
+        return <MaintenanceView reason={state.reason} />;
+    }
 
-	return <>{children}</>;
+    return <>{children}</>;
 }
 

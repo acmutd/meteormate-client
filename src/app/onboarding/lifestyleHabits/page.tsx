@@ -66,16 +66,15 @@ export default function LifestyleHabitsPage() {
 
     const handleDealbreakerToggle = (dealbreaker: string) => {
         setSelectedDealbreakers((prev) => {
-                if (prev.includes(dealbreaker)) {
-                    return prev.filter((i) => i !== dealbreaker);
-                }
-                return [...prev, dealbreaker];
+            if (prev.includes(dealbreaker)) {
+                return prev.filter((i) => i !== dealbreaker);
             }
+            return [...prev, dealbreaker];
+        }
         )
     };
 
     const handleNextStep = () => {
-        console.log(selectedCloseness, selectedSmokeVape, selectedDrink, selectedDealbreakers)
         router.push("/onboarding/interests");
     };
     return (

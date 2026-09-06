@@ -1,6 +1,6 @@
 import { SurveyCreateBody, SurveyUpdateBody } from "@/types/survey";
 import { RegisterUserBody, VerifyEmailBody } from "@/types/auth";
-import { ProfileCreateBody, ProfileUpdateBody, ProfilePictureBody, ProfileUpdateNotificationsBody, UpdateUserProfileBody } from "@/types/profile";
+import { ProfileCreateBody, ProfileUpdateBody, ProfileDeletePicturesBody, ProfileUpdateNotificationsBody, UpdateUserProfileBody } from "@/types/profile";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD";
 
@@ -11,7 +11,7 @@ export type ApiRequestBody =
     | SurveyUpdateBody
     | ProfileCreateBody
     | ProfileUpdateBody
-    | ProfilePictureBody
+    | ProfileDeletePicturesBody
     | ProfileUpdateNotificationsBody
     | UpdateUserProfileBody;
 

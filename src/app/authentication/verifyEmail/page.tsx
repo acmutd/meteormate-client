@@ -1,16 +1,17 @@
 "use client";
-import React, {useRef, useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { VerifyEmail, SendVerificationCode } from "@/utils/api/auth";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { OTP_LENGTH } from "@/constants/otp";
+import OtpCodeInput from "@/components/forms/OtpCodeInput";
 
 export default function VerifyEmailPage() {
     const router = useRouter();
 
-    const [code, setCode] = useState(Array(6).fill(""));
-    const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+    const [code, setCode] = useState(Array(OTP_LENGTH).fill(""));
     const [email, setEmail] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);
@@ -28,48 +29,13 @@ export default function VerifyEmailPage() {
         return () => unsubscribe();
     }, []);
 
-    useEffect(() => {
-        const t = setTimeout(() => inputsRef.current[0]?.focus(), 0);
-        return () => clearTimeout(t);
-    }, []);
-
-    const handleChange = (value: string, index: number) => {
-        if (/^\d$/.test(value)) {
-            const newCode = [...code];
-            newCode[index] = value;
-            setCode(newCode);
-            if (index < 5) inputsRef.current[index + 1]?.focus();
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-        if (e.key === "Backspace") {
-            const newCode = [...code];
-            if (code[index]) {
-                newCode[index] = "";
-                setCode(newCode);
-            } else if (index > 0) {
-                newCode[index - 1] = "";
-                setCode(newCode);
-                inputsRef.current[index - 1]?.focus();
-            }
-        } else if (e.key === "Delete") {
-            const newCode = [...code];
-            newCode[index] = "";
-            setCode(newCode);
-        } else if (e.key === "ArrowLeft" && index > 0) {
-            inputsRef.current[index - 1]?.focus();
-        } else if (e.key === "ArrowRight" && index < 5) {
-            inputsRef.current[index + 1]?.focus();
-        }
-    };
-
     const handleVerifyEmail = async () => {
         const verificationCode = code.join("");
+        
         setError(null);
 
-        if (verificationCode.length !== 6) {
-            setError("Please enter the 6-digit code.");
+        if (verificationCode.length !== OTP_LENGTH) {
+            setError(`Please enter the ${OTP_LENGTH}-digit code.`);
             return;
         }
 
@@ -95,6 +61,9 @@ export default function VerifyEmailPage() {
                 setError(response.error || "Invalid code. Please try again.");
                 return;
             }
+
+            // Reload the Firebase user so emailVerified is up-to-date
+            await getAuth().currentUser?.reload();
 
             router.push("../authentication?created=1");
         } catch (err) {
@@ -140,7 +109,7 @@ export default function VerifyEmailPage() {
     const isBusy = isVerifying || isResending;
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             <div className="w-full px-6">
                 {/* Back arrow - Dark */}
                 <button
@@ -176,8 +145,8 @@ export default function VerifyEmailPage() {
 
                         <p className="mt-1 font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500">
                             {email
-                                ? `We sent a 6-digit code to ${email}.`
-                                : "We sent a 6-digit code to your registered email."}
+                                ? `We sent a ${OTP_LENGTH}-digit code to ${email}.`
+                                : `We sent a ${OTP_LENGTH}-digit code to your registered email.`}
                         </p>
 
                         <p className="font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500 -mb-4">
@@ -187,33 +156,12 @@ export default function VerifyEmailPage() {
 
                     {/* Glass card */}
                     <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 pt-4 pb-0">
-                        <div className="flex justify-center gap-2 sm:gap-3">
-                            {code.map((digit, index) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    inputMode="numeric"
-                                    maxLength={1}
-                                    value={digit}
-                                    onChange={(e) => handleChange(e.target.value, index)}
-                                    onKeyDown={(e) => handleKeyDown(e, index)}
-                                    ref={(el: HTMLInputElement | null) => {
-                                        inputsRef.current[index] = el;
-                                    }}
-                                    disabled={isBusy}
-                                    aria-label={`Verification digit ${index + 1}`}
-                                    className={[
-                                        "w-12 h-12 text-center text-xl rounded-lg",
-                                        "bg-white/5 text-black placeholder:text-zinc-400",
-                                        "border border-zinc-300",
-                                        "outline-none",
-                                        "focus:border-primary focus:ring-2 focus:ring-primary/30",
-                                        "disabled:opacity-50 disabled:cursor-not-allowed",
-                                        "transition-all duration-200",
-                                    ].join(" ")}
-                                />
-                            ))}
-                        </div>
+                        <OtpCodeInput
+                            value={code}
+                            onChange={setCode}
+                            disabled={isBusy}
+                            ariaLabelPrefix="Verification code"
+                        />
 
                         {error && <p className="mt-3 text-sm text-red-500 text-center">{error}</p>}
 

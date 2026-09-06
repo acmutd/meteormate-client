@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { uploadProfilePicture, deleteProfilePicture } from "@/utils/api/profile";
-import { compressImage } from "@/utils/imageCompression";
+import { deleteProfilePictures, updateProfile } from "@/utils/api/profile";
+import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
@@ -14,20 +14,13 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
 import { MIN_PHOTOS, MAX_PHOTOS } from "@/constants/onboarding";
+import { countValidPhotos } from "@/utils/profilePhotos";
 
 const DEFAULT_BIO = "Your bio will appear here...";
 
-type PhotoEntry =
-    | { kind: "remote"; url: string; remoteIndex: number }
-    | { kind: "local"; previewUrl: string; base64: string };
-
-function getEntriesSignature(entries: PhotoEntry[]) {
+function getPhotosSignature(photos: string[]) {
     return JSON.stringify(
-        entries.map((entry) =>
-            entry.kind === "remote"
-                ? `remote:${entry.remoteIndex}:${entry.url}`
-                : `local:${entry.previewUrl}`,
-        ),
+        photos,
     );
 }
 
@@ -39,32 +32,28 @@ export default function UploadPicturesPage() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [loadError, setLoadError] = useState<string | null>(null);
 
-    const [photoEntries, setPhotoEntries] = useState<PhotoEntry[]>([]);
-    const [initialEntriesSignature, setInitialEntriesSignature] = useState("");
-    const [initialRemoteCount, setInitialRemoteCount] = useState(0);
+    const [photos, setPhotos] = useState<string[]>(Array(MAX_PHOTOS).fill(""));
+    const [initialPhotosSignature, setInitialPhotosSignature] = useState("");
+    const [deletedPhotoUrls, setDeletedPhotoUrls] = useState<string[]>([]);
 
     const [cropImage, setCropImage] = useState<string | null>(null);
     const [isCropping, setIsCropping] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
+    const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
+    const [deletingSlotIndex, setDeletingSlotIndex] = useState<number | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const [hasLoadedProfileData, setHasLoadedProfileData] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [compressionError, setCompressionError] = useState<string | null>(null);
     const [dropWarning, setDropWarning] = useState<string | null>(null);
     const [isDragOver, setIsDragOver] = useState(false);
 
-    const photos = photoEntries.map((entry) =>
-        entry.kind === "remote" ? entry.url : entry.previewUrl,
-    );
-    const uploadingSlotIndex = isUploading ? photos.length : null;
+    const filledPhotoCount = countValidPhotos(photos);
 
     const isDirty =
-        hasLoadedProfileData &&
         (isCropping ||
             uploadingSlotIndex !== null ||
             isSaving ||
-            getEntriesSignature(photoEntries) !== initialEntriesSignature);
+            getPhotosSignature(photos) !== initialPhotosSignature);
 
     const { isDialogOpen, confirmNavigation, cancelNavigation } =
         useUnsavedChangesGuard({ isDirty });
@@ -83,16 +72,13 @@ export default function UploadPicturesPage() {
                     )
                         ? res.data.profile.profile_picture_url
                         : [];
-                    const entries: PhotoEntry[] = profilePhotos.map((url, index) => ({
-                        kind: "remote",
-                        url,
-                        remoteIndex: index,
-                    }));
+                    const normalizedPhotos = Array.from(
+                        { length: MAX_PHOTOS },
+                        (_, index) => profilePhotos[index] ?? "",
+                    );
 
-                    setPhotoEntries(entries);
-                    setInitialEntriesSignature(getEntriesSignature(entries));
-                    setInitialRemoteCount(profilePhotos.length);
-                    setHasLoadedProfileData(true);
+                    setPhotos(normalizedPhotos);
+                    setInitialPhotosSignature(getPhotosSignature(normalizedPhotos));
                     return;
                 }
 
@@ -148,7 +134,7 @@ export default function UploadPicturesPage() {
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        if (photos.length < MAX_PHOTOS) {
+        if (filledPhotoCount < MAX_PHOTOS) {
             setIsDragOver(true);
         }
     };
@@ -163,7 +149,7 @@ export default function UploadPicturesPage() {
         setIsDragOver(false);
         setDropWarning(null);
 
-        if (photos.length >= MAX_PHOTOS) {
+        if (filledPhotoCount >= MAX_PHOTOS) {
             toast({
                 type: "error",
                 title: "Upload failed",
@@ -187,8 +173,10 @@ export default function UploadPicturesPage() {
     const handleCropDone = async (croppedDataUrl: string) => {
         setIsCropping(false);
         setCropImage(null);
-        setIsUploading(true);
         setCompressionError(null);
+
+        const currentSlot = photos.findIndex((photo) => !photo);
+        setUploadingSlotIndex(currentSlot);
 
         try {
             const res = await fetch(croppedDataUrl);
@@ -213,14 +201,11 @@ export default function UploadPicturesPage() {
                 reader.readAsDataURL(compressedFile);
             });
 
-            setPhotoEntries((prev) => [
-                ...prev,
-                {
-                    kind: "local",
-                    previewUrl: base64,
-                    base64,
-                },
-            ]);
+            setPhotos((prev) => {
+                const nextPhotos = [...prev];
+                nextPhotos[currentSlot] = base64;
+                return nextPhotos;
+            });
         } catch (error) {
             console.error("Image compression/preview failed:", error);
             setCompressionError("Failed to process image. Please try a different photo.");
@@ -230,63 +215,59 @@ export default function UploadPicturesPage() {
                 description: "We could not process that image.",
             });
         } finally {
-            setIsUploading(false);
+            setUploadingSlotIndex(null);
         }
     };
 
     const handleDeletePhoto = (index: number) => {
         setCompressionError(null);
         setDropWarning(null);
-        setPhotoEntries((prev) => prev.filter((_, entryIndex) => entryIndex !== index));
+
+        setDeletingSlotIndex(index);
+        const photoToDelete = photos[index];
+        if (photoToDelete && !photoToDelete.startsWith("data:")) {
+            setDeletedPhotoUrls((prev) =>
+                prev.includes(photoToDelete) ? prev : [...prev, photoToDelete],
+            );
+        }
+        setPhotos((prev) => {
+            const nextPhotos = [...prev];
+            nextPhotos[index] = "";
+            return nextPhotos;
+        });
+        setDeletingSlotIndex(null);
     };
 
     const handleUpdateProfile = async () => {
-        if (photos.length < MIN_PHOTOS || photos.length > MAX_PHOTOS) return;
-        if (!hasLoadedProfileData) return;
+        if (filledPhotoCount < MIN_PHOTOS || filledPhotoCount > MAX_PHOTOS) return;
 
         setIsSaving(true);
-        let failedOperation: string | null = null;
-        let appliedAnyOperation = false;
         try {
-            const keptRemoteIndexes = new Set(
-                photoEntries
-                    .filter(
-                        (
-                            entry,
-                        ): entry is Extract<PhotoEntry, { kind: "remote" }> =>
-                            entry.kind === "remote",
-                    )
-                    .map((entry) => entry.remoteIndex),
-            );
+            const changedImageMap = await uploadImages(photos);
 
-            const remoteIndexesToDelete: number[] = [];
-            for (let i = 0; i < initialRemoteCount; i += 1) {
-                if (!keptRemoteIndexes.has(i)) {
-                    remoteIndexesToDelete.push(i);
+            const updatedPhotos = [...photos];
+            for (const key in changedImageMap) {
+                const slotIndex = Number.parseInt(key, 10);
+                updatedPhotos[slotIndex] = changedImageMap[slotIndex];
+            }
+            setPhotos(updatedPhotos);
+
+            const urlsToDelete = [...new Set(deletedPhotoUrls)];
+            if (urlsToDelete.length > 0) {
+                const deleteResult = await deleteProfilePictures({
+                    profile_picture_url: urlsToDelete,
+                });
+                if (!deleteResult.ok) {
+                    throw new Error(deleteResult.error || "Failed to delete profile pictures.");
                 }
             }
 
-            remoteIndexesToDelete.sort((a, b) => b - a);
-            for (const remoteIndex of remoteIndexesToDelete) {
-                failedOperation = `delete image #${remoteIndex + 1}`;
-                const deleteRes = await deleteProfilePicture(remoteIndex);
-                if (!deleteRes.ok) {
-                    throw new Error(deleteRes.error || `Failed to ${failedOperation}.`);
-                }
-                appliedAnyOperation = true;
-            }
+            const profileUpdateRes = await updateProfile({
+                profile_picture_url: updatedPhotos,
+            });
 
-            const localEntries = photoEntries.flatMap((entry, entryIndex) =>
-                entry.kind === "local" ? [{ entry, entryIndex }] : [],
-            );
-
-            for (const localEntry of localEntries) {
-                failedOperation = `upload image #${localEntry.entryIndex + 1}`;
-                const uploadRes = await uploadProfilePicture({ base64: localEntry.entry.base64 });
-                if (!uploadRes.ok) {
-                    throw new Error(uploadRes.error || `Failed to ${failedOperation}.`);
-                }
-                appliedAnyOperation = true;
+            if (!profileUpdateRes.ok) {
+                throw new Error(profileUpdateRes.error || "Failed to save profile pictures.");
             }
 
             const refreshedUser = await fetchCurrentUser();
@@ -300,16 +281,15 @@ export default function UploadPicturesPage() {
                 ? refreshedUser.data.profile.profile_picture_url
                 : [];
 
-            const refreshedEntries: PhotoEntry[] = refreshedPhotos.map((url, index) => ({
-                kind: "remote",
-                url,
-                remoteIndex: index,
-            }));
+            const normalizedRefreshedPhotos = Array.from(
+                { length: MAX_PHOTOS },
+                (_, index) => refreshedPhotos[index] ?? "",
+            );
 
             setUserProfile(refreshedUser.data);
-            setPhotoEntries(refreshedEntries);
-            setInitialEntriesSignature(getEntriesSignature(refreshedEntries));
-            setInitialRemoteCount(refreshedPhotos.length);
+            setPhotos(normalizedRefreshedPhotos);
+            setInitialPhotosSignature(getPhotosSignature(normalizedRefreshedPhotos));
+            setDeletedPhotoUrls([]);
 
             toast({
                 type: "success",
@@ -318,17 +298,11 @@ export default function UploadPicturesPage() {
             });
         } catch (error) {
             console.error("Failed to update profile pictures", error);
-            const defaultDescription = failedOperation
-                ? `We could not ${failedOperation}.`
-                : "Could not save your photo changes.";
-            const refreshPrompt = appliedAnyOperation
-                ? "Some changes may have been applied. Please refresh this page to sync your latest photos."
-                : "Please refresh this page before trying again.";
-
             toast({
                 type: "error",
                 title: "Save failed",
-                description: `${defaultDescription} ${refreshPrompt}`,
+                description:
+                    "Could not save your photo changes. Please refresh this page before trying again.",
             });
         } finally {
             setIsSaving(false);
@@ -370,9 +344,10 @@ export default function UploadPicturesPage() {
                             type="button"
                             onClick={handleUpdateProfile}
                             disabled={
-                                photos.length < MIN_PHOTOS ||
+                                filledPhotoCount < MIN_PHOTOS ||
                                 uploadingSlotIndex !== null ||
-                                isSaving || !isDirty
+                                isSaving ||
+                                !isDirty
                             }
                             className="absolute right-8 top-4 px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                         >
@@ -390,7 +365,7 @@ export default function UploadPicturesPage() {
                                 photos={photos}
                                 primaryPhoto={primaryPhoto}
                                 uploadingSlotIndex={uploadingSlotIndex}
-                                deletingSlotIndex={null}
+                                deletingSlotIndex={deletingSlotIndex}
                                 compressionError={compressionError}
                                 dropWarning={dropWarning}
                                 maxPhotos={MAX_PHOTOS}
@@ -417,7 +392,7 @@ export default function UploadPicturesPage() {
                         </div>
                     </div>
 
-                    {photos.length < MIN_PHOTOS && (
+                    {filledPhotoCount < MIN_PHOTOS && (
                         <p className="mt-8 text-center text-[13px] font-medium text-gray-500">
                             A minimum of {MIN_PHOTOS} photos is required.
                         </p>

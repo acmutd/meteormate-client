@@ -135,7 +135,6 @@ export default function CreateAccountPage() {
                 });
             }
         } catch (err: unknown) {
-            console.error("Signup error:", err);
             const {message} = getAuthErrorMessage(err);
             toast({type: "error", title: "Sign up failed", description: message});
             setEmailTouched(true);
@@ -159,9 +158,9 @@ export default function CreateAccountPage() {
     };
 
     const RequirementLine = ({
-                                 ok,
-                                 children,
-                             }: {
+        ok,
+        children,
+    }: {
         ok: boolean;
         children: React.ReactNode;
     }) => (
@@ -181,7 +180,7 @@ export default function CreateAccountPage() {
     );
 
     return (
-        <LogoBox logoSrc="/MM_logo_V1.webp" logoAlt="MeteorMate Logo">
+        <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             <button
                 onClick={router.back}
                 className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/10 border border-white/10 hover:border-primary-hover/30 transition-colors"

@@ -3,6 +3,19 @@ export interface MMApiError {
     code: string
 };
 
+const toErrorMessage = (value: unknown): string => {
+    if (typeof value === "string") return value;
+    if (Array.isArray(value)) {
+        return value.map(toErrorMessage).join("\n");
+    }
+    if (typeof value === "object" && value) {
+        if ("msg" in value && typeof value.msg === "string") return value.msg;
+        if ("message" in value && typeof value.message === "string") return value.message;
+        return JSON.stringify(value);
+    }
+    return String(value);
+};
+
 export async function parseApiError(response: Response): Promise<MMApiError> {
     let data: unknown;
 
@@ -15,9 +28,9 @@ export async function parseApiError(response: Response): Promise<MMApiError> {
 
     // validation error has "details" as opposed to "detail"
     if (typeof data === "object" && data && "details" in data) {
-        const valErr = data as { details: string[] }
+        const valErr = data as { details: unknown }
         return {
-            message: valErr.details.join("\n"),
+            message: toErrorMessage(valErr.details),
             code: "Validation Error"
         }
     }
@@ -25,7 +38,7 @@ export async function parseApiError(response: Response): Promise<MMApiError> {
     // http errors only have "detail"
     if (typeof data === "object" && data && "detail" in data) {
         return {
-            message: (data as { detail: string }).detail,
+            message: toErrorMessage((data as { detail: unknown }).detail),
             code: response.status.toString()
         }
     }
