@@ -4,8 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ProgressHeader from "@/components/ProgressHeader";
 import NextStepButton from "@/components/NextStepButton";
 import { fetchCurrentUser } from "@/utils/api/auth";
-import { uploadProfilePicture, deleteProfilePicture } from "@/utils/api/profile";
-import { compressImage } from "@/utils/imageCompression";
+import { deleteProfilePictures, updateProfile } from "@/utils/api/profile";
+import { compressImage, uploadImages } from "@/utils/profile_pictures";
 import ImageCropper from "@/components/imageHandling/ImageCropper";
 import ImageUpload from "@/components/imageHandling/imageUpload";
 import ProfileCardPreview from "@/components/cardComponent/ProfileCardPreview";
@@ -15,6 +15,7 @@ import { useOnboarding } from "@/contexts/onboardingContext";
 import { useToast } from "@/components/ui/ToastProvider";
 
 import { MIN_PHOTOS, MAX_PHOTOS } from "@/constants/onboarding";
+import { countValidPhotos } from "@/utils/profilePhotos";
 
 export default function UploadPicturesPage() {
     const router = useRouter();
@@ -26,38 +27,39 @@ export default function UploadPicturesPage() {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [initialLoading, setInitialLoading] = useState(true);
 
-    const [photos, setPhotos] = useState<string[]>([]);
-    const [cropImage, setCropImage] = useState<string | null>(null);
-    const [isCropping, setIsCropping] = useState(false);
-    const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
-    const [deletingSlotIndex, setDeletingSlotIndex] = useState<number | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+	const [photos, setPhotos] = useState<string[]>(["", "", "", "", ""]);
+	const [deletedPhotoUrls, setDeletedPhotoUrls] = useState<string[]>([]);
+	const [cropImage, setCropImage] = useState<string | null>(null);
+	const [isCropping, setIsCropping] = useState(false);
+	const [uploadingSlotIndex, setUploadingSlotIndex] = useState<number | null>(null);
+	const [deletingSlotIndex, setDeletingSlotIndex] = useState<number | null>(null);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [compressionError, setCompressionError] = useState<string | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await fetchCurrentUser({
-                    preferCache: true,
-                    maxAgeMs: 5 * 60 * 1000,
-                });
-                if (res.ok && res.data) {
-                    setUserProfile(res.data);
-                    if (res.data.profile?.profile_picture_url) {
-                        setPhotos(res.data.profile.profile_picture_url);
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to fetch user profile", err);
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-        fetchUser();
-    }, []);
+    const filledPhotoCount = countValidPhotos(photos);
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			try {
+				const res = await fetchCurrentUser();
+				if (res.ok && res.data) {
+					setUserProfile(res.data);
+					const urls = res.data.profile?.profile_picture_url;
+					if (urls?.length) {
+						setPhotos(prev => prev.map((_, i) => urls[i] ?? ""));
+					}
+				}
+			} catch (err) {
+				console.error("Failed to fetch user profile", err);
+			} finally {
+				setInitialLoading(false);
+			}
+		};
+		fetchUser();
+	}, []);
 
     useEffect(() => {
         if (!toastShownRef.current && searchParams.get("toast") === "needs-pictures") {
@@ -98,7 +100,7 @@ export default function UploadPicturesPage() {
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        if (photos.length < MAX_PHOTOS) {
+        if (filledPhotoCount < MAX_PHOTOS) {
             setIsDragOver(true);
         }
     };
@@ -113,27 +115,25 @@ export default function UploadPicturesPage() {
         setIsDragOver(false);
         setDropWarning(null);
 
-        if (photos.length >= MAX_PHOTOS) return;
+        if (filledPhotoCount >= MAX_PHOTOS) return;
 
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            const file = e.dataTransfer.files[0];
-            if (!file.type.startsWith("image/")) {
-                setDropWarning("Please drop an image file.");
-                return;
-            }
-            processSelectedFile(file);
-        }
-    };
+		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+			const file = e.dataTransfer.files[0];
+			if (!file.type.startsWith("image/")) {
+				setDropWarning("Please drop an image file.");
+				return;
+			}
+			processSelectedFile(file);
+		}
+	};
 
-    const primaryPhoto = photos[0];
+	const handleCropDone = async (croppedDataUrl: string) => {
+		setIsCropping(false);
+		setCropImage(null);
 
-    const handleCropDone = async (croppedDataUrl: string) => {
-        setIsCropping(false);
-        setCropImage(null);
-		
-        const currentSlot = photos.length;
-        setUploadingSlotIndex(currentSlot);
-        setCompressionError(null);
+		const currentSlot = photos.findIndex(p => !p);
+		setUploadingSlotIndex(currentSlot);
+		setCompressionError(null);
 
         try {
             const res = await fetch(croppedDataUrl);
@@ -150,56 +150,94 @@ export default function UploadPicturesPage() {
                 return;
             }
 
-            const reader = new FileReader();
-            const base64Promise = new Promise<string>((resolve, reject) => {
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(compressedFile);
-            });
-			
-            const base64 = await base64Promise;
-            const uploadRes = await uploadProfilePicture({ base64 });
-			
-            if (uploadRes.ok && uploadRes.data?.profile_picture_url) {
-                setPhotos(uploadRes.data.profile_picture_url);
-            } else {
-                setCompressionError("Failed to upload image. Please try again.");
-            }
-        } catch (error) {
-            console.error("Image compression/upload failed:", error);
-            setCompressionError("Failed to process image. Please try a different photo.");
-        } finally {
-            setUploadingSlotIndex(null);
-        }
-    };
+			const reader = new FileReader();
+			const base64Promise = new Promise<string>((resolve, reject) => {
+				reader.onload = () => resolve(reader.result as string);
+				reader.onerror = reject;
+				reader.readAsDataURL(compressedFile);
+			});
 
-    const handleDeletePhoto = async (index: number) => {
-        setApiError(null);
-        try {
-            // Show specific loader over this slot while deleting
-            setDeletingSlotIndex(index);
-            const res = await deleteProfilePicture(index);
-            if (res.ok && res.data?.profile_picture_url) {
-                setPhotos(res.data.profile_picture_url);
-            } else if (res.ok && res.data) {
-                setPhotos(res.data.profile_picture_url || []);
-            }
-        } catch (e) {
-            console.error("Failed to delete photo", e);
-        } finally {
-            setDeletingSlotIndex(null);
-        }
-    };
+			const base64 = await base64Promise;
+			setPhotos(prev => {
+				const newPhotos = [...prev];
+				newPhotos[currentSlot] = base64;
+				return newPhotos;
+			});
+		} catch (error) {
+			console.error("Image compression/upload failed:", error);
+			setCompressionError("Failed to process image. Please try a different photo.");
+		} finally {
+			setUploadingSlotIndex(null);
+		}
+	};
+
+	const handleDeletePhoto = async (index: number) => {
+		setApiError(null);
+		try {
+			// Show specific loader over this slot while deleting
+			setDeletingSlotIndex(index);
+			if (photos[index] && !photos[index].startsWith("data:")) {
+				setDeletedPhotoUrls((prev) =>
+					prev.includes(photos[index]) ? prev : [...prev, photos[index]],
+				);
+			}
+			setPhotos(prev => {
+				const newPhotos = [...prev];
+				newPhotos[index] = "";
+				return newPhotos;
+			});
+		} catch (e) {
+			console.error("Failed to delete photo", e);
+		} finally {
+			setDeletingSlotIndex(null);
+		}
+	};
 
     const handleNextStep = async () => {
-        if (photos.length < MIN_PHOTOS || photos.length > MAX_PHOTOS) return;
+        if (filledPhotoCount < MIN_PHOTOS || filledPhotoCount > MAX_PHOTOS) return;
 
         setApiError(null);
         setIsLoading(true);
 
-        setIsLoading(false);
-        markPictureUploaded();
-        router.push("/onboarding/lifestylePreferences");
+        try {
+            const changedImageMap = await uploadImages(photos);
+            const newPhotos = Array.from({ length: MAX_PHOTOS }, (_, slotIndex) => {
+                if (Object.prototype.hasOwnProperty.call(changedImageMap, slotIndex)) {
+                    return changedImageMap[slotIndex];
+                }
+                return photos[slotIndex] ?? "";
+            });
+            const urlsToDelete = [...new Set(deletedPhotoUrls)];
+            setPhotos(newPhotos);
+
+            if (urlsToDelete.length > 0) {
+                const deleteResult = await deleteProfilePictures({
+                    profile_picture_url: urlsToDelete,
+                });
+                if (!deleteResult.ok) {
+                    throw new Error(deleteResult.error || "Failed to delete profile pictures");
+                }
+            }
+
+            const updateRes = await updateProfile({ profile_picture_url: newPhotos });
+            if (!updateRes.ok) {
+                throw new Error(updateRes.error || "Failed to update profile pictures");
+            }
+
+            setUserProfile((prev) => {
+                if (!prev) return prev;
+                return { ...prev, profile: updateRes.data ?? prev.profile };
+            });
+            setDeletedPhotoUrls([]);
+
+            markPictureUploaded();
+            router.push("/onboarding/lifestylePreferences");
+        } catch (error) {
+            console.error("Failed to save profile pictures", error);
+            setApiError("Failed to save photos. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (initialLoading) {
@@ -223,28 +261,28 @@ export default function UploadPicturesPage() {
                 progressImage="/peechi_progress_2.svg"
             />
 
-            <div className="mx-auto mt-5 flex flex-col lg:flex-row gap-8 w-full justify-center lg:items-stretch">
-                <div className="w-full lg:w-1/2 lg:max-w-135 flex flex-col pt-4">
-                    <ImageUpload
-                        photos={photos}
-                        primaryPhoto={primaryPhoto}
-                        uploadingSlotIndex={uploadingSlotIndex}
-                        deletingSlotIndex={deletingSlotIndex}
-                        compressionError={compressionError}
-                        dropWarning={dropWarning}
-                        maxPhotos={MAX_PHOTOS}
-                        fileInputRef={fileInputRef}
-                        onImageClick={handleImageClick}
-                        onDeletePhoto={handleDeletePhoto}
-                        onFileChange={handleFileChange}
-                        dragProps={{
-                            isDragOver: isDragOver,
-                            onDragOver: handleDragOver,
-                            onDragLeave: handleDragLeave,
-                            onDrop: handleDrop
-                        }}
-                    />
-                </div>
+			<div className="mx-auto mt-5 flex flex-col lg:flex-row gap-8 w-full justify-center lg:items-stretch">
+				<div className="w-full lg:w-1/2 lg:max-w-135 flex flex-col pt-4">
+					<ImageUpload
+						photos={photos}
+						primaryPhoto={photos[0]}
+						uploadingSlotIndex={uploadingSlotIndex}
+						deletingSlotIndex={deletingSlotIndex}
+						compressionError={compressionError}
+						dropWarning={dropWarning}
+						maxPhotos={MAX_PHOTOS}
+						fileInputRef={fileInputRef}
+						onImageClick={handleImageClick}
+						onDeletePhoto={handleDeletePhoto}
+						onFileChange={handleFileChange}
+						dragProps={{
+							isDragOver: isDragOver,
+							onDragOver: handleDragOver,
+							onDragLeave: handleDragLeave,
+							onDrop: handleDrop
+						}}
+					/>
+				</div>
 
                 <div className="w-full lg:w-1/2 lg:max-w-195 flex flex-col pt-4">
                     <ProfileCardPreview
@@ -256,19 +294,18 @@ export default function UploadPicturesPage() {
                 </div>
             </div>
 
-            <div className="mt-8 w-full flex flex-col items-center justify-center">
-                <NextStepButton
-                    className={`mb-3 ${
-                        photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                    onClick={handleNextStep}
-                    disabled={photos.length < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null}
-                />
-                {photos.length < MIN_PHOTOS && (
-                    <p className="text-[13px] text-gray-500 font-medium">A minimum of {MIN_PHOTOS} photos is required.</p>
-                )}
-                {apiError && <p className="text-red-500 text-sm text-center mt-2">{apiError}</p>}
-            </div>
+			<div className="mt-8 w-full flex flex-col items-center justify-center">
+				<NextStepButton
+					className={`mb-3 ${filledPhotoCount < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null ? "opacity-50 cursor-not-allowed" : ""
+						}`}
+					onClick={handleNextStep}
+					disabled={filledPhotoCount < MIN_PHOTOS || isLoading || uploadingSlotIndex !== null}
+				/>
+				{filledPhotoCount < MIN_PHOTOS && (
+					<p className="text-[13px] text-gray-500 font-medium">A minimum of {MIN_PHOTOS} photos is required.</p>
+				)}
+				{apiError && <p className="text-red-500 text-sm text-center mt-2">{apiError}</p>}
+			</div>
 
             {isCropping && cropImage && (
                 <ImageCropper

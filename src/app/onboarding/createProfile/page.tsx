@@ -129,18 +129,18 @@ export default function CreateProfilePage() {
         setApiError(null);
         setIsLoading(true);
 
-        // Create the profile
-        const createResult = await createProfile({
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            gender: gender as Gender,
-            major,
+		// Create the profile
+		const createResult = await createProfile({
+			first_name: firstName.trim(),
+			last_name: lastName.trim(),
+			gender: gender as Gender,
+			major,
             school,
-            classification: year as Classification,
-            bio,
-            dob: birthday!,
-            profile_picture_url: [],
-        });
+			classification: year as Classification,
+			bio,
+			dob: birthday!,
+			profile_picture_url: ["", "", "", "", ""], // placeholder, actual pictures will be uploaded in the next step
+		});
 
         if (!createResult.ok) {
             setApiError(createResult.error);

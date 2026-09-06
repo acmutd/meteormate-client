@@ -47,8 +47,10 @@ export default function ImageUpload({
     dragProps,
     onDeletePhoto,
 }: ImageUploadProps) {
-    const secondaryPhotoSlots = Math.max(0, maxPhotos - 1);
-    const secondaryPhotoCount = photos.length > 0 ? photos.length - 1 : 0;
+	const secondaryPhotoSlots = Math.max(0, maxPhotos - 1);
+	// all non empty strings from 1 to 4
+	const secondaryPhotoCount = photos.filter((_, i) => i > 0 && Boolean(photos[i])).length;
+	const nextSlotIndex = photos.findIndex((p, i) => i > 0 && !p);
 
     return (
         <div
@@ -146,7 +148,7 @@ export default function ImageUpload({
 										key={slotIndex}
 										photo={photos[slotIndex]}
 										slotIndex={slotIndex}
-										photosLength={photos.length}
+                                        isNextSlot={slotIndex === nextSlotIndex}
 										uploadingSlotIndex={uploadingSlotIndex}
 										deletingSlotIndex={deletingSlotIndex}
 										//primaryPhoto={primaryPhoto}

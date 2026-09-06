@@ -5,6 +5,7 @@ import { useAuth } from "./authContext";
 import { getProfile } from "@/utils/api/profile";
 import { getSurvey } from "@/utils/api/survey";
 import { MIN_PHOTOS } from "@/constants/onboarding";
+import { countValidPhotos } from "@/utils/profilePhotos";
 
 interface OnboardingContextType {
     isLoading: boolean;
@@ -68,8 +69,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
                     if (profileRes.ok && profileRes.data) {
                         setHasProfile(true);
                         setHasPicture(
-                            Array.isArray(profileRes.data.profile_picture_url) && 
-                            profileRes.data.profile_picture_url.length >= MIN_PHOTOS
+                            countValidPhotos(profileRes.data.profile_picture_url) >= MIN_PHOTOS,
                         );
                     } else {
                         setHasProfile(false);
