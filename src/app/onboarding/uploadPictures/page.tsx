@@ -15,6 +15,7 @@ import { useOnboarding } from "@/contexts/onboardingContext";
 import { useToast } from "@/components/ui/ToastProvider";
 
 import { MIN_PHOTOS, MAX_PHOTOS } from "@/constants/onboarding";
+import { countValidPhotos } from "@/utils/profilePhotos";
 
 export default function UploadPicturesPage() {
     const router = useRouter();
@@ -38,7 +39,7 @@ export default function UploadPicturesPage() {
     const [apiError, setApiError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const filledPhotoCount = photos.filter((photo) => Boolean(photo)).length;
+    const filledPhotoCount = countValidPhotos(photos);
 
 	useEffect(() => {
 		const fetchUser = async () => {
