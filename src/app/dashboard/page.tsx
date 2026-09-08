@@ -179,7 +179,7 @@ export default function Discover() {
         return;
     }
 
-    goToNextMatch();
+    fireMatch();
     };
     return (
         <div className="relative">
