@@ -12,3 +12,25 @@ export async function getPotentialMatches(
         }
     );
 }
+
+export async function likeUser(
+    targetUserId: string
+): Promise<Result<{ message: string }>> {
+    return apiFetch<{ message: string }>(
+        `/matches/like/${targetUserId}`,
+        {
+            method: "POST",
+        }
+    );
+}
+
+export async function passUser(
+    targetUserId: string
+): Promise<Result<{ message: string }>> {
+    return apiFetch<{ message: string }>(
+        `/matches/pass/${targetUserId}`,
+        {
+            method: "POST",
+        }
+    );
+}

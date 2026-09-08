@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
 import confetti from "canvas-confetti";
 import { ItsAMatchOverlay } from "@/components/itsAMatch";
-import { getPotentialMatches } from "@/utils/api/matches";
+import { getPotentialMatches, likeUser, passUser } from "@/utils/api/matches";
 import { PotentialMatch } from "@/types/matches";
 import { fetchCurrentUser } from "@/utils/api/auth";
 
@@ -14,6 +14,7 @@ export default function Discover() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentUserPhoto, setCurrentUserPhoto] = useState("/p2.png");
+    const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
 
     useEffect(() => {
         async function loadMatches() {
@@ -107,7 +108,7 @@ export default function Discover() {
         );
     }
 
-    if (matches.length === 0) {
+    if (matches.length === 0 || currentMatchIndex >= matches.length) {
         return (
             <div className="flex min-h-[600px] items-center justify-center">
                 <p className="text-gray-500">
@@ -116,7 +117,7 @@ export default function Discover() {
             </div>
         );
     }
-    const match = matches[0];
+    const match = matches[currentMatchIndex];
     const habits = [
         match.survey?.wake_time === "early_bird"
             ? { label: "Early Bird", selected: true }
@@ -156,12 +157,42 @@ export default function Discover() {
                     ? { label: "Doesn't Cook", selected: true }
                     : null,
     ].filter((habit): habit is { label: string; selected: true } => habit !== null);
+    const goToNextMatch = () => {
+        setCurrentMatchIndex((current) => current + 1);
+        };
+    const handleDislike = async () => {
+    const result = await passUser(match.uid);
+
+    if (!result.ok) {
+        setError(result.error);
+        return;
+    }
+
+    goToNextMatch();
+    };
+
+    const handleLike = async () => {
+    const result = await likeUser(match.uid);
+
+    if (!result.ok) {
+        setError(result.error);
+        return;
+    }
+
+    goToNextMatch();
+    };
     return (
         <div className="relative">
             <ItsAMatchOverlay
                 open={showMatch}
-                onClose={() => setShowMatch(false)}
-                onConfirm={() => setShowMatch(false)}
+                onClose={() => {
+                    setShowMatch(false);
+                    goToNextMatch();
+                }}
+                onConfirm={() => {
+                    setShowMatch(false);
+                    goToNextMatch();
+                }}
                 leftImg={currentUserPhoto}
                 rightImg={match.profile?.profile_picture_url?.[0] ?? "/p3.jpg"}
                 rightName={match.profile?.first_name ?? "them"}
@@ -191,11 +222,9 @@ export default function Discover() {
                                     : []),
                     ]}
                     bio={match.profile?.bio}
-                    onDislike={() => undefined}
+                    onDislike={handleDislike}
                     onRewind={() => undefined}
-                    onLike={() => {
-                        fireMatch();
-                    }}
+                    onLike={handleLike}
                     back={{
                         interests: (match.survey?.interests ?? []).map((interest) => ({
                             label: interest,
