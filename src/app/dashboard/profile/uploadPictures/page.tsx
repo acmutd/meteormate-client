@@ -360,7 +360,7 @@ export default function UploadPicturesPage() {
                     </div>
 
                     <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch justify-center sm:px-8 lg:px-10">
-                        <div className="w-full lg:w-1/2 lg:max-w-135 flex flex-col pt-4">
+                        <div className="w-full lg:w-3/8 lg:max-w-135 flex flex-col pt-4">
                             <ImageUpload
                                 photos={photos}
                                 primaryPhoto={primaryPhoto}
@@ -382,7 +382,7 @@ export default function UploadPicturesPage() {
                             />
                         </div>
 
-                        <div className="w-full lg:w-1/2 lg:max-w-195 flex flex-col pt-4">
+                        <div className="w-full lg:w-5/8 lg:max-w-195 flex flex-col pt-4">
                             <ProfileCardPreview
                                 name={displayName}
                                 images={photos}

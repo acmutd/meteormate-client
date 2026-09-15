@@ -55,7 +55,7 @@ export default function ImageUpload({
     return (
         <div
             className={cn(
-                "w-full bg-white rounded-[28px] shadow-sm border border-[#F1EADA] py-8 px-6 sm:px-10 flex flex-col flex-1 transition-all duration-200",
+                "w-full bg-white rounded-[28px] shadow-sm border border-[#F1EADA] py-4 px-6 sm:px-10 flex flex-col flex-1 transition-all duration-200",
                 dragProps.isDragOver ? "border-primary bg-orange-50/50" : ""
             )}
             onDragOver={dragProps.onDragOver}
@@ -63,10 +63,7 @@ export default function ImageUpload({
             onDrop={dragProps.onDrop}
         >
             <div className="mb-2">
-                <h1 className="text-black font-semibold text-xl mb-1">Your Photos</h1>
-                <p className="text-gray-500 text-sm mb-6">Drag and drop your photos here</p>
-
-                <div className="flex flex-col gap-8 w-full">
+                <div className="flex flex-col gap-4 w-full">
                     <div className="w-full flex flex-col items-start">
                         <h2 className="text-black font-semibold text-[15px] flex items-center gap-2 mb-3">
 							Profile Photo
@@ -128,11 +125,11 @@ export default function ImageUpload({
                                 )}
                             </button>
                         )}
-                        <p className="mt-3 text-[13px] text-gray-400 font-medium">This becomes your profile picture</p>
+
                     </div>
 
                     <div className="w-full">
-                        <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center justify-between mb-2">
                             <h2 className="text-black font-semibold text-[15px]">
 								More Photos{" "}
                                 <span className="text-gray-400 font-normal ml-1">
@@ -141,7 +138,7 @@ export default function ImageUpload({
                             </h2>
                         </div>
 
-						<div className="grid grid-cols-4 gap-3">
+						<div className="grid grid-cols-2 gap-3">
 							{Array.from({ length: secondaryPhotoSlots }, (_, idx) => idx + 1).map((slotIndex) => {
 								return (
 									<PhotoSlot
