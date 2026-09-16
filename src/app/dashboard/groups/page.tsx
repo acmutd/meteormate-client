@@ -3,9 +3,7 @@
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Users, X, Plus } from "lucide-react";
 import { useState } from "react";
-import confetti from "canvas-confetti";
 import ProfileCard from "@/components/cardComponent/ProfileCard";
-import { ItsAGroupMatchOverlay } from "@/components/itsAGroupMatch";
 
 type GroupMember = {
     id: number;
@@ -595,7 +593,6 @@ function GroupCard({
 
 export default function Groups() {
     const [showGroupProfile, setShowGroupProfile] = useState(false);
-    const [showGroupMatch, setShowGroupMatch] = useState(false);
     const [showCreateGroup, setShowCreateGroup] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupMatch | null>(
         null
@@ -608,53 +605,10 @@ export default function Groups() {
 
     const handleJoinGroup = (group: GroupMatch) => {
         setSelectedGroup(group);
-        setShowGroupProfile(false);
-        setShowGroupMatch(true);
 
-        const duration = 900;
-        const end = Date.now() + duration;
-
-        const rand = (min: number, max: number) =>
-            Math.random() * (max - min) + min;
-
-        (function frame() {
-            confetti({
-                particleCount: 15,
-                spread: 100,
-                startVelocity: 20,
-                scalar: 1.05,
-                origin: {
-                    x: rand(0.05, 0.2),
-                    y: rand(0.2, 0.8),
-                },
-            });
-
-            confetti({
-                particleCount: 15,
-                spread: 100,
-                startVelocity: 20,
-                scalar: 1.05,
-                origin: {
-                    x: rand(0.8, 0.95),
-                    y: rand(0.2, 0.8),
-                },
-            });
-
-            confetti({
-                particleCount: 15,
-                spread: 100,
-                startVelocity: 20,
-                scalar: 1.0,
-                origin: {
-                    x: rand(0.2, 0.8),
-                    y: rand(0.05, 0.25),
-                },
-            });
-
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
-        })();
+        // This will eventually connect to the backend
+        // to join the selected roommate group.
+        console.log("Join group:", group);
     };
 
     const handleCreateGroup = (members: GroupMember[]) => {
@@ -683,20 +637,6 @@ export default function Groups() {
                 onClose={() => setShowCreateGroup(false)}
                 onCreate={handleCreateGroup}
             />
-
-            {/* Join Group */}
-            {selectedGroup && (
-                <ItsAGroupMatchOverlay
-                    open={showGroupMatch}
-                    onClose={() => setShowGroupMatch(false)}
-                    onConfirm={() => setShowGroupMatch(false)}
-                    currentUserImg="/p2.png"
-                    members={selectedGroup.members.map((member) => ({
-                        name: member.name,
-                        image: member.image,
-                    }))}
-                />
-            )}
 
             <div className="mx-auto max-w-6xl">
                 <div className="mb-8">
