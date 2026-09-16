@@ -6,7 +6,6 @@ import { UserProfile } from "@/types/userProfile";
 import { useToast } from "@/components/ui/ToastProvider";
 import { apiFetch } from "@/utils/api/client";
 import { UpdateUserProfileBody } from "@/types/profile";
-import ProfileGallery from "@/components/imageHandling/ProfileGallery";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "@/components/navigation/UnsavedChangesDialog";
 import { DatePicker } from "../../../components/DatePicker";
@@ -176,14 +175,8 @@ export default function Profile() {
                 onCancel={cancelNavigation}
             />
             <div className="flex flex-col justify-center items-center relative">
-                <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl ">
-                    <div className="mt-4 ml-6">
-                        <ProfileGallery
-                            userId={userData.id}
-                            initialImages={userData.profile?.profile_picture_url}
-                        />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 w-full p-4">
+                <div className="w-[76%] min-h-180 bg-[#FFFFFF] rounded-2xl shadow-2xl flex flex-col">
+                    <div className="grid grid-cols-2 grid-rows-[auto_auto_auto_1fr] gap-4 w-full p-4 flex-1">
                         <div className="text-md">
                             <p className="mb-2">Name</p>
                             <div
@@ -390,12 +383,12 @@ export default function Profile() {
                             </div>
                         </div>
 
-                        <div className="text-md col-span-2">
+                        <div className="text-md col-span-2 flex flex-col min-h-0">
                             <p className="mb-2">Bio</p>
-                            <div className="relative">
+                            <div className="relative flex-1 min-h-[7rem]">
                                 <textarea
                                     placeholder="Write your Bio here e.g your hobbies, interests ETC"
-                                    className={`${inputStyle} resize-none h-28`}
+                                    className={`${inputStyle} resize-none absolute inset-0 w-full h-full`}
                                     value={bio}
                                     onChange={(e) => {
                                         if (e.target.value.length <= BIO_CHAR_LIMIT) {
@@ -410,17 +403,22 @@ export default function Profile() {
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center gap-6 mr-[1%]">
+                    <div className="flex justify-center gap-6 mr-[1%] mb-6">
                         <button
                             type="button"
                             onClick={handleUpdateProfile}
-                            className="px-6 py-2 rounded-lg text-black font-medium shadow bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md transition-all duration-200"
+                            disabled={!isDirty}
+                            className={`px-6 py-2 rounded-lg text-black font-medium shadow transition-all duration-200 ${
+                                isDirty
+                                    ? "bg-linear-60 from-[#F28C00] to-[#FFC243] hover:from-[#d97706] hover:to-[#f59e0b] hover:shadow-md cursor-pointer"
+                                    : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
+                            }`}
                         >
-              Update Profile
+                            Update Profile
                         </button>
                         <button
                             type="button"
-                            title="NOT IMPLEMENTED YET" // delete later
+                            title="COMING SOON" // delete later
                             className="px-6 py-2 rounded-lg bg-[#FBD7A8] text-black font-medium shadow cursor-not-allowed"
                         >
               View Profile
