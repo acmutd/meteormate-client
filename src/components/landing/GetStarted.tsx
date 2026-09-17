@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 import LandingSection from "./LandingSection";
+import StarBackground from "./StarBackground";
 
 export default function GetStarted() {
     const router = useRouter();
@@ -10,12 +11,10 @@ export default function GetStarted() {
 
     return (
         <LandingSection
-            id="getStarted"
-            className="min-h-screen bg-black bg-no-repeat bg-center bg-cover text-white flex flex-col items-center justify-center"
-            style={{
-                backgroundImage: `url('/landing_grayscale_comets.webp')`,
-            }}
+            id="contactUs"
+            className="relative bg-black overflow-hidden text-white flex flex-col w-full !py-12"
         >
+            <StarBackground seed={25}/>
             <div className="flex flex-col items-center">
                 <h1 className="outfit-bold text-[100px]">Ready to Find Your</h1>
                 <h1 className="outfit-bold text-[100px]">Perfect Match?</h1>

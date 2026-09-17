@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import LandingSection from "./LandingSection";
+import StarBackground from "./StarBackground";
 
 interface FeatureCardProps {
     imageSrc: string;
@@ -93,10 +94,10 @@ export default function HowItWorks() {
     return (
         <LandingSection
             id="howItWorks"
-            className="w-full bg-black bg-cover bg-center bg-no-repeat py-24 md:py-32"
-            style={{backgroundImage: `url('/stars.webp')`}}
+            className="relative w-full bg-black overflow-hidden py-24 md:py-32"
         >
-            <div className="max-w-7xl mx-auto px-6">
+            <StarBackground seed={5} />
+            <div className="relative z-10 max-w-7xl mx-auto px-6">
                 <div className="text-center mb-16 space-y-4">
                     <span
                         className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
