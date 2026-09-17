@@ -1,15 +1,11 @@
 "use client";
 import { Link } from "react-scroll";
 import { ArrowRight } from "lucide-react";
-import StarBackground from "./StarBackground";
 
 export default function HeroSection() {
     return (
         <section
-            className="relative min-h-[100vh] w-full flex items-center justify-center overflow-hidden bg-black pt-32 pb-20 lg:pt-40">
-
-            {/* Star background Good seeds: 41 42 59 83 yes (I went through 100 seeds)*/}
-            <StarBackground seed={83} /> 
+            className="relative min-h-[100vh] w-full flex items-center justify-center overflow-hidden pt-32 pb-20 lg:pt-40">
 
             <div className="container mx-auto px-6 z-10 relative">
                 <div className="flex flex-col items-start text-left max-w-xl">

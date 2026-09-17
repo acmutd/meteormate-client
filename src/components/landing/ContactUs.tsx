@@ -4,18 +4,16 @@ import { useRouter } from "next/navigation";
 import { Mail, Linkedin, Instagram, MapPin } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 import LandingSection from "./LandingSection";
-import StarBackground from "./StarBackground";
 
 export default function ContactUs() {
     const router = useRouter();
     return (
         <LandingSection
             id="contactUs"
-            className="relative bg-black overflow-hidden text-white flex flex-col w-full !py-12"
+            className="text-white flex flex-col w-full !py-12"
         >
-            <StarBackground seed={2} />
             {/* Main Footer Content */}
-            <div className="relative z-10 container mx-auto px-6 md:px-10">
+            <div className="container mx-auto px-6 md:px-10">
                 {/* Top Section: Logo, Navigation, and Contact Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                     {/* Left: Logo and Tagline */}

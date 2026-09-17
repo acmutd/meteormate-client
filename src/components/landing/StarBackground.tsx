@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 import { useMemo } from "react";
 
+// RNG for the stars
 function createRng(seed: number) {
-    let s = (seed * 2654435761) >>> 0;         
-    s = (Math.imul(1664525, s) + 1013904223) >>> 0;  
-    s = (Math.imul(1664525, s) + 1013904223) >>> 0;  
+    let s = (seed * 2654435761) >>> 0;
+    s = (Math.imul(1664525, s) + 1013904223) >>> 0;
+    s = (Math.imul(1664525, s) + 1013904223) >>> 0;
     return (): number => {
         s = (Math.imul(1664525, s) + 1013904223) >>> 0;
         return s / 0x100000000;
@@ -26,29 +27,30 @@ function sparklePath(cx: number, cy: number, outer: number): string {
     );
 }
 
-// Build constellation — random nodes + proximity-based edges
+const VIEW_W = 1440;
+const VIEW_H = 4000;
+
 function buildConstellation(rng: () => number): {
     nodes: { x: number; y: number }[];
     edges: [number, number][];
 } {
-    const nodeCount = 15 + Math.floor(rng() * 8); // around 15 – 22 nodes
+    const nodeCount = 28 + Math.floor(rng() * 12); // 28–39 nodes across full height
 
     const nodes: { x: number; y: number }[] = Array.from(
         { length: nodeCount },
-        () => ({ x: 80 + rng() * 1280, y: 40 + rng() * 820 }),
+        () => ({ x: 60 + rng() * (VIEW_W - 120), y: 60 + rng() * (VIEW_H - 120) }),
     );
 
     const edges: [number, number][] = [];
     const MIN_DIST = 90;
-    const MAX_DIST = 290;
+    const MAX_DIST = 480;
 
     for (let a = 0; a < nodes.length; a++) {
         for (let b = a + 1; b < nodes.length; b++) {
             const dx = nodes[a].x - nodes[b].x;
             const dy = nodes[a].y - nodes[b].y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            // Connect nearby pairs with ~45 % probability
-            if (dist >= MIN_DIST && dist <= MAX_DIST && rng() > 0.55) {
+            if (dist >= MIN_DIST && dist <= MAX_DIST && rng() > 0.38) {
                 edges.push([a, b]);
             }
         }
@@ -57,6 +59,7 @@ function buildConstellation(rng: () => number): {
     return { nodes, edges };
 }
 
+// Types
 interface Star {
     x: number;
     y: number;
@@ -69,23 +72,28 @@ interface Props {
     className?: string;
 }
 
+// Component
 export default function StarBackground({ seed = 1, className = "" }: Props) {
     const { stars, nodes, edges } = useMemo(() => {
         const rng = createRng(seed);
+
         const { nodes, edges } = buildConstellation(rng);
 
-        // Random scatter stars
-        const bg: Star[] = Array.from({ length: 80 }, () => {
+        // Scale star count to cover the larger viewBox (~200 for 1440×4000)
+        const bg: Star[] = Array.from({ length: 200 }, () => {
             const roll = rng();
             const size =
-                roll < 0.10 ? 7 + rng() * 6    // large   ~10 %
-                : roll < 0.42 ? 3 + rng() * 4   // medium  ~32 %
-                : 1.5 + rng() * 2;              // small   ~58 %
+                roll < 0.10 ? 7 + rng() * 6
+                : roll < 0.42 ? 3 + rng() * 4
+                : 1.5 + rng() * 2;
             const opacity =
-                rng() < 0.32
-                    ? 0.10 + rng() * 0.22       // dim
-                    : 0.45 + rng() * 0.55;      // bright
-            return { x: rng() * 1440, y: rng() * 900, size, opacity };
+                rng() < 0.32 ? 0.10 + rng() * 0.22 : 0.45 + rng() * 0.55;
+            return {
+                x: rng() * VIEW_W,
+                y: rng() * VIEW_H,
+                size,
+                opacity,
+            };
         });
 
         const cn: Star[] = nodes.map(({ x, y }) => ({
@@ -100,13 +108,13 @@ export default function StarBackground({ seed = 1, className = "" }: Props) {
 
     return (
         <svg
-            className={`absolute inset-0 w-full h-full pointer-events-none select-none ${className}`}
-            viewBox="0 0 1440 900"
-            preserveAspectRatio="xMidYMid slice"
+            className={`w-full pointer-events-none select-none ${className}`}
+            style={{ display: "block" }}
+            viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+            preserveAspectRatio="xMidYTop meet"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
         >
-            {/* Constellation lines */}
             {edges.map(([a, b], idx) => (
                 <line
                     key={idx}
@@ -120,7 +128,6 @@ export default function StarBackground({ seed = 1, className = "" }: Props) {
                 />
             ))}
 
-            {/* Stars */}
             {stars.map((s, idx) => (
                 <path
                     key={idx}
