@@ -17,12 +17,16 @@ import {
     type LikeNotification,
 } from "@/lib/notifications";
 
+
 type GroupMember = {
     id: number;
     name: string;
     image: string;
     major?: string;
     hasLease: boolean;
+    interests?: { label: string; selected?: boolean }[];
+    habits?: { label: string; selected?: boolean }[];
+    expandedBio?: string;
 };
 
 const mockGroupMembers: GroupMember[] = [
@@ -32,6 +36,17 @@ const mockGroupMembers: GroupMember[] = [
         image: "/p3.jpg",
         major: "Biology - Junior",
         hasLease: true,
+        interests: [
+            { label: "Anime", selected: true },
+            { label: "Music", selected: true },
+            { label: "Hiking" },
+        ],
+        habits: [
+            { label: "Tidy", selected: true },
+            { label: "Early Bird" },
+        ],
+        expandedBio:
+            "I enjoy spending time with friends, watching anime, and keeping shared spaces comfortable.",
     },
     {
         id: 2,
@@ -39,6 +54,17 @@ const mockGroupMembers: GroupMember[] = [
         image: "/p2.png",
         major: "Computer Science - Senior",
         hasLease: false,
+        interests: [
+            { label: "Art", selected: true },
+            { label: "Music", selected: true },
+            { label: "Video Games" },
+        ],
+        habits: [
+            { label: "Quiet", selected: true },
+            { label: "Tidy", selected: true },
+        ],
+        expandedBio:
+            "I'm an easygoing roommate who values communication, organization, and a relaxed home environment.",
     },
     {
         id: 3,
@@ -46,6 +72,35 @@ const mockGroupMembers: GroupMember[] = [
         image: "/p2.png",
         major: "Neuroscience - Sophomore",
         hasLease: true,
+        interests: [
+            { label: "Reading", selected: true },
+            { label: "Cooking" },
+            { label: "Hiking", selected: true },
+        ],
+        habits: [
+            { label: "Clean", selected: true },
+            { label: "Cooks Often", selected: true },
+        ],
+        expandedBio:
+            "I like exploring new places, cooking, and having a clean, welcoming space to come home to.",
+    },
+    {
+        id: 4,
+        name: "Ryan Edward",
+        image: "/p2.jpg",
+        major: "Computer Science",
+        hasLease: false,
+        interests: [
+            { label: "Gaming", selected: true },
+            { label: "Sports" },
+            { label: "Movies", selected: true },
+        ],
+        habits: [
+            { label: "Night Owl", selected: true },
+            { label: "Okay With Pets", selected: true },
+        ],
+        expandedBio:
+            "I enjoy gaming, watching movies, and finding roommates who are respectful and easy to communicate with.",
     },
 ];
 
