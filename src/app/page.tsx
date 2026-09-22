@@ -11,7 +11,7 @@ export default function Home() {
     return (
         <div className="relative bg-black overflow-hidden">
             <div className="absolute top-0 inset-x-0 z-0 pointer-events-none">
-                <StarBackground seed={45} />
+                <StarBackground seed={65} />
             </div>
 
             <div className="relative z-10 flex flex-col min-h-screen overflow-x-hidden scroll-smooth">
