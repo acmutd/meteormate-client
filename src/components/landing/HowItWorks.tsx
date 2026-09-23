@@ -42,6 +42,11 @@ function FeatureCard({
                     {description}
                 </p>
             </div>
+            <div className="-z-9 absolute top-10/4 -left-[10%] h-32 w-[120%] rotate-18 bg-gradient-to-r from-transparent via-orange-500/40 to-transparent blur-2xl"></div>
+                <div className="-z-9 absolute -bottom-500 -right-20 h-[500px] w-[500px] rounded-full bg-radial from-amber-500/60 via-orange-600/20 to-transparent blur-3xl"></div>
+                <div className="-z-9 absolute -bottom-450 -left-10 h-64 w-64 rounded-full bg-radial from-amber-500/50 via-orange-600/20 to-transparent blur-2xl"></div>
+                <div className="-z-9 absolute top-5/4 -left-70 h-12 -rotate-5 w-256 bg-gradient-to-r from-transparent via-orange-500/40 to-transparent blur-xl pointer-events-none"></div>
+                <div className="-z-9 absolute top-7/4 -right-70 h-12 w-256 -rotate-18 bg-gradient-to-r from-transparent via-orange-500/40 to-transparent blur-xl pointer-events-none"></div>
         </div>
     );
 }
