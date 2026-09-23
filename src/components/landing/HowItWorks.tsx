@@ -18,10 +18,13 @@ function FeatureCard({
 }: FeatureCardProps) {
     return (
         <div
-            className="flex flex-col items-start gap-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 hover:border-primary-hover/30 hover:bg-white/10 transition-all duration-300 group">
+            className="font-[family-name:var(--font-outfit)] w-80 h-100 rounded-2xl border border-transparent bg-[linear-gradient(#1A1919,#1A1919),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] [background-clip:padding-box,border-box] [background-origin:border-box] flex flex-col items-start gap-5 p-6 transition-all duration-300 group align-middle">
             {/* Icon Container - Fixed height, flex centered */}
             <div
                 className="relative h-16 w-16 md:h-20 md:w-20 flex-shrink-0 rounded-xl p-3 group-hover:scale-105 transition-transform">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-[#FF9100] to-[#FFC94C] font-bold text-white shadow-md text-xl">
+                    <p>1</p>
+                </div>
                 <Image
                     src={imageSrc}
                     alt={imageAlt}
@@ -30,12 +33,12 @@ function FeatureCard({
                     className="object-contain p-2"
                 />
             </div>
-
+        
             <div className="space-y-2">
-                <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">
+                <h3 className="outfit text-center text-2xl font-medium text-white group-hover:text-primary transition-colors">
                     {title}
                 </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="outfit font-light text-[#EEEEEE] text-center">
                     {description}
                 </p>
             </div>
@@ -49,74 +52,45 @@ export default function HowItWorks() {
         {
             imageSrc: "/L1.webp", // Updated from original code reference
             imageAlt: "AI Powered Matchmaking",
-            title: "AI Powered Matchmaking",
+            title: "Create Your Profile",
             description:
-                "Our algorithm weighs lifestyle, cleanliness, and personality traits to find the roommate that fits you.",
+                "Tell us about your lifestyle, preferences, and what you’re looking for.",
         },
         {
             imageSrc: "/L2.webp",
             imageAlt: "Data Driven Insights",
-            title: "Data Driven Insights",
+            title: "We Matchmake",
             description:
-                "Compare potential roommates with compatibility scores and metrics that make the decision simple.",
+                "Our algorithm analyzes compatibility and finds your best match.",
         },
         {
             imageSrc: "/L3.webp",
             imageAlt: "Multistep Verification",
-            title: "Multistep Verification",
+            title: "You Chat",
             description:
-                "School email plus optional social verification helps ensure everyone on the platform is a real UTD student.",
-        },
-        {
-            imageSrc: "/L4.webp",
-            imageAlt: "Privacy First",
-            title: "Privacy First",
-            description:
-                "You’re always in control of what you share. Reveal more details only when you’re comfortable.",
-        },
-        {
-            imageSrc: "/L5.webp",
-            imageAlt: "Personalized Matchmaking",
-            title: "Swipe-based Matching",
-            description:
-                "A Tinder-style interface with detailed profiles makes finding your roommate feel familiar and low-friction.",
-        },
-        {
-            imageSrc: "/L6.webp",
-            imageAlt: "Social Integration",
-            title: "Social Integration",
-            description:
-                "Optionally connect socials to add another layer of signal for compatibility and verification.",
+                "Reach out via email, get to know each other, and find your perfect roommate!",
         },
     ];
 
     return (
         <LandingSection
             id="howItWorks"
-            className="w-full bg-black bg-cover bg-center bg-no-repeat py-24 md:py-32"
-            style={{backgroundImage: `url('/stars.webp')`}}
+            className="w-full py-24 md:py-32"
+            
         >
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="text-center mb-16 space-y-4">
-                    <span
-                        className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
-            Features
-                    </span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                        Built for <span
-                            className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Comets</span>
-                    </h2>
-                    <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
-                        Everything you need to find your perfect match, verified and secure.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div className="mb-12 text-center text-white">
+                <h2 className="outfit-bold text-7xl font-bold mb-4 font-outfit extra-bold">How MeteorMate Works</h2>
+                <p className="outfit font-light text-3xl font-inter">
+                    You're just a few steps away from finding your perfect match
+                </p>
+            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-self-center">
                     {features.map((feature, index) => (
                         <FeatureCard key={index} {...feature} />
                     ))}
                 </div>
-            </div>
+
         </LandingSection>
     );
 }

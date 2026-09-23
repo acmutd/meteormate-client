@@ -6,10 +6,9 @@ import {ArrowRight} from "lucide-react";
 export default function HeroSection() {
     return (
         <section
-            className="relative min-h-[100vh] w-full flex items-center justify-center overflow-hidden bg-black pt-32 pb-20 lg:pt-40">
+            className="relative min-h-[100vh] w-full flex items-center justify-center overflow-hidden pt-32 pb-20 lg:pt-40">
 
             {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950/90 to-black"/>
             <div
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-gradient-to-br from-[#E87500]/8 via-orange-500/3 to-[#154734]/8 blur-[200px] rounded-full animate-pulse-slow"/>
             <div

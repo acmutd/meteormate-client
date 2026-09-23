@@ -23,6 +23,13 @@ body {
   font-style: normal;
 }
 
+.outfit-light {
+  font-family: "Outfit", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
 .outfit-regular {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
