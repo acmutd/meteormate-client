@@ -6,6 +6,7 @@ import HowItWorks from "@/components/landing/HowItWorks";
 import GetStarted from "@/components/landing/GetStarted";
 import ContactUs from "@/components/landing/ContactUs";
 import StarBackground from "@/components/landing/StarBackground";
+import Test from "@/components/landing/test";
 
 export default function Home() {
     return (
@@ -18,6 +19,7 @@ export default function Home() {
             <div className="relative z-10 flex flex-col min-h-screen overflow-x-hidden scroll-smooth">
                 <Navbar />
                 <main className="flex flex-col">
+                    <Test />
                     <HeroSection />
                     <HowItWorks />
                     <GetStarted />
