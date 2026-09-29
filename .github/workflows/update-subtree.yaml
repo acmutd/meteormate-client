@@ -9,8 +9,6 @@ on:
         description: 'Branch to sync'
         required: false
         default: 'main'
-  schedule:
-    - cron: "0 3 * * *"
 
 permissions:
   contents: write
