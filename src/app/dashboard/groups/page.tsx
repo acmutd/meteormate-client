@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -13,15 +12,27 @@ import {
   Check,
   Trash2,
   Search,
+  Eye,
 } from "lucide-react";
+import GroupProfileViewer, {
+  type GroupProfile,
+} from "@/components/cardComponent/GroupProfileViewer";
+
+type Chip = {
+  label: string;
+  selected?: boolean;
+};
 
 type GroupMember = {
   id: number;
   name: string;
-  image: string;
+  images: string[];
   major?: string;
   hasLease: boolean;
   bio?: string;
+  interests?: Chip[];
+  habits?: Chip[];
+  expandedBio?: string;
 };
 
 type RoommateGroup = {
@@ -35,10 +46,23 @@ type RoommateGroup = {
 const currentUser: GroupMember = {
   id: 1,
   name: "Aastha Sheth",
-  image: "/p2.png",
+  images: ["/p2.png", "/p3.jpg"],
   major: "Computer Science - Senior",
   hasLease: false,
   bio: "Organized, social, and loves a balanced study-life routine.",
+  interests: [
+    { label: "Dance", selected: true },
+    { label: "D&D", selected: true },
+    { label: "Travel", selected: true },
+    { label: "Reading", selected: false },
+  ],
+  habits: [
+    { label: "Clean", selected: true },
+    { label: "Early riser", selected: false },
+    { label: "Quiet weekdays", selected: true },
+  ],
+  expandedBio:
+    "I like keeping my space organized while still having a social and comfortable home environment. I enjoy hanging out with roommates but also appreciate having quiet time to study.",
 };
 
 // Mock people available to invite
@@ -46,26 +70,65 @@ const mockMatches: GroupMember[] = [
   {
     id: 2,
     name: "Usagi Tanaka",
-    image: "/p3.jpg",
+    images: ["/p3.jpg", "/p2.png"],
     major: "Biology - Junior",
     hasLease: true,
     bio: "Friendly, clean, and loves a calm apartment vibe.",
+    interests: [
+      { label: "Anime", selected: true },
+      { label: "Cooking", selected: true },
+      { label: "Gaming", selected: true },
+      { label: "Music", selected: false },
+    ],
+    habits: [
+      { label: "Clean", selected: true },
+      { label: "Night owl", selected: true },
+      { label: "Quiet weekends", selected: false },
+    ],
+    expandedBio:
+      "I like having a clean and comfortable place to come home to. I am pretty social but also respect everyone's space and schedule.",
   },
   {
     id: 3,
     name: "Maya Patel",
-    image: "/p2.png",
+    images: ["/p2.png", "/p3.jpg"],
     major: "Neuroscience - Sophomore",
     hasLease: true,
     bio: "Calm, focused, and loves a peaceful home.",
+    interests: [
+      { label: "Reading", selected: true },
+      { label: "Coffee", selected: true },
+      { label: "Hiking", selected: true },
+      { label: "Movies", selected: false },
+    ],
+    habits: [
+      { label: "Early riser", selected: true },
+      { label: "Clean", selected: true },
+      { label: "Quiet home", selected: true },
+    ],
+    expandedBio:
+      "I am pretty focused during the week because of school, so I really value a peaceful apartment. I enjoy getting coffee, hiking, and having movie nights with friends.",
   },
   {
     id: 4,
     name: "Zara Ahmed",
-    image: "/p3.jpg",
+    images: ["/p3.jpg", "/p2.png"],
     major: "Business - Senior",
     hasLease: false,
     bio: "Outgoing, stylish, and likes a neat space.",
+    interests: [
+      { label: "Fashion", selected: true },
+      { label: "Travel", selected: true },
+      { label: "Photography", selected: true },
+      { label: "Fitness", selected: false },
+    ],
+    habits: [
+      { label: "Clean", selected: true },
+      { label: "Social", selected: true },
+      { label: "Night owl", selected: false },
+    ],
+    expandedBio:
+      "I like having a neat space and enjoy being around people. I am usually down for spontaneous plans, trying new restaurants, or exploring somewhere new.",
   },
 ];
 
@@ -73,6 +136,8 @@ export default function Groups() {
   const [myGroup, setMyGroup] = useState<RoommateGroup | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showManageModal, setShowManageModal] = useState(false);
+  const [viewingProfile, setViewingProfile] =
+    useState<GroupMember | null>(null);
   const [search, setSearch] = useState("");
 
   const isAdmin = myGroup?.adminId === currentUser.id;
@@ -127,6 +192,10 @@ export default function Groups() {
         (member) => member.id !== memberId
       ),
     });
+
+    if (viewingProfile?.id === memberId) {
+      setViewingProfile(null);
+    }
   };
 
   const handleLeaveGroup = () => {
@@ -138,6 +207,7 @@ export default function Groups() {
 
     if (remaining.length === 0) {
       setMyGroup(null);
+      setViewingProfile(null);
       return;
     }
 
@@ -149,6 +219,8 @@ export default function Groups() {
           ? remaining[0].id
           : myGroup.adminId,
     });
+
+    setViewingProfile(null);
   };
 
   const availableMatches = mockMatches.filter(
@@ -166,9 +238,11 @@ export default function Groups() {
             <p className="mb-2 text-sm font-semibold text-primary">
               ROOMMATE CONNECTIONS
             </p>
+
             <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
               Roommate Groups
             </h1>
+
             <p className="mt-2 max-w-xl text-gray-600">
               Create your group, invite roommates, and manage your
               group’s members.
@@ -222,9 +296,11 @@ export default function Groups() {
                     <Users size={17} />
                     YOUR GROUP
                   </div>
+
                   <h2 className="text-2xl font-bold">
                     {myGroup.name}
                   </h2>
+
                   <p className="mt-2 text-sm text-white/80">
                     {myGroup.members.length} members
                   </p>
@@ -256,7 +332,8 @@ export default function Groups() {
 
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {myGroup.members.map((member) => {
-                  const memberIsAdmin = member.id === myGroup.adminId;
+                  const memberIsAdmin =
+                    member.id === myGroup.adminId;
 
                   return (
                     <div
@@ -267,7 +344,7 @@ export default function Groups() {
                         <div className="flex items-start gap-4">
                           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl ring-4 ring-white shadow-md">
                             <Image
-                              src={member.image}
+                              src={member.images[0]}
                               alt={member.name}
                               fill
                               sizes="64px"
@@ -278,8 +355,10 @@ export default function Groups() {
                           <div className="min-w-0 flex-1">
                             <h4 className="truncate font-bold text-gray-900">
                               {member.name}
-                              {member.id === currentUser.id && " (You)"}
+                              {member.id === currentUser.id &&
+                                " (You)"}
                             </h4>
+
                             <p className="mt-1 text-sm text-gray-600">
                               {member.major || "Roommate match"}
                             </p>
@@ -291,11 +370,25 @@ export default function Groups() {
                               </span>
                             )}
                           </div>
+
+                          {/* View Profile */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setViewingProfile(member)
+                            }
+                            aria-label={`View ${member.name}'s profile`}
+                            title="View profile"
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-orange-100 bg-white text-primary shadow-sm transition hover:bg-orange-50 hover:shadow-md"
+                          >
+                            <Eye size={19} />
+                          </button>
                         </div>
 
                         <div className="mt-4 rounded-2xl border border-orange-100 bg-gradient-to-br from-white to-orange-50/60 p-4">
                           <p className="text-sm text-gray-700">
-                            {member.bio || "No bio added yet."}
+                            {member.bio ||
+                              "No bio added yet."}
                           </p>
 
                           <div className="mt-3">
@@ -339,6 +432,7 @@ export default function Groups() {
           <p className="font-semibold text-primary">
             Looking for more roommate matches?
           </p>
+
           <p className="mt-1 text-sm text-gray-600">
             Head to Discover to explore individual profiles and
             group matches.
@@ -354,7 +448,9 @@ export default function Groups() {
             myGroup?.members.map((member) => member.id) ?? []
           }
           onClose={() => setShowCreateModal(false)}
-          onCreate={myGroup ? handleAddMembers : handleCreateGroup}
+          onCreate={
+            myGroup ? handleAddMembers : handleCreateGroup
+          }
         />
       )}
 
@@ -367,6 +463,22 @@ export default function Groups() {
           onTransferAdmin={handleTransferAdmin}
           onRemoveMember={handleRemoveMember}
           onLeaveGroup={handleLeaveGroup}
+        />
+      )}
+
+      {/* Profile viewer */}
+      {viewingProfile && (
+        <GroupProfileViewer
+          profile={{
+            name: viewingProfile.name,
+            subtitle: viewingProfile.major,
+            images: viewingProfile.images,
+            bio: viewingProfile.bio,
+            interests: viewingProfile.interests,
+            habits: viewingProfile.habits,
+            expandedBio: viewingProfile.expandedBio,
+          }}
+          onClose={() => setViewingProfile(null)}
         />
       )}
     </main>
@@ -394,7 +506,9 @@ function CreateGroupModal({
   const availableMembers = mockMatches.filter(
     (member) =>
       !existingMemberIds.includes(member.id) &&
-      member.name.toLowerCase().includes(search.toLowerCase())
+      member.name
+        .toLowerCase()
+        .includes(search.toLowerCase())
   );
 
   const toggleMember = (id: number) => {
@@ -421,8 +535,11 @@ function CreateGroupModal({
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {isAddingMembers ? "Add Members" : "Create Your Group"}
+              {isAddingMembers
+                ? "Add Members"
+                : "Create Your Group"}
             </h2>
+
             <p className="mt-2 text-sm text-gray-600">
               {isAddingMembers
                 ? "Choose people to add to your group."
@@ -443,7 +560,7 @@ function CreateGroupModal({
           <div className="mb-5 flex items-center gap-3 rounded-2xl border border-orange-100 bg-orange-50/70 p-3">
             <div className="relative h-12 w-12 overflow-hidden rounded-2xl">
               <Image
-                src={currentUser.image}
+                src={currentUser.images[0]}
                 alt={currentUser.name}
                 fill
                 sizes="48px"
@@ -455,7 +572,10 @@ function CreateGroupModal({
               <p className="font-semibold text-gray-900">
                 {currentUser.name} (You)
               </p>
-              <p className="text-sm text-primary">Group Admin</p>
+
+              <p className="text-sm text-primary">
+                Group Admin
+              </p>
             </div>
 
             <Check className="text-primary" size={20} />
@@ -464,11 +584,14 @@ function CreateGroupModal({
 
         <div className="relative mb-4">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+
           <input
             type="text"
             placeholder="Search people..."
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) =>
+              setSearch(event.target.value)
+            }
             className="w-full rounded-2xl border border-orange-100 bg-white px-11 py-3 text-sm outline-none transition focus:border-orange-300 focus:ring-4 focus:ring-orange-100"
           />
         </div>
@@ -477,6 +600,7 @@ function CreateGroupModal({
           <h3 className="font-semibold text-gray-900">
             People to invite
           </h3>
+
           <span className="text-sm text-gray-500">
             {selectedIds.length} selected
           </span>
@@ -504,7 +628,7 @@ function CreateGroupModal({
                 >
                   <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
                     <Image
-                      src={member.image}
+                      src={member.images[0]}
                       alt={member.name}
                       fill
                       sizes="48px"
@@ -516,6 +640,7 @@ function CreateGroupModal({
                     <p className="font-semibold text-gray-900">
                       {member.name}
                     </p>
+
                     <p className="text-sm text-gray-500">
                       {member.major || "Roommate match"}
                     </p>
@@ -555,7 +680,10 @@ function CreateGroupModal({
             disabled={selectedIds.length === 0}
             className="rounded-2xl bg-gradient-to-r from-primary to-secondary px-5 py-3 font-semibold text-white shadow-md transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {isAddingMembers ? "Add Selected Members" : "Create Group"}
+            {isAddingMembers
+              ? "Add Selected Members"
+              : "Create Group"}
+
             {!isAddingMembers &&
               selectedIds.length > 0 &&
               ` (${selectedIds.length + 1} members)`}
@@ -602,6 +730,7 @@ function ManageGroupModal({
             <h2 className="text-2xl font-bold text-gray-900">
               Manage Group
             </h2>
+
             <p className="mt-1 text-sm text-gray-500">
               {group.members.length} members
             </p>
@@ -617,7 +746,10 @@ function ManageGroupModal({
         </div>
 
         <div className="mb-6 rounded-2xl border border-orange-100 bg-gradient-to-br from-white to-orange-50/60 p-4">
-          <p className="text-sm text-gray-600">Current admin</p>
+          <p className="text-sm text-gray-600">
+            Current admin
+          </p>
+
           <p className="mt-1 flex items-center gap-2 font-semibold text-primary">
             <Crown size={17} />
             {currentAdmin?.name ?? "No admin assigned"}
@@ -637,7 +769,7 @@ function ManageGroupModal({
             >
               <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
                 <Image
-                  src={member.image}
+                  src={member.images[0]}
                   alt={member.name}
                   fill
                   sizes="44px"
@@ -650,6 +782,7 @@ function ManageGroupModal({
                   {member.name}
                   {member.id === currentUserId && " (You)"}
                 </p>
+
                 <p className="text-sm text-gray-500">
                   {member.major || "Roommate match"}
                 </p>
@@ -662,16 +795,19 @@ function ManageGroupModal({
                 </span>
               )}
 
-              {isAdmin && member.id !== currentUserId && (
-                <button
-                  onClick={() => onRemoveMember(member.id)}
-                  aria-label={`Remove ${member.name}`}
-                  title="Remove member"
-                  className="rounded-xl p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
-                >
-                  <Trash2 size={16} />
-                </button>
-              )}
+              {isAdmin &&
+                member.id !== currentUserId && (
+                  <button
+                    onClick={() =>
+                      onRemoveMember(member.id)
+                    }
+                    aria-label={`Remove ${member.name}`}
+                    title="Remove member"
+                    className="rounded-xl p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
             </div>
           ))}
         </div>
@@ -693,14 +829,21 @@ function ManageGroupModal({
               id="new-admin"
               value={group.adminId}
               onChange={(event) =>
-                onTransferAdmin(Number(event.target.value))
+                onTransferAdmin(
+                  Number(event.target.value)
+                )
               }
               className="w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-300 focus:ring-4 focus:ring-orange-100"
             >
               {group.members.map((member) => (
-                <option key={member.id} value={member.id}>
+                <option
+                  key={member.id}
+                  value={member.id}
+                >
                   {member.name}
-                  {member.id === currentUserId ? " (You)" : ""}
+                  {member.id === currentUserId
+                    ? " (You)"
+                    : ""}
                 </option>
               ))}
             </select>
@@ -710,7 +853,9 @@ function ManageGroupModal({
         <div className="mt-7 border-t border-orange-100 pt-6">
           {!showLeaveConfirmation ? (
             <button
-              onClick={() => setShowLeaveConfirmation(true)}
+              onClick={() =>
+                setShowLeaveConfirmation(true)
+              }
               className="inline-flex items-center gap-2 rounded-2xl border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
             >
               <Trash2 size={16} />
@@ -723,14 +868,17 @@ function ManageGroupModal({
               </p>
 
               <p className="mt-1 text-sm text-red-600">
-                {isAdmin && group.members.length > 1
+                {isAdmin &&
+                group.members.length > 1
                   ? "Admin rights will be transferred to another member."
                   : "You will be removed from this group."}
               </p>
 
               <div className="mt-4 flex gap-3">
                 <button
-                  onClick={() => setShowLeaveConfirmation(false)}
+                  onClick={() =>
+                    setShowLeaveConfirmation(false)
+                  }
                   className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium"
                 >
                   Cancel
