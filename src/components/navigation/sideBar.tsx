@@ -7,6 +7,7 @@ import { doSignOut } from "@/firebase/auth";
 import {
     DiscoverIcon,
     MatchesIcon,
+    GroupsIcon,
     MessagesIcon,
     SettingsIcon,
     ProfileIcon,
@@ -19,6 +20,7 @@ export default function Sidebar() {
     const items = [
         { label: "Discover", href: "/dashboard", icon: DiscoverIcon },
         { label: "Matches", href: "/dashboard/matches", icon: MatchesIcon },
+        { label: "Roommate Groups", href: "/dashboard/groups", icon: GroupsIcon },
         { label: "Notification", href: "/dashboard/notify", icon: MessagesIcon },
         { label: "Profile", href: "/dashboard/profile", icon: ProfileIcon },
     ];

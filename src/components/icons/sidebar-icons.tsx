@@ -36,6 +36,25 @@ export function MatchesIcon({ className }: IconProps) {
     );
 }
 
+export function GroupsIcon({ className }: IconProps) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className={className}
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.125-.956 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.003a.375.375 0 0 1-.375.375h-3.75a.375.375 0 0 1-.375-.375v-.003m4.5-3.07a6.75 6.75 0 0 0-12.75 0M9 19.128a9.38 9.38 0 0 1-2.625.372 9.337 9.337 0 0 1-4.125-.956 4.125 4.125 0 0 1 7.533-2.493M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128v.003c0 .207.168.375.375.375h3.75a.375.375 0 0 0 .375-.375v-.003m-4.5-3.07a6.75 6.75 0 0 1 12.75 0M12 12.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z"
+            />
+        </svg>
+    );
+}
+
 export function MessagesIcon({ className }: IconProps) {
     return (
         <svg
