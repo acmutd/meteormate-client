@@ -1,0 +1,174 @@
+import numpy as np
+
+NUM_QUESTIONS = 46  # 11 demographic/lifestyle + 32 interests + 3 additional
+MAX_NUM_ANSWER_CHOICES = 6
+
+sim_matrix = np.zeros((NUM_QUESTIONS, MAX_NUM_ANSWER_CHOICES, MAX_NUM_ANSWER_CHOICES))
+q_weights = np.ones((1, NUM_QUESTIONS))  # for now, all questions are weighted equally
+
+
+def _place(q: int, block: list[list[float]]):
+    n = len(block)
+    sim_matrix[q, :n, :n] = np.array(block)
+
+
+# For each question's matrix q_mat, q_mat[i][j] represents how similar choosing answer is to choosing answer j
+
+# gender
+_place(
+    0,
+    [
+        [1.00, 0.50, 0.50, 0.50, 0.50],  # Female
+        [0.50, 1.00, 0.50, 0.50, 0.50],  # Male
+        [0.50, 0.50, 1.00, 0.50, 0.50],  # Non-binary
+        [0.50, 0.50, 0.50, 1.00, 0.50],  # Prefer not to say
+        [0.50, 0.50, 0.50, 0.50, 1.00],  # Other
+    ]
+)
+
+# # major (majors are grouped into 5 categories)
+# _place(1, [
+#     [1.00,  0.30,  0.40,  0.10,  0.15],  # STEM & Engineering
+#     [0.30,  1.00,  0.20,  0.15,  0.35],  # Business & Management
+#     [0.40,  0.20,  1.00,  0.10,  0.30],  # Life Sciences & Health
+#     [0.10,  0.15,  0.10,  1.00,  0.45],  # Humanities & Arts
+#     [0.15,  0.35,  0.30,  0.45,  1.00],  # Social Sciences & Policy
+# ])
+
+# major (grouped by school)
+_place(
+    1,
+    [
+        [1.0, 0.3, 0.3, 0.2, 0.3, 0.1],  # Bass (AHT)
+        [0.3, 1.0, 0.6, 0.5, 0.4, 0.7],  # BBS
+        [0.3, 0.6, 1.0, 0.4, 0.7, 0.4],  # EPPS
+        [0.2, 0.5, 0.4, 1.0, 0.6, 0.8],  # Jonsson (ECS)
+        [0.3, 0.4, 0.7, 0.6, 1.0, 0.4],  # Jindal (JSOM)
+        [0.1, 0.7, 0.4, 0.8, 0.4, 1.0],  # NSM
+    ]
+)
+
+# classification
+_place(
+    2,
+    [
+        [1.00, 0.80, 0.50, 0.30, 0.10],  # Freshman
+        [0.80, 1.00, 0.80, 0.50, 0.20],  # Sophomore
+        [0.50, 0.80, 1.00, 0.80, 0.30],  # Junior
+        [0.30, 0.50, 0.80, 1.00, 0.50],  # Senior
+        [0.10, 0.20, 0.30, 0.50, 1.00],  # Graduate
+    ]
+)
+
+# housing intent
+_place(
+    3,
+    [
+        #  both  off   on
+        [1.0, 0.5, 0.5],  # both
+        [0.5, 1.0, 0.0],  # off_campus
+        [0.5, 0.0, 1.0],  # on_campus
+    ]
+)
+
+# wake time (3 answer choices)
+_place(
+    4,
+    [
+        [1.0, 0.5, 0.0],  # early_bird
+        [0.5, 1.0, 0.5],  # flexible
+        [0.0, 0.5, 1.0],  # night_owl
+    ]
+)
+
+# cleanliness
+_place(
+    5,
+    [
+        [1.0, 0.3, 0.5],  # neat_freak
+        [0.2, 1.0, 0.5],  # relaxed
+        [0.5, 0.3, 1.0],  # tidy
+    ]
+)
+
+# noise_tolerance
+_place(
+    6,
+    [
+        [1.0, 0.7, 0.5],  # loud
+        [0.4, 1.0, 0.8],  # moderate
+        [0.1, 0.7, 1.0],  # quiet
+    ]
+)
+
+# cooking_frequency
+_place(
+    7,
+    [
+        [1.0, 0.7, 0.5],  # never
+        [0.7, 1.0, 0.7],  # rarely
+        [0.5, 0.7, 1.0],  # often
+    ]
+)
+
+# pet_preference
+_place(
+    8,
+    [
+        [1.0, 0.9, 0.8],  # okay with pet
+        [0.7, 1.0, 0.0],  # not okay with pet
+        [
+            0.7, 0.0, 0.5
+        ],  # has a pet (two people having pets may cause problems, which is why last value is 0.5 and not 1)
+    ]
+)
+
+# guest_frequency
+_place(
+    9,
+    [
+        [1.0, 0.35, 0.05],  # never
+        [0.35, 1.0, 0.60],  # sometimes
+        [0.05, 0.60, 1.0],  # often
+    ]
+)
+
+# roommate_closeness
+_place(
+    10,
+    [
+        [1.0, 0.40, 0.05],  # not_close
+        [0.40, 1.0, 0.6],  # friends
+        [0.05, 0.6, 1.0],  # close_friends
+    ]
+)
+
+# interests (32 interests, each treated as a binary yes/no question)
+for i in range(11, 11 + 32):
+    _place(
+        i,
+        [
+            [0.5, 0.5],  # doesn't have interest
+            [0.5, 1.0],  # has interest
+        ]
+    )
+
+# ── Q10 honors ──────────────────────────────────────────────────────
+_place(43, [
+    [1.0, 0.5],
+    [0.5, 1.0],
+])
+
+# ── Q11 llc_interest ────────────────────────────────────────────────
+_place(44, [
+    [1.0, 0.5],
+    [0.5, 1.0],
+])
+
+# num_roommates
+_place(45, [
+    [1.0,  0.8,  0.80, 0.80],   # no_preference
+    [0.8,  1.0,  0.35, 0.1],  # one
+    [0.8,  0.6, 1.0, 0.4],   # two
+    [0.8,  0.4, 0.60, 1.0],  # three
+])
