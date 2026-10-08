@@ -219,8 +219,8 @@ export default function StarBackground({ seed = 1, className = "" }: Props) {
             const roll = rng();
             const size =
                 roll < BG_STAR_LARGE_TIER  ? BG_STAR_LARGE_SIZE_MIN  + rng() * BG_STAR_LARGE_SIZE_RANGE
-                : roll < BG_STAR_MEDIUM_TIER ? BG_STAR_MEDIUM_SIZE_MIN + rng() * BG_STAR_MEDIUM_SIZE_RANGE
-                :                              BG_STAR_TINY_SIZE_MIN   + rng() * BG_STAR_TINY_SIZE_RANGE;
+                    : roll < BG_STAR_MEDIUM_TIER ? BG_STAR_MEDIUM_SIZE_MIN + rng() * BG_STAR_MEDIUM_SIZE_RANGE
+                        :                              BG_STAR_TINY_SIZE_MIN   + rng() * BG_STAR_TINY_SIZE_RANGE;
 
             const opacity =
                 rng() < BG_STAR_DIM_TIER
@@ -274,100 +274,102 @@ export default function StarBackground({ seed = 1, className = "" }: Props) {
     }, [seed]);
 
     return (
-        <svg
-            className={`w-full pointer-events-none select-none ${className}`}
-            style={{ display: "block" }}
-            viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
-            preserveAspectRatio="xMidYTop meet"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-        >
-            {/* Constellation edges */}
-            {edges.map(([a, b], idx) => (
-                <line
-                    key={idx}
-                    x1={nodes[a].x}
-                    y1={nodes[a].y}
-                    x2={nodes[b].x}
-                    y2={nodes[b].y}
-                    stroke={CONSTELLATION_EDGE_COLOR}
-                    strokeWidth={CONSTELLATION_EDGE_WIDTH}
-                    strokeOpacity={CONSTELLATION_EDGE_OPACITY}
-                />
-            ))}
+        <div className={`relative w-full pointer-events-none select-none ${className}`}>
+            <svg
+                className="w-full"
+                style={{ display: "block" }}
+                viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+                preserveAspectRatio="xMidYTop meet"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+            >
+                {/* Constellation edges */}
+                {edges.map(([a, b], idx) => (
+                    <line
+                        key={idx}
+                        x1={nodes[a].x}
+                        y1={nodes[a].y}
+                        x2={nodes[b].x}
+                        y2={nodes[b].y}
+                        stroke={CONSTELLATION_EDGE_COLOR}
+                        strokeWidth={CONSTELLATION_EDGE_WIDTH}
+                        strokeOpacity={CONSTELLATION_EDGE_OPACITY}
+                    />
+                ))}
 
-            {/* Stars */}
-            {stars.map((s, idx) => {
-                // No animation — bare path for performance
-                if (!s.twinkle && !s.pulse) {
+                {/* Stars */}
+                {stars.map((s, idx) => {
+                    // No animation — bare path for performance
+                    if (!s.twinkle && !s.pulse) {
+                        return (
+                            <path
+                                key={idx}
+                                d={sparklePath(s.x, s.y, s.size)}
+                                fill={STAR_FILL_COLOR}
+                                opacity={s.opacity}
+                            />
+                        );
+                    }
+
+                    // Animated stars are drawn at local (0, 0) inside a translated <g>
+                    // so that scale and rotate transforms pivot from the star's own centre.
                     return (
-                        <path
-                            key={idx}
-                            d={sparklePath(s.x, s.y, s.size)}
-                            fill={STAR_FILL_COLOR}
-                            opacity={s.opacity}
-                        />
+                        <g key={idx} transform={`translate(${s.x}, ${s.y})`}>
+                            <path
+                                d={sparklePath(0, 0, s.size)}
+                                fill={STAR_FILL_COLOR}
+                                opacity={s.opacity}
+                            >
+                                {/* Twinkle — smooth opacity oscillation */}
+                                {s.twinkle && (
+                                    <animate
+                                        attributeName="opacity"
+                                        values={`${s.twinkleLo};${s.twinkleHi};${s.twinkleLo}`}
+                                        dur={`${s.twinkleDur}s`}
+                                        begin={`${s.twinkleDelay}s`}
+                                        repeatCount="indefinite"
+                                        calcMode="spline"
+                                        keySplines={`${EASE_IN_OUT_SPLINE}; ${EASE_IN_OUT_SPLINE}`}
+                                        keyTimes="0;0.5;1"
+                                    />
+                                )}
+
+                                {/* Size breathe — gentle scale pulse pivoting from star centre */}
+                                {s.pulse && (
+                                    <animateTransform
+                                        attributeName="transform"
+                                        type="scale"
+                                        additive="sum"
+                                        values={`1;${PULSE_SCALE_PEAK};1`}
+                                        dur={`${s.pulseDur}s`}
+                                        begin={`${s.pulseDelay}s`}
+                                        repeatCount="indefinite"
+                                        calcMode="spline"
+                                        keySplines={`${EASE_IN_OUT_SPLINE}; ${EASE_IN_OUT_SPLINE}`}
+                                        keyTimes="0;0.5;1"
+                                    />
+                                )}
+
+                                {/* Gentle rotation — slightly slower than scale so they drift apart */}
+                                {s.pulse && (
+                                    <animateTransform
+                                        attributeName="transform"
+                                        type="rotate"
+                                        additive="sum"
+                                        values={`-${PULSE_ROTATION_DEGREES};${PULSE_ROTATION_DEGREES};-${PULSE_ROTATION_DEGREES}`}
+                                        dur={`${s.pulseDur * PULSE_ROTATION_DUR_MULTIPLIER}s`}
+                                        begin={`${s.pulseDelay}s`}
+                                        repeatCount="indefinite"
+                                        calcMode="spline"
+                                        keySplines={`${EASE_IN_OUT_SPLINE}; ${EASE_IN_OUT_SPLINE}`}
+                                        keyTimes="0;0.5;1"
+                                    />
+                                )}
+                            </path>
+                        </g>
                     );
-                }
-
-                // Animated stars are drawn at local (0, 0) inside a translated <g>
-                // so that scale and rotate transforms pivot from the star's own centre.
-                return (
-                    <g key={idx} transform={`translate(${s.x}, ${s.y})`}>
-                        <path
-                            d={sparklePath(0, 0, s.size)}
-                            fill={STAR_FILL_COLOR}
-                            opacity={s.opacity}
-                        >
-                            {/* Twinkle — smooth opacity oscillation */}
-                            {s.twinkle && (
-                                <animate
-                                    attributeName="opacity"
-                                    values={`${s.twinkleLo};${s.twinkleHi};${s.twinkleLo}`}
-                                    dur={`${s.twinkleDur}s`}
-                                    begin={`${s.twinkleDelay}s`}
-                                    repeatCount="indefinite"
-                                    calcMode="spline"
-                                    keySplines={`${EASE_IN_OUT_SPLINE}; ${EASE_IN_OUT_SPLINE}`}
-                                    keyTimes="0;0.5;1"
-                                />
-                            )}
-
-                            {/* Size breathe — gentle scale pulse pivoting from star centre */}
-                            {s.pulse && (
-                                <animateTransform
-                                    attributeName="transform"
-                                    type="scale"
-                                    additive="sum"
-                                    values={`1;${PULSE_SCALE_PEAK};1`}
-                                    dur={`${s.pulseDur}s`}
-                                    begin={`${s.pulseDelay}s`}
-                                    repeatCount="indefinite"
-                                    calcMode="spline"
-                                    keySplines={`${EASE_IN_OUT_SPLINE}; ${EASE_IN_OUT_SPLINE}`}
-                                    keyTimes="0;0.5;1"
-                                />
-                            )}
-
-                            {/* Gentle rotation — slightly slower than scale so they drift apart */}
-                            {s.pulse && (
-                                <animateTransform
-                                    attributeName="transform"
-                                    type="rotate"
-                                    additive="sum"
-                                    values={`-${PULSE_ROTATION_DEGREES};${PULSE_ROTATION_DEGREES};-${PULSE_ROTATION_DEGREES}`}
-                                    dur={`${s.pulseDur * PULSE_ROTATION_DUR_MULTIPLIER}s`}
-                                    begin={`${s.pulseDelay}s`}
-                                    repeatCount="indefinite"
-                                    calcMode="spline"
-                                    keySplines={`${EASE_IN_OUT_SPLINE}; ${EASE_IN_OUT_SPLINE}`}
-                                    keyTimes="0;0.5;1"
-                                />
-                            )}
-                        </path>
-                    </g>
-                );
-            })}
-        </svg>
+                })}
+            </svg>
+        </div>
     );
 }
