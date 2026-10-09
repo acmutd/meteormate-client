@@ -1,5 +1,6 @@
 "use client";
-import React, {useEffect, useRef, useState} from "react";
+
+import React, {useEffect, useState} from "react";
 import LogoBox from "../../../components/LogoBox";
 import {useRouter} from "next/navigation";
 import {validatePasswordMatch, validatePassword} from "@/utils/validation";
@@ -7,38 +8,41 @@ import LoadingSpinner from "../../../components/LoadingSpinner";
 import PasswordInput from "@/components/forms/PasswordInput";
 import {useToast} from "@/components/ui/ToastProvider";
 import {Check, X} from "lucide-react";
+import {ResetPassword, SendResetPasswordCode} from "@/utils/api/auth";
+import {OTP_LENGTH} from "@/constants/otp";
+import OtpCodeInput from "@/components/forms/OtpCodeInput";
 
 export default function NewPasswordPage() {
     const router = useRouter();
     const {toast} = useToast();
-    const passwordRef = useRef<HTMLInputElement | null>(null);
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [email, setEmail] = useState("");
-    const [code, setCode] = useState("");
+    const [code, setCode] = useState<string[]>(Array(OTP_LENGTH).fill(""));
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isResending, setIsResending] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
     const [passwordValidation, setPasswordValidation] = useState(() =>
         validatePassword("")
     );
 
-    // Load email + code saved earlier
     useEffect(() => {
         const storedEmail = sessionStorage.getItem("resetEmail");
-        const storedCode = sessionStorage.getItem("resetCode");
 
-        if (storedEmail) setEmail(storedEmail);
-        if (storedCode) setCode(storedCode);
+        if (!storedEmail) {
+            router.replace("/authentication/forgotPassword");
+            return;
+        }
 
-        // Optional: if either is missing, kick them back to Forgot Password
-        // if (!storedEmail || !storedCode) router.push("/authentication/forgotPassword");
+        setEmail(storedEmail);
     }, [router]);
 
-    useEffect(() => {
-        passwordRef.current?.focus();
-    }, []);
+    const handleCodeChange = (nextCode: string[]) => {
+        setCode(nextCode);
+        setErrorMsg("");
+    };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -59,6 +63,12 @@ export default function NewPasswordPage() {
     const handleSubmit = async () => {
         setErrorMsg("");
 
+        const verificationCode = code.join("");
+        if (verificationCode.length !== OTP_LENGTH) {
+            setErrorMsg(`Please enter the full ${OTP_LENGTH}-digit verification code.`);
+            return;
+        }
+
         if (!password || !confirmPassword) {
             setErrorMsg("Please fill out both password fields.");
             return;
@@ -77,31 +87,21 @@ export default function NewPasswordPage() {
             return;
         }
 
-        if (!email || !code) {
-            setErrorMsg("Missing reset email or code. Please restart the reset process.");
+        if (!email) {
+            setErrorMsg("Missing reset email. Please restart the reset process.");
             return;
         }
 
         try {
             setIsSubmitting(true);
 
-            const response = await fetch(`/api/auth/reset-password`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    email,
-                    code,
-                    new_password: password,
-                }),
-            });
+            const result = await ResetPassword(email, verificationCode, password);
 
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                throw new Error(data.detail || "Failed to reset password.");
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to reset password.");
             }
 
             sessionStorage.removeItem("resetEmail");
-            sessionStorage.removeItem("resetCode");
 
             toast({
                 type: "success",
@@ -124,13 +124,46 @@ export default function NewPasswordPage() {
         }
     };
 
+    const resendCode = async () => {
+        if (!email || isResending) return;
+
+        try {
+            setIsResending(true);
+            setErrorMsg("");
+
+            const result = await SendResetPasswordCode(email);
+            if (!result.ok) {
+                throw new Error(result.error || "Failed to resend code.");
+            }
+
+            setCode(Array(OTP_LENGTH).fill(""));
+            toast({
+                type: "success",
+                title: "Verification code sent",
+                description: "Check your email for a new 6-digit code.",
+            });
+        } catch (err: unknown) {
+            const errorMessage =
+                err instanceof Error ? err.message : "Failed to resend code. Please try again.";
+            setErrorMsg(errorMessage);
+            toast({
+                type: "error",
+                title: "Couldn't resend code",
+                description: errorMessage,
+            });
+        } finally {
+            setIsResending(false);
+        }
+    };
+
     const canSubmit =
         !isSubmitting &&
+        !isResending &&
         passwordValidation.isValid &&
         !!confirmPassword &&
         validatePasswordMatch(password, confirmPassword) === "" &&
         !!email &&
-        !!code;
+        code.join("").length === OTP_LENGTH;
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -156,14 +189,15 @@ export default function NewPasswordPage() {
         </p>
     );
 
+    const isBusy = isSubmitting || isResending;
+
     return (
         <LogoBox logoSrc="/MM_logo_V2.svg" logoAlt="MeteorMate Logo">
             <div className="flex flex-col w-full max-w-2xl px-10">
-                {/* Back Arrow */}
                 <button
-                    onClick={() => router.push("/authentication")}
+                    onClick={() => router.push("/authentication/forgotPassword")}
                     className="absolute top-8 left-5 p-2 rounded-full text-zinc-600 hover:bg-zinc-400/10 border border-white/10 hover:border-primary-hover/30 transition-colors"
-                    aria-label="Back to login"
+                    aria-label="Back to forgot password"
                     type="button"
                 >
                     <svg
@@ -177,32 +211,55 @@ export default function NewPasswordPage() {
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            d="M15.75 19.5L8.25 12l7.5-7.5"
+                            d="M15.75 19.5 8.25 12l7.5-7.5"
                         />
                     </svg>
                 </button>
 
-                {/* Title */}
                 <div className="flex flex-col justify-center items-center text-center pb-2">
                     <h1 className="font-urbanist font-semibold md:text-[35px] text-[20px] pt-6 text-black">
-                        Input New Password
+                        Reset Password
                     </h1>
                     <p className="font-urbanist font-light md:text-[12px] text-[10px] text-zinc-500">
-                        Choose a strong password you haven’t used before.
+                        Enter the code from your email and choose a strong new password.
                     </p>
                 </div>
 
-                {/* Glass card container */}
                 <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6">
                     <form onSubmit={onSubmit} className="flex flex-col gap-3">
+                        <div>
+                            <p className="block text-sm font-urbanist font-light text-zinc-400 mb-2">
+                                Verification code
+                            </p>
+                            <OtpCodeInput
+                                value={code}
+                                onChange={handleCodeChange}
+                                disabled={isBusy}
+                                ariaLabelPrefix="Reset code"
+                                inputClassName="w-10 h-10 sm:w-12 sm:h-12"
+                            />
+                            <button
+                                type="button"
+                                onClick={resendCode}
+                                disabled={isBusy}
+                                className={[
+                                    "w-full mt-3 text-sm underline underline-offset-4",
+                                    isBusy
+                                        ? "text-zinc-400 cursor-not-allowed"
+                                        : "text-zinc-500 hover:text-primary-hover cursor-pointer transition-colors",
+                                ].join(" ")}
+                            >
+                                {isResending ? "Resending..." : "Resend code"}
+                            </button>
+                        </div>
+
                         <PasswordInput
                             value={password}
                             onChange={handlePasswordChange}
                             label="Password"
-                            disabled={isSubmitting}
+                            disabled={isBusy}
                             showToggle
                             autoComplete="new-password"
-                            inputRef={passwordRef}
                         />
 
                         <PasswordInput
@@ -210,7 +267,7 @@ export default function NewPasswordPage() {
                             onChange={handleConfirmPasswordChange}
                             label="Verify Password"
                             error={confirmPasswordError}
-                            disabled={isSubmitting}
+                            disabled={isBusy}
                             showToggle
                             autoComplete="new-password"
                         />
@@ -254,7 +311,7 @@ export default function NewPasswordPage() {
                         </button>
 
                         <p className="text-center text-xs text-zinc-500 -mb-4">
-                            If you didn’t request this reset, go back and log in normally.
+                            If you didn&apos;t request this reset, go back and log in normally.
                         </p>
                     </form>
                 </div>

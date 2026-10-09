@@ -6,16 +6,16 @@ import ImageDelete from "./ImageDelete";
 
 interface ImageDisplayProps {
   imageUrl: string;
-  onImageChange?: (newImageUrl: string) => void;
-  deleteIndex?: number;
-  onDeleted?: () => void;
+  onImageChange?: (newImageUrl: string) => void | Promise<void>;
+  canDelete?: boolean;
+  onDeleted?: (profilePictures: string[]) => void;
   variant?: "image" | "placeholder";
 }
 
 export default function ImageDisplay({
     imageUrl,
     onImageChange,
-    deleteIndex,
+    canDelete = false,
     onDeleted,
     variant = "image",
 }: ImageDisplayProps) {
@@ -89,8 +89,8 @@ export default function ImageDisplay({
                         onClick={handleImageClick}
                         title="Click to update this image"
                     />
-                    {typeof deleteIndex === "number" && (
-                        <ImageDelete index={deleteIndex} onDeleted={onDeleted} />
+                    {canDelete && (
+                        <ImageDelete imageUrl={imageUrl} onDeleted={onDeleted} />
                     )}
                 </>
             )}
@@ -119,9 +119,7 @@ export default function ImageDisplay({
             )}
             <ImageUploader
                 ref={uploaderRef}
-                onImageChange={(newUrl) => {
-                    if (onImageChange) onImageChange(newUrl);
-                }}
+                onImageChange={onImageChange}
             />
         </div>
     );

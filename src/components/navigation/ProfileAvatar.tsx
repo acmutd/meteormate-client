@@ -2,21 +2,32 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { readCachedCurrentUser } from "@/utils/currentUserCache";
+import {
+    CURRENT_USER_CACHE_UPDATED_EVENT,
+    readCachedCurrentUser,
+} from "@/utils/currentUserCache";
+
+const DEFAULT_AVATAR = "/peechi_progress_2.svg";
 
 export default function ProfileAvatar() {
     const router = useRouter();
-    const [src, setSrc] = useState<string>("/peechi_progress_2.svg");
+    const [src, setSrc] = useState<string>(DEFAULT_AVATAR);
 
     useEffect(() => {
-        try {
+        const syncAvatarFromCache = () => {
             const cached = readCachedCurrentUser();
             const first = cached?.profile?.profile_picture_url?.[0];
-            if (first) setSrc(first);
-        } catch (e) {
-            // ignore and keep placeholder
-            console.warn("ProfileAvatar: no cached profile image; using placeholder", e);
-        }
+            setSrc(first || DEFAULT_AVATAR);
+        };
+
+        syncAvatarFromCache();
+        window.addEventListener(CURRENT_USER_CACHE_UPDATED_EVENT, syncAvatarFromCache);
+        window.addEventListener("storage", syncAvatarFromCache);
+
+        return () => {
+            window.removeEventListener(CURRENT_USER_CACHE_UPDATED_EVENT, syncAvatarFromCache);
+            window.removeEventListener("storage", syncAvatarFromCache);
+        };
     }, []);
 
     return (

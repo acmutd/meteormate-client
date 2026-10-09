@@ -1,6 +1,8 @@
-import { UserProfile } from "@/types/userProfile";
+import type { UserProfile } from "@/types/userProfile";
+import type { ProfileResponse } from "@/types/profile";
 
 const CURRENT_USER_CACHE_KEY = "meteormate_current_user";
+export const CURRENT_USER_CACHE_UPDATED_EVENT = "meteormate:current-user-cache-updated";
 
 interface CurrentUserCacheEnvelope {
     data: UserProfile;
@@ -41,9 +43,22 @@ export function writeCachedCurrentUser(user: UserProfile) {
     };
 
     localStorage.setItem(CURRENT_USER_CACHE_KEY, JSON.stringify(payload));
+    window.dispatchEvent(new Event(CURRENT_USER_CACHE_UPDATED_EVENT));
+}
+
+export function updateCachedCurrentUserProfile(profile: ProfileResponse) {
+    const currentUser = readCachedCurrentUser();
+    if (!currentUser) return;
+
+    writeCachedCurrentUser({
+        ...currentUser,
+        profile,
+        profile_created: true,
+    });
 }
 
 export function clearCachedCurrentUser() {
     if (!isBrowser()) return;
     localStorage.removeItem(CURRENT_USER_CACHE_KEY);
+    window.dispatchEvent(new Event(CURRENT_USER_CACHE_UPDATED_EVENT));
 }

@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState } from "react";
 import StackedCarousel from "@/components/cardComponent/imageCarousel";
-import { loadNotifications, type LikeNotification } from "@/lib/notifications";
 import ProfileCardBack from "@/components/cardComponent/ProfileCardBack";
 import { cn } from "@/utils/cn";
+//Commented out for future implementation of notifications in ProfileCard.
+// import { loadNotifications, type LikeNotification } from "@/lib/notifications";
+
 
 type Chip = {
 	label: string;
@@ -37,8 +39,9 @@ type ProfileCardProps = {
     onLike?: () => void;
 
     showActions?: boolean;
-    showSidebar?: boolean;
+    //showSidebar?: boolean;
 };
+
 
 export default function ProfileCard({
     name,
@@ -50,38 +53,42 @@ export default function ProfileCard({
     onDislike,
     onLike,
     showActions = true,
-    showSidebar = true,
-}: ProfileCardProps) {
-    
+    }: ProfileCardProps) {
 
     const [flipped, setFlipped] = useState(false); 
     const [peek, setPeek] = useState(false);  
     const [peekDown, setPeekDown] = useState(false);
     const [showHint, setShowHint] = useState(true);
+    const [showReportMenu, setShowReportMenu] = useState(false);
+    //Commented out for future implementation of notifications in ProfileCard.
+    // const [notifications, setNotifications] = useState<LikeNotification[]>([]);
+    // const [loadingNotifications, setLoadingNotifications] = useState(true);
 
-    const [notifications, setNotifications] = useState<LikeNotification[]>([]);
-    const [loadingNotifications, setLoadingNotifications] = useState(true);
-    useEffect(() => {
-        let mounted = true;
+    // useEffect(() => {
+    //     let mounted = true;
 
-        try {
-            setLoadingNotifications(true);
-            const data = loadNotifications(); // reads local storage cache you already use
-            if (mounted) setNotifications(data);
-        } finally {
-            if (mounted) setLoadingNotifications(false);
-        }
+    //     try {
+    //         setLoadingNotifications(true);
+    //         const data = loadNotifications();
+    //         if (mounted) setNotifications(data);
+    //     } finally {
+    //         if (mounted) setLoadingNotifications(false);
+    //     }
 
-        return () => {
-            mounted = false;
-        };
-    }, []);
+    //     return () => {
+    //         mounted = false;
+    //     };
+    // }, []);
 
-    const top3 = useMemo(() => {
-        return [...notifications]
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-            .slice(0, 3);
-    }, [notifications]);
+    // const top3 = useMemo(() => {
+    //     return [...notifications]
+    //         .sort(
+    //             (a, b) =>
+    //                 new Date(b.createdAt).getTime() -
+    //                 new Date(a.createdAt).getTime()
+    //         )
+    //         .slice(0, 3);
+    // }, [notifications]);
 
     return (
         <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-center">
@@ -111,6 +118,36 @@ export default function ProfileCard({
                             >
                                 {/* use ONE shared outer card shell */}
                                 <div className="relative h-full w-full rounded-[28px] border border-[#F1EADA] bg-white shadow-sm p-6 overflow-hidden">
+                                    
+                                    <div className="absolute top-8 right-8 z-30">
+                                        <button
+                                        onClick={() => setShowReportMenu((v) => !v)}
+                                        className="cursor-pointer h-10 w-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur border border-[#F1EADA] shadow-sm hover:bg-gray-100 transition"
+                                        >
+                                        {/* the dots hehe */}
+                                        <div className="flex flex-col gap-[3px]">
+                                            <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                            <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                            <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                        </div>
+                                        </button>
+
+                                        {/* the actualy menu  */}
+                                        {showReportMenu && (
+                                        <div className="absolute right-0 mt-2 w-30 rounded-xl border border-[#F1EADA] bg-white shadow-lg p-1">
+                                            <button
+                                            onClick={() => {
+                                                console.log("Report user");
+                                                setShowReportMenu(false);
+                                            }}
+                                            className="cursor-pointer w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition"
+                                            >
+                                            Report user
+                                            </button>
+                                        </div>
+                                        )}
+                                    </div>
+
                                     <div className="relative rounded-[22px] overflow-hidden">
                                         <StackedCarousel images={images} altPrefix={name} />
 
@@ -277,80 +314,19 @@ export default function ProfileCard({
                 )}
             </div>
                 
-            {/** right side here */}
-            {showSidebar && (
-                <div className="w-full lg:w-[380px] xl:w-105 shrink-0 flex flex-col gap-6 lg:ml-auto lg:items-end">
-                    <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10">
-                        <div className="flex items-center justify-start gap-2 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
-                            </svg>
-                            <p className="text-sm font-semibold text-gray-900">
-                                Filters
-                            </p>
-                        </div>
-                        <p className="mb-2">Dealbreakers - Location</p>
-                        <div className="flex justify-between mb-2">
-                            <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">On Campus</button>
-                            <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">Off Campus</button>
-                        </div>
-                        <p className="mb-2">Dealbreakers - Pets</p>
-                        <button className="border rounded-xl px-2 py-1 text-[12px] cursor-pointer">No Pets</button>
-                            
-                        
-                    </div>
-                    {/* Here's the filter's and recent activity */}
-                    <div className="rounded-2xl border w-[75%] border-[#F1EADA] bg-white shadow-sm py-6 px-10 max-h-90 overflow-auto">
-                        <div className="flex items-center justify-start gap-2 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                            <p className="text-sm font-semibold text-gray-900">
-                                Recent activity
-                            </p>
-                        </div>
-                        
-
-                        {loadingNotifications && (
-                            <p className="text-sm text-gray-500">
-                                Loading…
-                            </p>
-                        )}
-
-                        {!loadingNotifications && top3.length === 0 && (
-                            <p className="text-sm text-gray-500">
-                                No notifications yet.
-                            </p>
-                        )}
-
-                        {!loadingNotifications && top3.length > 0 && (
-                            <div className="space-y-3">
-                                {top3.map((n) => (
-                                    <div
-                                        key={n.id}
-                                        className={[
-                                            "flex items-centerpx-4",
-                                            n.isRead ? "bg-white" : "bg-[#FFF7ED]",
-                                        ].join(" ")}
-                                    >
-
-                                        <p className="text-sm text-gray-900 truncate">
-                                            <span className="font-semibold">
-                                                {n.liker.name}
-                                            </span>{" "}
-                                            liked your profile
-                                            {!n.isRead && (
-                                                <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
-                                            )}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>   
-                </div>
-            )}
+       
         </div>
     );
 }
+
+//Dot function is commented out since it was not referenced anywhere else in the code
+// function Dot({ active }: { active: boolean }) {
+//     return (
+//         <span
+//             className={cn(
+//                 "h-2 w-2 rounded-full transition",
+//                 active ? "bg-white" : "bg-white/40"
+//             )}
+//         />
+//     );
+// }

@@ -40,6 +40,7 @@ export interface ProfileResponse {
     updated_at: string;
     first_name: string;
     last_name: string;
+    age: number;
     dob: string;
     profile_picture_url: string[];
     bio: string;
@@ -47,9 +48,10 @@ export interface ProfileResponse {
     promotional_notification: boolean;
 }
 
-export interface ProfilePictureBody {
-    base64: string;
+export interface ProfileDeletePicturesBody {
+    profile_picture_url: string[];
 }
+
 export interface ProfileUpdateNotificationsBody {
     match_notification?: boolean | null;
     promotional_notification?: boolean | null;
@@ -62,3 +64,4 @@ export interface UpdateUserProfileBody {
     bio: string;
     dob: string | null;
 }
+

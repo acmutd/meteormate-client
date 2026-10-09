@@ -4,11 +4,12 @@ import {
     readCachedProfile,
     writeCachedProfile,
 } from "@/utils/profileCache";
+import { updateCachedCurrentUserProfile } from "@/utils/currentUserCache";
 import {
     ProfileCreateBody,
     ProfileUpdateBody,
     ProfileResponse,
-    ProfilePictureBody,
+    ProfileDeletePicturesBody,
     ProfileUpdateNotificationsBody,
 } from "@/types/profile";
 
@@ -21,6 +22,7 @@ export interface FetchProfileOptions {
 function updateProfileCache(result: Result<ProfileResponse>) {
     if (result.ok) {
         writeCachedProfile(result.data);
+        updateCachedCurrentUserProfile(result.data);
     }
 }
 
@@ -76,20 +78,13 @@ export async function getProfile(uid: string): Promise<Result<ProfileResponse>> 
     return fetchProfile(uid);
 }
 
-// Uploads a profile picture (base64 encoded)
-export async function uploadProfilePicture(body: ProfilePictureBody): Promise<Result<ProfileResponse>> {
-    const result = await apiFetch<ProfileResponse>("/api/profiles/upload_picture", {
-        method: "POST",
-        body,
-    });
-    updateProfileCache(result);
-    return result;
-}
-
-// Deletes a profile picture by index
-export async function deleteProfilePicture(index: number): Promise<Result<ProfileResponse>> {
-    const result = await apiFetch<ProfileResponse>(`/api/profiles/delete_picture/${index}`, {
+// Deletes profile-picture objects and clears their slots in the profile.
+export async function deleteProfilePictures(
+    body: ProfileDeletePicturesBody,
+): Promise<Result<ProfileResponse>> {
+    const result = await apiFetch<ProfileResponse>("/api/profiles/delete_pictures", {
         method: "DELETE",
+        body,
     });
     updateProfileCache(result);
     return result;

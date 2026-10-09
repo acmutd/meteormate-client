@@ -233,42 +233,42 @@ export default function Matches() {
                         {filteredMatches.length} Matches
                     </div>
           
-                </div>
-                <AnimatePresence mode="wait">
-                    {selectedUser && (
-                        <motion.div
-                            key={selectedUser.id}
-                            layout
-                            initial={{ opacity: 0, y: -20, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -12, scale: 0.98 }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
-                            className="mb-8 origin-top"
-                        >
-                            <div className="mb-8">
-                                <ProfileCard
-                                    name={selectedUser.name}
-                                    subtitle={selectedUser.major}
-                                    images={selectedUser.images}
-                                    tags={[
-                                        {
-                                            label: selectedUser.hasLease ? "Has a lease" : "No lease yet",
-                                            tone: "orange",
-                                        },
-                                    ]}
-                                    bio={selectedUser.bio}
-                                    back={{
-                                        interests: selectedUser.interests,
-                                        habits: selectedUser.habits,
-                                        expandedBio: selectedUser.expandedBio,
-                                    }}
-                                    showActions={false}
-                                    showSidebar={false}
-                                />
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+        </div>
+        <AnimatePresence mode="wait">
+        {selectedUser && (
+          <motion.div
+            key={selectedUser.id}
+            layout
+            initial={{ opacity: 0, y: -20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="mb-8 origin-top"
+          >
+          <div className="mb-8">
+            <ProfileCard
+              name={selectedUser.name}
+              subtitle={selectedUser.major}
+              images={selectedUser.images}
+              tags={[
+                {
+                  label: selectedUser.hasLease ? "Has a lease" : "No lease yet",
+                  tone: "orange",
+                },
+              ]}
+              bio={selectedUser.bio}
+              back={{
+                interests: selectedUser.interests,
+                habits: selectedUser.habits,
+                expandedBio: selectedUser.expandedBio,
+              }}
+              showActions={false}
+              //showSidebar={false}
+            />
+          </div>
+          </motion.div>
+        )}
+        </AnimatePresence>
 
                 {/* and matches grid */}
                 {filteredMatches.length > 0 ? (
