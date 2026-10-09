@@ -1,10 +1,13 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 
 interface StarsBackgroundProps {
     count?: number;
     color?: string;
+    opacity?: number;
     className?: string;
+    fixed?: boolean;
+    background?: boolean;
     /** Max rotation in either direction, in degrees (e.g. 20 = -20deg..+20deg). */
     maxRotation?: number;
 }
@@ -26,7 +29,10 @@ const STAR_PATH = "M50 0 Q55 45 100 50 Q55 55 50 100 Q45 55 0 50 Q45 45 50 0 Z";
 export default function StarsBackground({
     count = 60,
     color = "#FF9100",
+    opacity = 0.4,
     className = "",
+    fixed = true,
+    background = true,
     maxRotation = 20,
 }: StarsBackgroundProps) {
     const stars = useMemo(() => {
@@ -65,7 +71,7 @@ export default function StarsBackground({
                     top: cy + (rand() * 2 - 1) * cellH * jitter,
                     left: cx + (rand() * 2 - 1) * cellW * jitter,
                     size,
-                    opacity: 0.4 + rand() * 0.01, // very transparent
+                    opacity: opacity * (0.9 + rand() * 0.1),
                     rotate: (rand() * 2 - 1) * maxRotation, // -maxRotation..+maxRotation
                     delay: rand() * 4,
                     glow: size * 0.45, // bigger stars => bigger glow radius
@@ -74,12 +80,13 @@ export default function StarsBackground({
         }
 
         return stars;
-    }, [count, maxRotation]);
+    }, [count, maxRotation, opacity]);
 
     return (
         <div
             aria-hidden="true"
-            className={`pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-black ${className}`}        >
+            className={`pointer-events-none ${fixed ? "fixed inset-0 -z-10" : "absolute inset-0 z-0"} overflow-hidden ${background ? "bg-black" : ""} ${className}`}
+        >
             {stars.map((s, i) => (
                 <svg
                     key={i}

@@ -3,74 +3,84 @@ import Image from "next/image";
 import LandingSection from "./LandingSection";
 
 interface FeatureCardProps {
-    imageSrc: string;
-    imageAlt: string;
+    number: number;
+    icon: "profile" | "match" | "chat";
     title: string;
     description: string;
-    // Removed imageWidth/Height from props to enforce CSS sizing
+    connectNext?: boolean;
+}
+
+function FeatureIcon({ icon }: { icon: FeatureCardProps["icon"] }) {
+    const iconSrc = {
+        profile: "/profile.svg",
+        match: "/meteor.svg",
+        chat: "/chat.svg",
+    }[icon];
+
+    return (
+        <Image
+            src={iconSrc}
+            alt=""
+            aria-hidden="true"
+            width={90}
+            height={90}
+            className="h-[90px] w-[90px] object-contain"
+        />
+    );
 }
 
 function FeatureCard({
-    imageSrc,
-    imageAlt,
+    number,
+    icon,
     title,
     description,
+    connectNext = false,
 }: FeatureCardProps) {
     return (
         <div
-            className="font-[family-name:var(--font-outfit)] w-80 h-100 rounded-2xl border border-transparent bg-[linear-gradient(#1A1919,#1A1919),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] [background-clip:padding-box,border-box] [background-origin:border-box] flex flex-col items-start gap-5 p-6 transition-all duration-300 group align-middle">
-            {/* Icon Container - Fixed height, flex centered */}
-            <div
-                className="relative h-16 w-16 md:h-20 md:w-20 flex-shrink-0 rounded-xl p-3 group-hover:scale-105 transition-transform">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-[#FF9100] to-[#FFC94C] font-bold text-white shadow-md text-xl">
-                    <p>1</p>
-                </div>
-                <Image
-                    src={imageSrc}
-                    alt={imageAlt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-contain p-2"
-                />
+            className={`group relative z-10 flex h-[323px] w-[250px] flex-col items-center rounded-[10px] border-[0.8px] border-transparent bg-[linear-gradient(#1A1919,#1A1919),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] [background-clip:padding-box,border-box] [background-origin:border-box] px-5 pt-[14px] text-center font-[family-name:var(--font-outfit)] transition-colors duration-300 hover:bg-[linear-gradient(#211F1C,#211F1C),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] ${
+                connectNext
+                    ? "after:absolute after:left-full after:top-1/2 after:hidden after:h-[3px] after:w-[76px] after:bg-gradient-to-r after:from-[#FF9100]/30 after:to-[#FFC94C]/30 after:content-[''] lg:after:block"
+                    : ""
+            }`}
+        >
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(90deg,#FF9100_57.21%,#FFC94C_100%)] font-[family-name:var(--font-orelega-one)] text-base font-bold leading-none text-white">
+                {number}
             </div>
-        
-            <div className="space-y-2">
-                <h3 className="outfit text-center text-2xl font-medium text-white group-hover:text-primary transition-colors">
+            <div className="mt-4 flex h-[130px] w-[130px] shrink-0 items-center justify-center rounded-full border border-[#29251F] bg-[#201E1A] transition-transform duration-300 group-hover:scale-105">
+                <FeatureIcon icon={icon} />
+            </div>
+            <div className="mt-4 space-y-2">
+                <h3 className="text-center text-2xl font-medium text-white transition-colors group-hover:text-primary">
                     {title}
                 </h3>
-                <p className="outfit font-light text-[#EEEEEE] text-center">
+                <p className="text-center text-sm font-light leading-[19px] text-[#EEEEEE]">
                     {description}
                 </p>
             </div>
-            <div className="-z-9 absolute top-10/4 -left-[10%] h-32 w-[120%] rotate-18 bg-gradient-to-r from-transparent via-orange-500/40 to-transparent blur-2xl"></div>
-                <div className="-z-9 absolute -bottom-500 -right-20 h-[500px] w-[500px] rounded-full bg-radial from-amber-500/60 via-orange-600/20 to-transparent blur-3xl"></div>
-                <div className="-z-9 absolute -bottom-450 -left-10 h-64 w-64 rounded-full bg-radial from-amber-500/50 via-orange-600/20 to-transparent blur-2xl"></div>
-                <div className="-z-9 absolute top-5/4 -left-70 h-12 -rotate-5 w-256 bg-gradient-to-r from-transparent via-orange-500/40 to-transparent blur-xl pointer-events-none"></div>
-                <div className="-z-9 absolute top-7/4 -right-70 h-12 w-256 -rotate-18 bg-gradient-to-r from-transparent via-orange-500/40 to-transparent blur-xl pointer-events-none"></div>
         </div>
     );
 }
 
 export default function HowItWorks() {
-    // Removed width/height from data array
     const features: FeatureCardProps[] = [
         {
-            imageSrc: "/L1.webp", // Updated from original code reference
-            imageAlt: "AI Powered Matchmaking",
+            number: 1,
+            icon: "profile",
             title: "Create Your Profile",
             description:
                 "Tell us about your lifestyle, preferences, and what you’re looking for.",
         },
         {
-            imageSrc: "/L2.webp",
-            imageAlt: "Data Driven Insights",
+            number: 2,
+            icon: "match",
             title: "We Matchmake",
             description:
                 "Our algorithm analyzes compatibility and finds your best match.",
         },
         {
-            imageSrc: "/L3.webp",
-            imageAlt: "Multistep Verification",
+            number: 3,
+            icon: "chat",
             title: "You Chat",
             description:
                 "Reach out via email, get to know each other, and find your perfect roommate!",
@@ -81,21 +91,22 @@ export default function HowItWorks() {
         <LandingSection
             id="howItWorks"
             className="w-full py-24 md:py-32"
-            
         >
-            
             <div className="mb-12 text-center text-white">
-                <h2 className="outfit-bold text-7xl font-bold mb-4 font-outfit extra-bold">How MeteorMate Works</h2>
-                <p className="outfit font-light text-3xl font-inter">
-                    You're just a few steps away from finding your perfect match
+                <h2 className="outfit-bold mb-4 text-7xl font-bold">How MeteorMate Works</h2>
+                <p className="outfit font-light text-3xl">
+                    You&apos;re just a few steps away from finding your perfect match
                 </p>
             </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 justify-self-center">
-                    {features.map((feature, index) => (
-                        <FeatureCard key={index} {...feature} />
-                    ))}
-                </div>
-
+            <div className="mx-auto grid max-w-[900px] grid-cols-1 justify-items-center gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3 lg:gap-[72px]">
+                {features.map((feature, index) => (
+                    <FeatureCard
+                        key={feature.title}
+                        {...feature}
+                        connectNext={index < features.length - 1}
+                    />
+                ))}
+            </div>
         </LandingSection>
     );
 }
