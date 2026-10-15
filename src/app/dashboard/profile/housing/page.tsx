@@ -205,7 +205,7 @@ export default function HousingPage() {
                 payload.budget_max = null;
             }
 
-            await upsertSurvey(payload, surveyExists);
+            await upsertSurvey(payload, true);
             updateOnboardingData(payload);
 
             setSelectedLocation(payload.on_campus_locations);
