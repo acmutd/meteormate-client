@@ -49,8 +49,8 @@ export const LANDING_MATCHES: {
     },
     {
         position: {
-            left: "44.084837%",
-            top: "52.019427%",
+            left: "65.084837%",
+            top: "4.019427%",
             width: 384,
             transform: "translateX(-100%)",
             marginTop: 16,

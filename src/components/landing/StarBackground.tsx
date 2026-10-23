@@ -22,7 +22,7 @@ const CONSTELLATION_EDGE_SPAWN_THRESHOLD = 0.38;
 
 // Background star population
 /** Total number of purely decorative background stars. */
-const BG_STAR_COUNT = 2000;
+const BG_STAR_COUNT = 1500;
 
 // Size tiers – roll < LARGE_TIER → large, roll < MEDIUM_TIER → medium, else tiny
 const BG_STAR_LARGE_TIER   = 0.10;
@@ -42,7 +42,7 @@ const BG_STAR_DIM_TIER          = 0.32;
 const BG_STAR_DIM_OPACITY_MIN   = 0.10;
 const BG_STAR_DIM_OPACITY_RANGE = 0.22; // 0.10–0.32
 
-const BG_STAR_BRIGHT_OPACITY_MIN   = 0.45;
+const BG_STAR_BRIGHT_OPACITY_MIN   = 0.25;
 const BG_STAR_BRIGHT_OPACITY_RANGE = 0.55; // 0.45–1.0
 
 // Constellation node star appearance
