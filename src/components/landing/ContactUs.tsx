@@ -13,7 +13,8 @@ export default function ContactUs() {
             id="contactUs"
             className="relative isolate w-full overflow-hidden bg-transparent !py-8 text-white md:!py-9"
         >
-            <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 bg-black" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0" />
+            {/*
             <StarsBackground
                 count={64}
                 color="#777777"
@@ -21,6 +22,7 @@ export default function ContactUs() {
                 fixed={false}
                 background={false}
             />
+*/}
             <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
                 <div className="grid grid-cols-1 items-center gap-8 py-2 md:min-h-[166px] md:grid-cols-3 md:gap-8">
                     <div className="flex flex-col items-center gap-3 md:items-start">
