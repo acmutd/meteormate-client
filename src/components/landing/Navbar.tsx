@@ -8,16 +8,8 @@ import LoadingSpinner from "../LoadingSpinner";
 export default function Navbar() {
     const router = useRouter();
     const [isNavigating, setIsNavigating] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
     const [scrollOffset, setScrollOffset] = useState(-96);
     const headerRef = useRef<HTMLElement | null>(null);
-
-    useEffect(() => {
-        const onScroll = () => setIsScrolled(window.scrollY > 12);
-        onScroll();
-        window.addEventListener("scroll", onScroll, { passive: true });
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
 
     useEffect(() => {
         const updateOffset = () => {
@@ -35,39 +27,42 @@ export default function Navbar() {
     return (
         <header
             ref={headerRef}
-            className={[
-                "fixed top-0 left-0 right-0 z-50",
-                "transition-all duration-500",
-                isScrolled 
-                    ? "bg-black/30 backdrop-blur-lg border-b border-white/10 shadow-2xl py-2" 
-                    : "bg-transparent py-4",
-            ].join(" ")}
+            className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black py-2"
         >
-            <div className="w-full max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10">
-                <div className="relative flex items-center gap-4 group cursor-pointer" onClick={() => router.push("/")}>
+            <div className="flex w-full items-center justify-between px-3 sm:px-4">
+                <button
+                    type="button"
+                    className="group flex cursor-pointer items-center gap-2 text-left sm:gap-3"
+                    onClick={() => router.push("/")}
+                    aria-label="MeteorMate home"
+                >
                     <div className="relative">
                         <Image
-                            src="/MM_logo_V2.svg"
+                            src="/android-chrome-512x512.png"
                             alt="MeteorMate Logo"
                             width={56}
                             height={56}
-                            className="md:w-14 md:h-14 w-10 h-10 transition-transform duration-300 group-hover:scale-110"
+                            className="h-11 w-11 sm:h-[52px] sm:w-[52px]"
                             priority
                         />
-                        {/* Subtle glow effect around logo */}
-                        <div className="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
                     <div className="flex flex-col leading-tight">
-                        <h1 className="font-pavanam font-bold md:text-2xl text-lg tracking-tight bg-gradient-to-r from-primary via-secondary to-primary-hover bg-clip-text text-transparent drop-shadow-lg">
-							MeteorMate
+                        <h1
+                            className="bg-clip-text font-outfit text-xl font-bold tracking-tight text-transparent sm:text-[26px]"
+                            style={{
+                                backgroundImage:
+                                    "linear-gradient(90deg, #FF9100 7.76%, #F2DDBC 52.43%, #FF9100 85.1%)",
+                            }}
+                        >
+                            MeteorMate
                         </h1>
-                        <span className="text-[10px] md:text-xs font-pavanam font-medium text-white/70 uppercase tracking-widest">
-							Powered by ACM Dev
+                        <span className="self-end text-right text-[11px] font-normal text-white/70 sm:text-[13px]" style={{ fontFamily: "var(--font-inter)" }}>
+                            Powered by ACM Dev
                         </span>
                     </div>
-                </div>
+                </button>
 
-                <nav className="hidden md:flex items-center gap-10">
+                <nav className="hidden items-center gap-6 md:flex lg:gap-8">
                     {[
                         { to: "howItWorks", label: "How It Works" },
                         { to: "getStarted", label: "Get Started" },
@@ -79,15 +74,29 @@ export default function Navbar() {
                             smooth={true}
                             duration={500}
                             offset={scrollOffset}
-                            className="relative cursor-pointer font-outfit font-medium text-lg text-white/90 hover:text-white transition-colors duration-300 group"
+                            className="group relative cursor-pointer whitespace-nowrap text-sm text-white/90 transition-colors duration-300 hover:text-white lg:text-base"
+                            style={{
+                                fontFamily: "var(--font-inter)",
+                                fontWeight: 400,
+                                lineHeight: "100%",
+                                letterSpacing: "0px",
+                                textAlign: "center",
+                            }}
                         >
                             {link.label}
-                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary transition-all duration-300 group-hover:w-full" />
+                            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-primary to-secondary transition-all duration-300 group-hover:w-full" />
                         </Link>
                     ))}
 
                     <button
-                        className="ml-4 cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
+                        type="button"
+                        className="ml-1 inline-flex cursor-pointer items-center gap-2 rounded-xl px-[14px] py-2 font-outfit text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 lg:text-base"
+                        style={{
+                            border: "1.11px solid transparent",
+                            background:
+                                "linear-gradient(#000, #000) padding-box, linear-gradient(90deg, #FF9100 57.21%, #FFC94C 100%) border-box",
+                            fontFamily: "var(--font-outfit)",
+                        }}
                         onClick={() => {
                             if (!isNavigating) {
                                 setIsNavigating(true);
@@ -96,19 +105,36 @@ export default function Navbar() {
                         }}
                         disabled={isNavigating}
                     >
-                        <span className="outfit-bold border-0 bg-gradient-to-br from-primary to-secondary text-white rounded-full px-8 py-3 transition-all duration-300 group-hover:from-primary-hover group-hover:to-secondary-hover group-hover:shadow-xl shadow-lg inline-flex items-center gap-3 text-base">
-                            {isNavigating && (
-                                <LoadingSpinner size="sm" className="border-white" />
-                            )}
-							Login
-                        </span>
+                        {isNavigating && <LoadingSpinner size="sm" className="border-white" />}
+                        Login
+                    </button>
+                    <button
+                        type="button"
+                        className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-[#FF9100] to-[#FFC94C] px-[14px] py-2 font-outfit text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50 lg:text-base"
+                        style={{ fontFamily: "var(--font-outfit)" }}
+                        onClick={() => {
+                            if (!isNavigating) {
+                                setIsNavigating(true);
+                                router.push("/authentication/createAccount");
+                            }
+                        }}
+                        disabled={isNavigating}
+                    >
+                        {isNavigating && <LoadingSpinner size="sm" className="border-black" />}
+                        Sign up
                     </button>
                 </nav>
 
-                {/* Mobile Login Button - keeping it simple but bigger */}
-                <div className="md:hidden flex items-center">
+                <div className="flex items-center gap-2 md:hidden">
                     <button
-                        className="cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 group"
+                        type="button"
+                        className="inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 font-outfit text-xs font-semibold text-white disabled:opacity-50"
+                        style={{
+                            border: "1.11px solid transparent",
+                            background:
+                                "linear-gradient(#000, #000) padding-box, linear-gradient(90deg, #FF9100 57.21%, #FFC94C 100%) border-box",
+                            fontFamily: "var(--font-outfit)",
+                        }}
                         onClick={() => {
                             if (!isNavigating) {
                                 setIsNavigating(true);
@@ -117,14 +143,24 @@ export default function Navbar() {
                         }}
                         disabled={isNavigating}
                     >
-                        <span className="outfit-bold bg-gradient-to-br from-primary to-secondary text-white rounded-full px-5 py-2 text-sm inline-flex items-center gap-2 shadow-md">
-                            {isNavigating && <LoadingSpinner size="sm" className="border-white" />}
-							Login
-                        </span>
+                        Login
+                    </button>
+                    <button
+                        type="button"
+                        className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-gradient-to-r from-[#FF9100] to-[#FFC94C] px-3 py-2 font-outfit text-xs font-semibold text-black disabled:opacity-50"
+                        style={{ fontFamily: "var(--font-outfit)" }}
+                        onClick={() => {
+                            if (!isNavigating) {
+                                setIsNavigating(true);
+                                router.push("/authentication/createAccount");
+                            }
+                        }}
+                        disabled={isNavigating}
+                    >
+                        Sign up
                     </button>
                 </div>
             </div>
         </header>
     );
 }
-

@@ -4,7 +4,7 @@ import LandingPageMatchCard, { type LandingPageMatchCardProps } from "@/componen
 import type { CSSProperties } from "react";
 
 // Edit each position directly: left/top accept percentages or pixel numbers.
-// Percentages refer to the full background canvas; width and marginTop are pixels.
+// Percentages refer to the page's 1440:4000 card canvas; width and marginTop are pixels.
 // translateX(-50%) centers the card on left; translateX(-100%) aligns its right edge.
 export const LANDING_MATCHES: {
     position: CSSProperties;
@@ -71,7 +71,7 @@ export const LANDING_MATCHES: {
 export default function LandingMatchCards({ layout = "stacked" }: { layout?: "desktop" | "stacked" }) {
     if (layout === "desktop") {
         return (
-            <ul className="absolute inset-0 hidden xl:block" aria-label="Example roommate matches">
+            <ul className="absolute inset-0 hidden 2xl:block" aria-label="Example roommate matches">
                 {LANDING_MATCHES.map(({ position, card }) => (
                     <li key={card.initials} className="absolute [&>div]:max-w-none" style={position}>
                         <LandingPageMatchCard {...card} />
@@ -81,9 +81,9 @@ export default function LandingMatchCards({ layout = "stacked" }: { layout?: "de
         );
     }
 
-    // Keep the examples readable beneath the hero on smaller screens.
+    // Keep the examples below the hero until there is room beside its text.
     return (
-        <div className="relative mx-auto mb-24 w-full max-w-sm px-6 xl:hidden" aria-label="Example roommate matches">
+        <div className="relative mx-auto mb-24 w-full max-w-sm px-6 2xl:hidden" aria-label="Example roommate matches">
             <div className="pointer-events-none absolute bottom-0 left-1/2 top-2 w-px bg-[#E87500]/30" aria-hidden="true" />
             <ul className="relative grid gap-12">
                 {LANDING_MATCHES.map(({ card }) => (

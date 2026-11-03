@@ -3,39 +3,58 @@ import Image from "next/image";
 import LandingSection from "./LandingSection";
 
 interface FeatureCardProps {
-    imageSrc: string;
-    imageAlt: string;
+    number: number;
+    icon: "profile" | "match" | "chat";
     title: string;
     description: string;
-    // Removed imageWidth/Height from props to enforce CSS sizing
+    connectNext?: boolean;
+}
+
+function FeatureIcon({ icon }: { icon: FeatureCardProps["icon"] }) {
+    const iconSrc = {
+        profile: "/profile.svg",
+        match: "/meteor.svg",
+        chat: "/chat.svg",
+    }[icon];
+
+    return (
+        <Image
+            src={iconSrc}
+            alt=""
+            aria-hidden="true"
+            width={90}
+            height={90}
+            className="h-[90px] w-[90px] object-contain"
+        />
+    );
 }
 
 function FeatureCard({
-    imageSrc,
-    imageAlt,
+    number,
+    icon,
     title,
     description,
+    connectNext = false,
 }: FeatureCardProps) {
     return (
         <div
-            className="flex flex-col items-start gap-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 hover:border-primary-hover/30 hover:bg-white/10 transition-all duration-300 group">
-            {/* Icon Container - Fixed height, flex centered */}
-            <div
-                className="relative h-16 w-16 md:h-20 md:w-20 flex-shrink-0 rounded-xl p-3 group-hover:scale-105 transition-transform">
-                <Image
-                    src={imageSrc}
-                    alt={imageAlt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-contain p-2"
-                />
+            className={`group relative z-10 flex h-[323px] w-[250px] flex-col items-center rounded-[10px] border-[0.8px] border-transparent bg-[linear-gradient(#1A1919,#1A1919),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] [background-clip:padding-box,border-box] [background-origin:border-box] px-5 pt-[14px] text-center font-[family-name:var(--font-outfit)] transition-colors duration-300 hover:bg-[linear-gradient(#211F1C,#211F1C),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] ${
+                connectNext
+                    ? "after:absolute after:left-full after:top-1/2 after:hidden after:h-[3px] after:w-[76px] after:bg-gradient-to-r after:from-[#FF9100]/30 after:to-[#FFC94C]/30 after:content-[''] lg:after:block"
+                    : ""
+            }`}
+        >
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(90deg,#FF9100_57.21%,#FFC94C_100%)] font-[family-name:var(--font-orelega-one)] text-base font-bold leading-none text-white">
+                {number}
             </div>
-
-            <div className="space-y-2">
-                <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">
+            <div className="mt-4 flex h-[130px] w-[130px] shrink-0 items-center justify-center rounded-full border border-[#29251F] bg-[#201E1A] transition-transform duration-300 group-hover:scale-105">
+                <FeatureIcon icon={icon} />
+            </div>
+            <div className="mt-4 space-y-2">
+                <h3 className="text-center text-2xl font-medium text-white transition-colors group-hover:text-primary">
                     {title}
                 </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-center text-sm font-light leading-[19px] text-[#EEEEEE]">
                     {description}
                 </p>
             </div>
@@ -44,49 +63,27 @@ function FeatureCard({
 }
 
 export default function HowItWorks() {
-    // Removed width/height from data array
     const features: FeatureCardProps[] = [
         {
-            imageSrc: "/L1.webp", // Updated from original code reference
-            imageAlt: "AI Powered Matchmaking",
-            title: "AI Powered Matchmaking",
+            number: 1,
+            icon: "profile",
+            title: "Create Your Profile",
             description:
-                "Our algorithm weighs lifestyle, cleanliness, and personality traits to find the roommate that fits you.",
+                "Tell us about your lifestyle, preferences, and what you’re looking for.",
         },
         {
-            imageSrc: "/L2.webp",
-            imageAlt: "Data Driven Insights",
-            title: "Data Driven Insights",
+            number: 2,
+            icon: "match",
+            title: "We Matchmake",
             description:
-                "Compare potential roommates with compatibility scores and metrics that make the decision simple.",
+                "Our algorithm analyzes compatibility and finds your best match.",
         },
         {
-            imageSrc: "/L3.webp",
-            imageAlt: "Multistep Verification",
-            title: "Multistep Verification",
+            number: 3,
+            icon: "chat",
+            title: "You Chat",
             description:
-                "School email plus optional social verification helps ensure everyone on the platform is a real UTD student.",
-        },
-        {
-            imageSrc: "/L4.webp",
-            imageAlt: "Privacy First",
-            title: "Privacy First",
-            description:
-                "You’re always in control of what you share. Reveal more details only when you’re comfortable.",
-        },
-        {
-            imageSrc: "/L5.webp",
-            imageAlt: "Personalized Matchmaking",
-            title: "Swipe-based Matching",
-            description:
-                "A Tinder-style interface with detailed profiles makes finding your roommate feel familiar and low-friction.",
-        },
-        {
-            imageSrc: "/L6.webp",
-            imageAlt: "Social Integration",
-            title: "Social Integration",
-            description:
-                "Optionally connect socials to add another layer of signal for compatibility and verification.",
+                "Reach out via email, get to know each other, and find your perfect roommate!",
         },
     ];
 
@@ -95,26 +92,20 @@ export default function HowItWorks() {
             id="howItWorks"
             className="w-full py-24 md:py-32"
         >
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="text-center mb-16 space-y-4">
-                    <span
-                        className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium tracking-wider uppercase">
-            Features
-                    </span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                        Built for <span
-                            className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Comets</span>
-                    </h2>
-                    <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
-                        Everything you need to find your perfect match, verified and secure.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {features.map((feature, index) => (
-                        <FeatureCard key={index} {...feature} />
-                    ))}
-                </div>
+            <div className="mb-12 text-center text-white">
+                <h2 className="outfit-bold mb-4 text-7xl font-bold">How MeteorMate Works</h2>
+                <p className="outfit font-light text-3xl">
+                    You&apos;re just a few steps away from finding your perfect match
+                </p>
+            </div>
+            <div className="mx-auto grid max-w-[900px] grid-cols-1 justify-items-center gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3 lg:gap-[72px]">
+                {features.map((feature, index) => (
+                    <FeatureCard
+                        key={feature.title}
+                        {...feature}
+                        connectNext={index < features.length - 1}
+                    />
+                ))}
             </div>
         </LandingSection>
     );
