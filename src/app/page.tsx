@@ -14,9 +14,11 @@ export default function Home() {
         <div className="relative isolate flex flex-col min-h-screen overflow-x-hidden scroll-smooth">
             <StarsBackground count={70} color="#FF9100" />
             <StreakBackground />
-            {/* Preserve the cards' coordinate canvas independently of the star field. */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-0 aspect-[1440/4000]">
-                <LandingMatchCards layout="desktop" />
+            {/* Keep the cards' coordinate canvas from extending the page past the footer. */}
+            <div className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden 2xl:block">
+                <div className="relative w-full aspect-[1440/4000]">
+                    <LandingMatchCards layout="desktop" />
+                </div>
             </div>
             <Navbar />
             <main className="relative z-10 flex flex-col">
