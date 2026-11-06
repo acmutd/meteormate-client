@@ -60,3 +60,18 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #f28c00 #fff2df;
 }
+
+.star-sparkle {
+  animation: star-twinkle 3s ease-in-out infinite;
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
