@@ -44,7 +44,7 @@ export async function apiFetch<T>(
             let token: string;
             try {
                 token = await user.getIdToken();
-            } catch (tokenError) {
+            } catch {
                 token = await user.getIdToken(true);
             }
 

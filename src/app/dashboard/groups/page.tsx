@@ -14,9 +14,7 @@ import {
   Search,
   Eye,
 } from "lucide-react";
-import GroupProfileViewer, {
-  type GroupProfile,
-} from "@/components/cardComponent/GroupProfileViewer";
+import GroupProfileViewer from "@/components/cardComponent/GroupProfileViewer";
 
 type Chip = {
   label: string;
@@ -138,7 +136,7 @@ export default function Groups() {
   const [showManageModal, setShowManageModal] = useState(false);
   const [viewingProfile, setViewingProfile] =
     useState<GroupMember | null>(null);
-  const [search, setSearch] = useState("");
+  //const [search, setSearch] = useState("");
 
   const isAdmin = myGroup?.adminId === currentUser.id;
 
@@ -223,11 +221,11 @@ export default function Groups() {
     setViewingProfile(null);
   };
 
-  const availableMatches = mockMatches.filter(
-    (member) =>
-      !myGroup?.members.some((existing) => existing.id === member.id) &&
-      member.name.toLowerCase().includes(search.toLowerCase())
-  );
+  //const availableMatches = mockMatches.filter(
+  //  (member) =>
+  //    !myGroup?.members.some((existing) => existing.id === member.id) &&
+  //    member.name.toLowerCase().includes(search.toLowerCase())
+  //);
 
   return (
     <main className="min-h-screen px-4 py-8 md:px-8">
@@ -248,16 +246,6 @@ export default function Groups() {
               group’s members.
             </p>
           </div>
-
-          {myGroup && (
-            <button
-              onClick={() => setShowManageModal(true)}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-orange-100 bg-white px-5 py-3 font-semibold text-primary shadow-sm transition hover:bg-orange-50"
-            >
-              <Settings size={18} />
-              Manage Group
-            </button>
-          )}
         </div>
 
         {/* Empty state */}
@@ -268,7 +256,7 @@ export default function Groups() {
             </div>
 
             <h2 className="text-2xl font-bold text-gray-900">
-              Find your roommate crew
+              Find your orbit
             </h2>
 
             <p className="mx-auto mt-3 max-w-lg text-gray-600">
