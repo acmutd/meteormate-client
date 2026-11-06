@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, {
@@ -130,9 +131,16 @@ export default function Discover() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [actionError, setActionError] = useState<string | null>(null);
 
-    const actionInProgress = useRef(false);
+    // Additional match loading state
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
+    const [loadMoreRetry, setLoadMoreRetry] = useState(0);
 
-    // Fetch potential matches in the order returned by the backend.
+    const actionInProgress = useRef(false);
+    const loadingMoreRef = useRef(false);
+
+    // Fetch initial potential matches in the order returned by the backend.
     useEffect(() => {
         let cancelled = false;
 
@@ -152,6 +160,7 @@ export default function Discover() {
 
                 setMatches(result.data.matches ?? []);
                 setCurrentMatchIndex(0);
+                setHasMore(true);
             } catch (err) {
                 console.error("Failed to load potential matches:", err);
 
@@ -173,6 +182,86 @@ export default function Discover() {
             cancelled = true;
         };
     }, []);
+
+    // Fetch another batch when the current batch has been exhausted.
+    useEffect(() => {
+        if (
+            loading ||
+            loadingMore ||
+            loadingMoreRef.current ||
+            !hasMore ||
+            matches.length === 0 ||
+            currentMatchIndex < matches.length ||
+            loadMoreError
+        ) {
+            return;
+        }
+
+        let cancelled = false;
+
+        async function fetchMoreMatches() {
+            loadingMoreRef.current = true;
+            setLoadingMore(true);
+
+            try {
+                const result = await getPotentialMatches();
+
+                if (cancelled) return;
+
+                if (!result.ok) {
+                    setLoadMoreError(result.error);
+                    return;
+                }
+
+                const existingIds = new Set(
+                    matches.map((match) => match.uid)
+                );
+
+                const newMatches = (result.data.matches ?? []).filter(
+                    (match) => !existingIds.has(match.uid)
+                );
+
+                if (newMatches.length === 0) {
+                    setHasMore(false);
+                    return;
+                }
+
+                setMatches((previous) => [...previous, ...newMatches]);
+                setLoadMoreError(null);
+            } catch (err) {
+                console.error(
+                    "Failed to fetch more potential matches:",
+                    err
+                );
+
+                if (!cancelled) {
+                    setLoadMoreError(
+                        "Unable to load more potential matches. Please try again."
+                    );
+                }
+            } finally {
+                loadingMoreRef.current = false;
+
+                if (!cancelled) {
+                    setLoadingMore(false);
+                }
+            }
+        }
+
+        void fetchMoreMatches();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        loading,
+        loadingMore,
+        hasMore,
+        matches,
+        currentMatchIndex,
+        loadMoreError,
+        loadMoreRetry,
+    ]);
 
     // Load local notifications for the sidebar.
     useEffect(() => {
@@ -332,12 +421,36 @@ export default function Discover() {
         );
     }
 
-    if (matches.length === 0 || currentMatchIndex >= matches.length) {
+    // Show the next batch loading state or empty state only after
+    // the backend confirms there are no additional matches.
+    if (currentMatchIndex >= matches.length) {
         return (
-            <div className="flex min-h-[600px] items-center justify-center">
-                <p className="text-gray-500">
-                    No potential matches found.
-                </p>
+            <div className="flex min-h-[600px] flex-col items-center justify-center gap-3">
+                {loadingMore ? (
+                    <p className="text-gray-500">
+                        Loading more potential matches...
+                    </p>
+                ) : loadMoreError ? (
+                    <>
+                        <p role="alert" className="text-red-500">
+                            {loadMoreError}
+                        </p>
+                        <button
+                            type="button"
+                            className="rounded-lg border px-4 py-2"
+                            onClick={() => {
+                                setLoadMoreError(null);
+                                setLoadMoreRetry((prev) => prev + 1);
+                            }}
+                        >
+                            Retry
+                        </button>
+                    </>
+                ) : (
+                    <p className="text-gray-500">
+                        You&apos;ve viewed all available potential matches.
+                    </p>
+                )}
             </div>
         );
     }
@@ -348,40 +461,40 @@ export default function Discover() {
         match.survey?.wake_time === "early_bird"
             ? { label: "Early Bird", selected: true }
             : match.survey?.wake_time === "night_owl"
-              ? { label: "Night Owl", selected: true }
-              : null,
+                ? { label: "Night Owl", selected: true }
+                : null,
 
         match.survey?.cleanliness === "tidy"
             ? { label: "Tidy", selected: true }
             : match.survey?.cleanliness === "neat_freak"
-              ? { label: "Neat Freak", selected: true }
-              : match.survey?.cleanliness === "relaxed"
-                ? { label: "Relaxed", selected: true }
-                : null,
+                ? { label: "Neat Freak", selected: true }
+                : match.survey?.cleanliness === "relaxed"
+                    ? { label: "Relaxed", selected: true }
+                    : null,
 
         match.survey?.noise_tolerance === "quiet"
             ? { label: "Quiet", selected: true }
             : match.survey?.noise_tolerance === "moderate"
-              ? { label: "Moderate Noise", selected: true }
-              : match.survey?.noise_tolerance === "loud"
-                ? { label: "Okay With Noise", selected: true }
-                : null,
+                ? { label: "Moderate Noise", selected: true }
+                : match.survey?.noise_tolerance === "loud"
+                    ? { label: "Okay With Noise", selected: true }
+                    : null,
 
         match.survey?.pet_preference === "okay"
             ? { label: "Okay With Pets", selected: true }
             : match.survey?.pet_preference === "have_a_pet"
-              ? { label: "Has a Pet", selected: true }
-              : match.survey?.pet_preference === "not_okay"
-                ? { label: "No Pets", selected: true }
-                : null,
+                ? { label: "Has a Pet", selected: true }
+                : match.survey?.pet_preference === "not_okay"
+                    ? { label: "No Pets", selected: true }
+                    : null,
 
         match.survey?.cooking_frequency === "often"
             ? { label: "Cooks Often", selected: true }
             : match.survey?.cooking_frequency === "rarely"
-              ? { label: "Rarely Cooks", selected: true }
-              : match.survey?.cooking_frequency === "never"
-                ? { label: "Doesn't Cook", selected: true }
-                : null,
+                ? { label: "Rarely Cooks", selected: true }
+                : match.survey?.cooking_frequency === "never"
+                    ? { label: "Doesn't Cook", selected: true }
+                    : null,
     ].filter(
         (habit): habit is { label: string; selected: true } =>
             habit !== null
@@ -434,6 +547,7 @@ export default function Discover() {
                     />
                 ) : (
                     <ProfileCard
+                        key={match.uid}
                         name={`${match.profile?.first_name ?? ""} ${match.profile?.last_name ?? ""}`.trim()}
                         subtitle={`${match.profile?.major ?? ""} - ${match.profile?.classification ?? ""}`}
                         images={match.profile?.profile_picture_url ?? []}
@@ -441,36 +555,36 @@ export default function Discover() {
                             ...(match.survey?.budget_min != null ||
                             match.survey?.budget_max != null
                                 ? [
-                                      {
-                                          label: `$${match.survey?.budget_min ?? 0}–$${match.survey?.budget_max ?? 0} Rent range`,
-                                          tone: "orange" as const,
-                                      },
-                                  ]
+                                    {
+                                        label: `$${match.survey?.budget_min ?? 0}–$${match.survey?.budget_max ?? 0} Rent range`,
+                                        tone: "orange" as const,
+                                    },
+                                ]
                                 : []),
 
                             ...(match.survey?.pet_preference === "have_a_pet"
                                 ? [
-                                      {
-                                          label: "Has a pet",
-                                          tone: "gray" as const,
-                                      },
-                                  ]
+                                    {
+                                        label: "Has a pet",
+                                        tone: "gray" as const,
+                                    },
+                                ]
                                 : match.survey?.pet_preference === "okay"
-                                  ? [
+                                    ? [
                                         {
                                             label: "Okay with pets",
                                             tone: "gray" as const,
                                         },
                                     ]
-                                  : match.survey?.pet_preference ===
+                                    : match.survey?.pet_preference ===
                                       "not_okay"
-                                    ? [
-                                          {
-                                              label: "No pets",
-                                              tone: "gray" as const,
-                                          },
-                                      ]
-                                    : []),
+                                        ? [
+                                            {
+                                                label: "No pets",
+                                                tone: "gray" as const,
+                                            },
+                                        ]
+                                        : []),
                         ]}
                         bio={match.profile?.bio}
                         onDislike={() => handleDislike(match.uid)}
