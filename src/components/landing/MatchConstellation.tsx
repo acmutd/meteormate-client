@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 
 type Point = { x: number; y: number };
 type Star = Point & { size: number };
@@ -8,8 +8,6 @@ type Scene = { cards: Point[]; width: number; height: number };
 
 const STAR_PATH = "M50 0 Q55 45 100 50 Q55 55 50 100 Q45 55 0 50 Q45 45 50 0 Z";
 
-// Fixed, irregular positions keep the constellation consistent across renders.
-// These share the desktop cards' 1440:4000 canvas.
 const DESKTOP_STARS = [
     { x: 0.45, y: 0.018, size: 20 },
     { x: 0.67, y: 0.025, size: 14 },
@@ -28,7 +26,72 @@ export default function MatchConstellation({
     layout: "desktop" | "stacked";
 }) {
     const svgRef = useRef<SVGSVGElement>(null);
+    const gradientRef = useRef<SVGRadialGradientElement>(null);
+    const glowRef = useRef<SVGGElement>(null);
+    const glowId = useId();
     const [scene, setScene] = useState<Scene | null>(null);
+
+    useEffect(() => {
+        let cursor: Point | null = null;
+        let frame = 0;
+
+        const updateGlow = () => {
+            frame = 0;
+            const svg = svgRef.current;
+            const gradient = gradientRef.current;
+            const glow = glowRef.current;
+            if (!svg || !gradient || !glow || !cursor) return;
+
+            const bounds = svg.getBoundingClientRect();
+            if (!bounds.width || !bounds.height) {
+                glow.setAttribute("opacity", "0");
+                return;
+            }
+
+            gradient.setAttribute("cx", String(cursor.x - bounds.left));
+            gradient.setAttribute("cy", String(cursor.y - bounds.top));
+            glow.setAttribute("opacity", "1");
+        };
+
+        const scheduleUpdate = () => {
+            if (cursor && !frame) frame = window.requestAnimationFrame(updateGlow);
+        };
+
+        const clearGlow = () => {
+            cursor = null;
+            window.cancelAnimationFrame(frame);
+            frame = 0;
+            glowRef.current?.setAttribute("opacity", "0");
+        };
+
+        const handlePointerMove = (event: PointerEvent) => {
+            if (event.pointerType === "touch") {
+                clearGlow();
+                return;
+            }
+            cursor = { x: event.clientX, y: event.clientY };
+            scheduleUpdate();
+        };
+
+        const handlePointerOut = (event: PointerEvent) => {
+            if (!event.relatedTarget) clearGlow();
+        };
+
+        window.addEventListener("pointermove", handlePointerMove, { passive: true });
+        window.addEventListener("pointerout", handlePointerOut);
+        window.addEventListener("blur", clearGlow);
+        window.addEventListener("scroll", scheduleUpdate, { passive: true, capture: true });
+        window.addEventListener("resize", scheduleUpdate);
+
+        return () => {
+            window.cancelAnimationFrame(frame);
+            window.removeEventListener("pointermove", handlePointerMove);
+            window.removeEventListener("pointerout", handlePointerOut);
+            window.removeEventListener("blur", clearGlow);
+            window.removeEventListener("scroll", scheduleUpdate, true);
+            window.removeEventListener("resize", scheduleUpdate);
+        };
+    }, []);
 
     useEffect(() => {
         const svg = svgRef.current;
@@ -52,8 +115,6 @@ export default function MatchConstellation({
             });
         };
 
-        // Measure the actual cards so fixed widths, transforms, and responsive
-        // resizing never leave a connection floating away from its card.
         const observer = new ResizeObserver(update);
         observer.observe(svg);
         Array.from(list.children).forEach((card) => observer.observe(card));
@@ -99,7 +160,35 @@ export default function MatchConstellation({
             focusable="false"
             fill="none"
         >
+            <defs>
+                <radialGradient
+                    ref={gradientRef}
+                    id={glowId}
+                    gradientUnits="userSpaceOnUse"
+                    cx="-999"
+                    cy="-999"
+                    r="200"
+                >
+                    <stop offset="0%" stopColor="#FFE0A3" />
+                    <stop offset="35%" stopColor="#FFAB24" />
+                    <stop offset="75%" stopColor="#FF9100" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#FF9100" stopOpacity="0" />
+                </radialGradient>
+            </defs>
             <g stroke="#FFAB24" strokeWidth="0.8" strokeOpacity="0.75" strokeLinejoin="round">
+                {paths.map((points, index) => (
+                    <polyline key={index} points={points.map(({ x, y }) => `${x},${y}`).join(" ")} />
+                ))}
+            </g>
+            <g
+                ref={glowRef}
+                stroke={`url(#${glowId})`}
+                strokeWidth="1.8"
+                strokeLinejoin="round"
+                opacity="0"
+                className="transition-opacity duration-150 motion-reduce:transition-none"
+                style={{ filter: "drop-shadow(0 0 4px rgb(255 145 0 / 75%))" }}
+            >
                 {paths.map((points, index) => (
                     <polyline key={index} points={points.map(({ x, y }) => `${x},${y}`).join(" ")} />
                 ))}
