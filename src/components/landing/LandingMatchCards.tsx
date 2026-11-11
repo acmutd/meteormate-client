@@ -1,7 +1,8 @@
 "use client";
 
 import LandingPageMatchCard, { type LandingPageMatchCardProps } from "@/components/cardComponent/LandingPageMatchCard";
-import type { CSSProperties } from "react";
+import MatchConstellation from "@/components/landing/MatchConstellation";
+import { useRef, type CSSProperties } from "react";
 
 // Edit each position directly: left/top accept percentages or pixel numbers.
 // Percentages refer to the page's 1440:4000 card canvas; width and marginTop are pixels.
@@ -69,28 +70,30 @@ export const LANDING_MATCHES: {
 ];
 
 export default function LandingMatchCards({ layout = "stacked" }: { layout?: "desktop" | "stacked" }) {
+    const cardsRef = useRef<HTMLUListElement>(null);
+
     if (layout === "desktop") {
         return (
-            <ul className="absolute inset-0 hidden 2xl:block" aria-label="Example roommate matches">
-                {LANDING_MATCHES.map(({ position, card }) => (
-                    <li key={card.initials} className="absolute [&>div]:max-w-none" style={position}>
-                        <LandingPageMatchCard {...card} />
-                    </li>
-                ))}
-            </ul>
+            <div className="absolute inset-0 hidden 2xl:block">
+                <MatchConstellation cardsRef={cardsRef} layout={layout} />
+                <ul ref={cardsRef} className="absolute inset-0" aria-label="Example roommate matches">
+                    {LANDING_MATCHES.map(({ position, card }) => (
+                        <li key={card.initials} className="absolute [&>div]:max-w-none" style={position}>
+                            <LandingPageMatchCard {...card} />
+                        </li>
+                    ))}
+                </ul>
+            </div>
         );
     }
 
     // Keep the examples below the hero until there is room beside its text.
     return (
         <div className="relative mx-auto mb-24 w-full max-w-sm px-6 2xl:hidden" aria-label="Example roommate matches">
-            <div className="pointer-events-none absolute bottom-0 left-1/2 top-2 w-px bg-[#E87500]/30" aria-hidden="true" />
-            <ul className="relative grid gap-12">
+            <MatchConstellation cardsRef={cardsRef} layout={layout} />
+            <ul ref={cardsRef} className="relative grid gap-16 py-8">
                 {LANDING_MATCHES.map(({ card }) => (
                     <li key={card.initials}>
-                        <svg className="mx-auto mb-4 size-4 text-[#E87500]" viewBox="0 0 16 16" aria-hidden="true">
-                            <path d="M8 0 9 7 16 8 9 9 8 16 7 9 0 8 7 7Z" fill="currentColor" />
-                        </svg>
                         <LandingPageMatchCard {...card} />
                     </li>
                 ))}
