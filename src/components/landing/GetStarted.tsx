@@ -38,12 +38,12 @@ export default function GetStarted() {
                         <div
                         key={index}
                         className={`
-                            flex flex-col items-center justify-center p-8 text-center bg-black
+                            flex flex-col items-center justify-center p-8 text-center
                             border-gray-800
                             /* Vertical divider lines between columns (except the last column on desktop) */
-                            md:[&:not(:nth-child(3n))]:border-r
+                            md:[&:not(:nth-child(3n))]:border-r-2
                             /* Horizontal divider lines between rows (except the last row) */
-                            [&:not(:nth-last-child(-n+3))]:border-b
+                            [&:not(:nth-last-child(-n+3))]:border-b-2
                         `}
                         >
                         <Icon className="w-12 h-12 text-amber-500 mb-6" />

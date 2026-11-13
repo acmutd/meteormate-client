@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import LandingSection from "./LandingSection";
 
 interface FeatureCardProps {
@@ -36,27 +37,60 @@ function FeatureCard({
     description,
     connectNext = false,
 }: FeatureCardProps) {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [mousePos, setMousePos] = useState({ x: -999, y: -999 });
+    const [glowOpacity, setGlowOpacity] = useState(0);
+
+    useEffect(() => {
+        const activationRadius = 200;
+
+        const handleMouseMove = (event: MouseEvent) => {
+            const card = cardRef.current;
+            if (!card) return;
+
+            const rect = card.getBoundingClientRect();
+            setMousePos({ x: event.clientX - rect.left, y: event.clientY - rect.top });
+
+            const dx = Math.max(rect.left - event.clientX, 0, event.clientX - rect.right);
+            const dy = Math.max(rect.top - event.clientY, 0, event.clientY - rect.bottom);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            setGlowOpacity(Math.max(0, 1 - distance / activationRadius));
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
+    const borderStyle = {
+        background: `radial-gradient(circle 200px at ${mousePos.x}px ${mousePos.y}px, rgba(232, 124, 0, ${glowOpacity}) 0%, transparent 70%)`,
+    };
+
     return (
         <div
-            className={`group relative z-10 flex h-[323px] w-[250px] flex-col items-center rounded-[10px] border-[0.8px] border-transparent bg-[linear-gradient(#1A1919,#1A1919),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] [background-clip:padding-box,border-box] [background-origin:border-box] px-5 pt-[14px] text-center font-[family-name:var(--font-outfit)] transition-colors duration-300 hover:bg-[linear-gradient(#211F1C,#211F1C),radial-gradient(46.34%_46.47%_at_49.53%_53.53%,#F8E1CB_0%,#FCD59F_100%)] ${
+            ref={cardRef}
+            style={borderStyle}
+            className={`group relative z-10 h-[323px] w-[250px] rounded-[10px] p-px ${
                 connectNext
                     ? "after:absolute after:left-full after:top-1/2 after:hidden after:h-[3px] after:w-[76px] after:bg-gradient-to-r after:from-[#FF9100]/30 after:to-[#FFC94C]/30 after:content-[''] lg:after:block"
                     : ""
             }`}
         >
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(90deg,#FF9100_57.21%,#FFC94C_100%)] font-[family-name:var(--font-orelega-one)] text-base font-bold leading-none text-white">
-                {number}
-            </div>
-            <div className="mt-4 flex h-[130px] w-[130px] shrink-0 items-center justify-center rounded-full border border-[#29251F] bg-[#201E1A] transition-transform duration-300 group-hover:scale-105">
-                <FeatureIcon icon={icon} />
-            </div>
-            <div className="mt-4 space-y-2">
-                <h3 className="text-center text-2xl font-medium text-white transition-colors group-hover:text-primary">
-                    {title}
-                </h3>
-                <p className="text-center text-sm font-light leading-[19px] text-[#EEEEEE]">
-                    {description}
-                </p>
+            <div className="flex h-full w-full flex-col items-center rounded-[9px] bg-[#1A1919] px-5 pt-[14px] text-center font-[family-name:var(--font-outfit)] transition-colors duration-300 group-hover:bg-[#211F1C]">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(90deg,#FF9100_57.21%,#FFC94C_100%)] font-[family-name:var(--font-orelega-one)] text-base font-bold leading-none text-white">
+                    {number}
+                </div>
+                <div className="mt-4 flex h-[130px] w-[130px] shrink-0 items-center justify-center rounded-full border border-[#29251F] bg-[#201E1A] transition-transform duration-300 group-hover:scale-105">
+                    <FeatureIcon icon={icon} />
+                </div>
+                <div className="mt-4 space-y-2">
+                    <h3 className="text-center text-2xl font-medium text-white transition-colors group-hover:text-primary">
+                        {title}
+                    </h3>
+                    <p className="text-center text-sm font-light leading-[19px] text-[#EEEEEE]">
+                        {description}
+                    </p>
+                </div>
             </div>
         </div>
     );

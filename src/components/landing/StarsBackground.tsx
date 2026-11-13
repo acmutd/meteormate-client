@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface StarsBackgroundProps {
     count?: number;
@@ -35,6 +35,28 @@ export default function StarsBackground({
     background = true,
     maxRotation = 20,
 }: StarsBackgroundProps) {
+    const [scrollY, setScrollY] = useState(0);
+
+    useEffect(() => {
+        let frame = 0;
+        const updateScroll = () => {
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+                setScrollY(window.scrollY);
+            });
+        };
+
+        window.addEventListener("scroll", updateScroll, { passive: true });
+        updateScroll();
+
+        return () => {
+            window.removeEventListener("scroll", updateScroll);
+            cancelAnimationFrame(frame);
+        };
+    }, []);
+
+    const scrollRotation = Math.min(6, scrollY * 0.003);
+    const glowOpacity = Math.max(0.65, 1 - scrollY * 0.0001);
     const stars = useMemo(() => {
         const rand = mulberry32(42);
 
@@ -99,15 +121,22 @@ export default function StarsBackground({
                             position: "absolute",
                             top: `${s.top}%`,
                             left: `${s.left}%`,
-                            transform: `rotate(${s.rotate}deg)`,
+                            transform: `translateY(-${scrollY * (s.size / 40) * 0.018}px) rotate(${s.rotate + scrollRotation}deg) scale(${Math.max(0.8, 1 - scrollY * 0.00012)})`,
                             animationDelay: `${s.delay}s`,
-                            opacity: s.opacity, // applied directly, not just via CSS var
-                            "--star-opacity": s.opacity,
-                            filter: `drop-shadow(0 0 ${s.glow}px ${color})`,
                         } as React.CSSProperties
                     }
                 >
-                    <path d={STAR_PATH} fill={color} />
+                    <path
+                        d={STAR_PATH}
+                        fill={color}
+                        opacity={s.opacity}
+                        filter={`drop-shadow(0 0 ${s.glow}px color-mix(in srgb, ${color} ${glowOpacity * 100}%, transparent))`}
+                    />
+                    <path
+                        d={STAR_PATH}
+                        fill={color}
+                        opacity={Math.min(1, s.opacity + 0.18) * Math.max(0.65, 1 - scrollY * 0.0001)}
+                    />
                 </svg>
             ))}
         </div>
