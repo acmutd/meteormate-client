@@ -187,7 +187,6 @@ export default function Discover() {
     useEffect(() => {
         if (
             loading ||
-            loadingMore ||
             loadingMoreRef.current ||
             !hasMore ||
             matches.length === 0 ||
@@ -255,14 +254,12 @@ export default function Discover() {
         };
     }, [
         loading,
-        loadingMore,
         hasMore,
         matches,
         currentMatchIndex,
         loadMoreError,
         loadMoreRetry,
     ]);
-
     // Load local notifications for the sidebar.
     useEffect(() => {
         let mounted = true;
