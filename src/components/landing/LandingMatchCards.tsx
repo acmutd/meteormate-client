@@ -2,6 +2,7 @@
 
 import LandingPageMatchCard, { type LandingPageMatchCardProps } from "@/components/cardComponent/LandingPageMatchCard";
 import MatchConstellation from "@/components/landing/MatchConstellation";
+import StarsBackground from "@/components/landing/StarsBackground";
 import { useRef, type CSSProperties } from "react";
 
 // Edit each position directly: left/top accept percentages or pixel numbers.
@@ -75,6 +76,9 @@ export default function LandingMatchCards({ layout = "stacked" }: { layout?: "de
     if (layout === "desktop") {
         return (
             <div className="absolute inset-0 hidden 2xl:block">
+                <div className="pointer-events-none absolute left-[42%] right-0 top-[1%] h-[16%]" aria-hidden="true">
+                    <StarsBackground count={64} opacity={0.45} fixed={false} background={false} />
+                </div>
                 <MatchConstellation cardsRef={cardsRef} layout={layout} />
                 <ul ref={cardsRef} className="absolute inset-0" aria-label="Example roommate matches">
                     {LANDING_MATCHES.map(({ position, card }) => (
@@ -90,6 +94,9 @@ export default function LandingMatchCards({ layout = "stacked" }: { layout?: "de
     // Keep the examples below the hero until there is room beside its text.
     return (
         <div className="relative mx-auto mb-24 w-full max-w-sm px-6 2xl:hidden" aria-label="Example roommate matches">
+            <div className="pointer-events-none absolute -inset-x-20 -inset-y-6" aria-hidden="true">
+                <StarsBackground count={36} opacity={0.45} fixed={false} background={false} />
+            </div>
             <MatchConstellation cardsRef={cardsRef} layout={layout} />
             <ul ref={cardsRef} className="relative grid gap-16 py-8">
                 {LANDING_MATCHES.map(({ card }) => (
